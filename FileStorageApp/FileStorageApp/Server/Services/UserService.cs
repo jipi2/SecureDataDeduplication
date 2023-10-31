@@ -1,4 +1,5 @@
-﻿using FileStorageApp.Server.Repositories;
+﻿using FileStorageApp.Server.Entity;
+using FileStorageApp.Server.Repositories;
 using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 
@@ -19,6 +20,14 @@ namespace FileStorageApp.Server.Services
         public async Task<Response> Login(LoginUser logUser)
         {
             return await _userRepo.Login(logUser);
+        }
+
+        public bool isUserAdmin(User user)
+        {
+            string roleName = _userRepo.GetUserRoleName(user);
+            if(roleName == "admin")
+                return true;
+            return false;
         }
     }
 }

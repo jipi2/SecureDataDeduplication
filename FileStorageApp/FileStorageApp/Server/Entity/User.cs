@@ -18,6 +18,6 @@ namespace FileStorageApp.Server.Entity
         public string Password { get; set; }
         public string Salt { get; set; }
         public bool isDeleted { get; set; }
-        public ICollection<Role> Roles { get; set; }
+        public List<Role> Roles { get; set; }
     }
 }
