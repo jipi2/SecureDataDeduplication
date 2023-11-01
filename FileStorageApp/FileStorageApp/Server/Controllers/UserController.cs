@@ -18,6 +18,7 @@ namespace FileStorageApp.Server.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<Response> Register(RegisterUser regUser)
         {
             return await _userService.Register(regUser);
@@ -32,7 +33,7 @@ namespace FileStorageApp.Server.Controllers
 
 
         [HttpGet("test")]
-        [Authorize(Roles ="client")]
+        [Authorize(Roles = "client")]
         public IActionResult GetTestClient()
         {
             return Ok("Merge frate");

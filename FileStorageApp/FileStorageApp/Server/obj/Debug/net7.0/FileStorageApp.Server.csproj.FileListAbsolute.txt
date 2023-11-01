@@ -106,3 +106,5 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\BouncyCa
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\CryptoLib.pdb
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\BouncyCastle.Crypto.xml
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Blazored.LocalStorage.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Microsoft.AspNetCore.Components.Authorization.dll

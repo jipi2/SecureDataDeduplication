@@ -2,8 +2,11 @@
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Encoders;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -47,6 +50,83 @@ namespace CryptoLib
 
             return Hex.ToHexString(hash);
 
+        }
+
+        static public string GetHashOfFile(Stream file)
+        {
+
+            byte[] h = new byte[64];
+            var sha3_512 = new Sha3Digest(512);
+
+            long fileSize = file.Length;
+            byte[] buffer = new byte[1024];
+
+            int bytesRead = 0;
+            while((bytesRead = file.Read(buffer, 0, buffer.Length))>0)
+            {
+                sha3_512.BlockUpdate(buffer, 0, bytesRead);
+            }
+
+            sha3_512.DoFinal(h, 0);
+            
+            return Hex.ToHexString(h);
+        }
+
+        static private void GetLeaves(ref MerkleTree MT, int count)
+        {
+            while (count > 1)
+            {
+                count = 0;
+                int level = MT.Levels+1;
+                int n = MT.HashTree.Count;
+                MerkleTree aux = new MerkleTree();
+
+
+                for(int i = MT.IndexOfLevel[MT.Levels]; i<n; i+=2)
+                {
+                    byte[] h = new byte[32];
+                    var sha3_256 = new Sha3Digest(256);
+                    sha3_256.BlockUpdate(MT.HashTree[i]._hash, 0, MT.HashTree[i]._hash.Length);
+                    sha3_256.BlockUpdate(MT.HashTree[i + 1]._hash, 0, MT.HashTree[i + 1]._hash.Length);
+                    sha3_256.DoFinal(h, 0);
+                    aux.HashTree.Add(new MTMember(level, h));
+                    count++;
+                }
+                foreach(MTMember m in aux.HashTree)
+                {
+                    MT.HashTree.Add(m);
+                }
+                MT.IndexOfLevel.Add(MT.HashTree.Count - count);
+                MT.Levels++;
+            }
+        }
+
+        static public MerkleTree GetMerkleTree(Stream file)
+        {
+            MerkleTree MT = new MerkleTree();
+            long fileSize = file.Length;
+            byte[] buffer = new byte[1024];
+
+            int bytesRead = 0;
+            int count = 0;
+            while ((bytesRead = file.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                byte[] h = new byte[32];
+                var sha3_256 = new Sha3Digest(256);
+                sha3_256.BlockUpdate(buffer, 0, bytesRead);
+                sha3_256.DoFinal(h, 0);
+                MT.HashTree.Add(new MTMember(0, h));
+                count++;
+            }
+            if (count % 2 != 0)
+            {
+                MT.HashTree.Add(MT.HashTree[0]);
+                count++;
+            }
+            MT.IndexOfLevel.Add(0);
+            GetLeaves(ref MT, count);
+
+            return MT;
         }
     }
 }

@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using System.Text;
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@page "/uploadPage"
+
+
+<h3>Upload File here:</h3>
+<InputFile OnChange="@LoadFiles" class="form-control" accept=".png,.jpg,.jpeg, .pdf" />
+
+@code {
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+
+        var file = e.GetMultipleFiles().FirstOrDefault(); // Get the first file if multiple files are selected
+                                                          // if (file != null)
+                                                          // {
+                                                          //     string token = await LocalStorage.GetItemAsync<string>("token");
+                                                          //     Http.DefaultRequestHeaders.Remove("Authorization");
+                                                          //     Http.DefaultRequestHeaders.Add("Authorization", "Bearer "+token);
+
+        //     var content = new MultipartFormDataContent();
+        //     content.Add(new StreamContent(file.OpenReadStream()), "file", file.Name); // "file" is the key for the file
+
+        //     var result = await Http.PostAsync("api/File/upload", content);
+        //     if (result.IsSuccessStatusCode)
+        //     {
+        //         Console.WriteLine(result.Content.ToString());
+        //     }
+
+
+        // }
+        long maxFileSize = 200000 * 1024 * 10;
+
+        Stream streamFile = file.OpenReadStream(maxFileSize);
+        byte[] buffer = new byte[1024];
+
+        int bytesRead;
+        long totalBytesRead = 0;
+
+
+        Console.WriteLine(file.Size);
+        while ((bytesRead = await streamFile.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        {
+            totalBytesRead += bytesRead;
+            // Console.WriteLine($"Read {bytesRead} bytes. Total read: {totalBytesRead} bytes.");
+
+            // Process the chunk, e.g., display, save, or manipulate it as needed.
+            // In this example, we are just displaying the chunk.
+            // DisplayChunk(buffer, bytesRead);
+        }
+        Console.WriteLine($"Read {bytesRead} bytes. Total read: {totalBytesRead} bytes.");
+        streamFile.Close();
+    }
+}

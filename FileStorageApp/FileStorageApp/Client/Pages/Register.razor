@@ -1,0 +1,64 @@
+﻿@page "/Register"
+@using FileStorageApp.Shared.Dto;
+@using FileStorageApp.Shared;
+@inject HttpClient Http
+
+<h3>Register here</h3>
+
+@if (isRegistered)
+{
+    <p>Registration successful!</p>
+}
+else
+{
+    <EditForm Model="@user" OnInvalidSubmit="RegisterFunction">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="lastName">last Name</label>
+            <InputText type="text" class="form-control" id="lastName" @bind-Value="user.LastName" />
+            <ValidationMessage For="@(() => user.LastName)" />
+        </div>
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <InputText type="text" class="form-control" id="firstName" @bind-Value="user.FirstName" />
+            <ValidationMessage For="@(() => user.FirstName)" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText type="email" class="form-control" id="email" @bind-Value="user.Email" />
+            <ValidationMessage For="@(() => user.Email)" />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText type="password" class="form-control" id="password" @bind-Value="user.Password" />
+            <ValidationMessage For="@(() => user.Password)" />
+        </div>
+        <div class="form-group">
+            <label for="confirmPass">Confirm Password</label>
+            <InputText type="password" class="form-control" id="confirmPass" @bind-Value="user.ConfirmPassword" />
+            <ValidationMessage For="@(() => user.ConfirmPassword)" />
+        </div>
+        <br>
+        <br>
+        <button type="submit" class="btn btn-primary">Register</button>
+        <ValidationSummary />
+    </EditForm>
+}
+
+@code {
+    private bool isRegistered;
+    private RegisterUser user = new RegisterUser();
+
+    private async Task RegisterFunction()
+    {
+       var result = await Http.PostAsJsonAsync("api/User/Register", user);
+        
+        if (result.IsSuccessStatusCode)
+        {
+            Response registrationResponse = await result.Content.ReadFromJsonAsync<Response>();
+            isRegistered = true;
+
+        }
+      
+    }
+}

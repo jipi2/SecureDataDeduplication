@@ -3,8 +3,10 @@ using FileStorageApp.Server.Repositories;
 using FileStorageApp.Server.SecurityFolder;
 using FileStorageApp.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -70,7 +72,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         ValidateIssuerSigningKey = true,
                         ValidAudience = "fileStorage.com",
                         ValidIssuer = "fileStorage.com",
-                        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("ksdjafljiasbljfbsajkldf"))
+                        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Secret"]))
                     };
                 }
                 );
@@ -79,6 +81,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
     options.AddPolicy("RequireClientRole", policy => policy.RequireRole("client"));
 });*/
+
+//Configure Maximum File Size
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1000 * 1024 * 1024; // 1000 MB
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 1000 * 1024 * 1024; // 1000 MB
+});
 
 var app = builder.Build();
 

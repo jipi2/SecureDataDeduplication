@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "FuwzylWYmPeLsynzeDS/CFTY23qiktAxdh8w1VlKkPA=",
+  "Hash": "VFgMl+iL4pA2KRuTMMJ/nm9faOejbdOULx4lLIztZX0=",
   "Source": "FileStorageApp.Client",
   "BasePath": "/",
   "Mode": "Root",
@@ -49,6 +49,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly\\7.0.12\\build\\net7.0\\blazor.webassembly.js"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Blazored.LocalStorage.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Blazored.LocalStorage.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\blazored.localstorage\\4.4.0\\lib\\net7.0\\Blazored.LocalStorage.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\dotnet.7.0.12.2ns971qm01.js",
@@ -252,7 +269,24 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.authorization\\7.0.12\\lib\\net7.0\\Microsoft.AspNetCore.Authorization.dll"
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.authorization\\7.0.13\\lib\\net7.0\\Microsoft.AspNetCore.Authorization.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.Authorization.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Components.Authorization.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components.authorization\\7.0.13\\lib\\net7.0\\Microsoft.AspNetCore.Components.Authorization.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.dll",
@@ -269,7 +303,7 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components\\7.0.12\\lib\\net7.0\\Microsoft.AspNetCore.Components.dll"
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components\\7.0.13\\lib\\net7.0\\Microsoft.AspNetCore.Components.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.Forms.dll",
@@ -323,6 +357,57 @@
       "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly\\7.0.12\\lib\\net7.0\\Microsoft.AspNetCore.Components.WebAssembly.dll"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.Abstractions.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Http.Abstractions.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\lib\\netstandard2.0\\Microsoft.AspNetCore.Http.Abstractions.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Http.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.http\\2.2.2\\lib\\netstandard2.0\\Microsoft.AspNetCore.Http.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.Features.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Http.Features.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\lib\\netstandard2.0\\Microsoft.AspNetCore.Http.Features.dll"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Metadata.dll",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -337,7 +422,24 @@
       "AssetTraitValue": "runtime",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.metadata\\7.0.12\\lib\\net7.0\\Microsoft.AspNetCore.Metadata.dll"
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.metadata\\7.0.13\\lib\\net7.0\\Microsoft.AspNetCore.Metadata.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.WebUtilities.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.WebUtilities.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.webutilities\\2.2.0\\lib\\netstandard2.0\\Microsoft.AspNetCore.WebUtilities.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.CSharp.dll",
@@ -561,6 +663,23 @@
       "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.extensions.logging\\7.0.0\\lib\\net7.0\\Microsoft.Extensions.Logging.dll"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Extensions.ObjectPool.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.ObjectPool.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.extensions.objectpool\\2.2.0\\lib\\netstandard2.0\\Microsoft.Extensions.ObjectPool.dll"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Extensions.Options.dll",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -627,6 +746,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.jsinterop.webassembly\\7.0.12\\lib\\net7.0\\Microsoft.JSInterop.WebAssembly.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Net.Http.Headers.dll",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Net.Http.Headers.dll",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "BlazorWebAssemblyResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.net.http.headers\\2.2.0\\lib\\netstandard2.0\\Microsoft.Net.Http.Headers.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.VisualBasic.Core.dll",
@@ -3876,6 +4012,23 @@
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Data.dll"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\4Y6j1o5E.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Components.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.dll"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\533OMuLM.gz",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -4044,23 +4197,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Security.Cryptography.Csp.dll"
-    },
-    {
-      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\7StdwGw+.gz",
-      "SourceId": "FileStorageApp.Client",
-      "SourceType": "Computed",
-      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.AspNetCore.Authorization.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Authorization.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Authorization.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\7w3hc1UN.gz",
@@ -4947,6 +5083,23 @@
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Private.CoreLib.dll"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\FXpY+ccq.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Extensions.ObjectPool.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Extensions.ObjectPool.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Extensions.ObjectPool.dll"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\FYwYH9JU.gz",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -4962,6 +5115,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Resources.Writer.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\gF+R3Icp.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Http.Features.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.Features.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.Features.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\gijzq6Zn.gz",
@@ -5117,23 +5287,6 @@
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Threading.dll"
     },
     {
-      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\hG+UoGDi.gz",
-      "SourceId": "FileStorageApp.Client",
-      "SourceType": "Computed",
-      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.AspNetCore.Components.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.dll"
-    },
-    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\hJibcRoU.gz",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -5217,6 +5370,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Linq.Expressions.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\I5Bek10U.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.Net.Http.Headers.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Net.Http.Headers.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.Net.Http.Headers.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\IlhnnX9S.gz",
@@ -5338,6 +5508,23 @@
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Text.RegularExpressions.dll"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\k+JNezyi.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Http.Abstractions.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.Abstractions.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.Abstractions.dll"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\k+YwtnUm.gz",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -5370,6 +5557,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Diagnostics.Debug.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\KBQew4X4.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Metadata.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Metadata.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Metadata.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\kWdHJSyK.gz",
@@ -5491,23 +5695,6 @@
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.CSharp.dll"
     },
     {
-      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\lQK1B8iL.gz",
-      "SourceId": "FileStorageApp.Client",
-      "SourceType": "Computed",
-      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/Microsoft.AspNetCore.Metadata.dll.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Metadata.dll",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Metadata.dll"
-    },
-    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\LRAZvQAx.gz",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -5610,6 +5797,23 @@
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Xml.Linq.dll"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\NJx+HwZg.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Blazored.LocalStorage.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Blazored.LocalStorage.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Blazored.LocalStorage.dll"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\nOO5SaPu.gz",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Computed",
@@ -5659,6 +5863,40 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.IO.UnmanagedMemoryStream.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\NWTGs+SC.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Components.Authorization.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.Authorization.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Components.Authorization.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\o7R1fuZD.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Authorization.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Authorization.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Authorization.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\Oa3B5ALu.gz",
@@ -5863,6 +6101,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.IO.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\psKgg9ns.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.Http.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.Http.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\qf+0VNOu.gz",
@@ -6322,6 +6577,23 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\System.Runtime.InteropServices.JavaScript.dll"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\TYjHXknc.gz",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Computed",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/Microsoft.AspNetCore.WebUtilities.dll.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "RelatedAsset": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.WebUtilities.dll",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\bin\\Debug\\net7.0\\wwwroot\\_framework\\Microsoft.AspNetCore.WebUtilities.dll"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\obj\\Debug\\net7.0\\build-gz\\uF1D2YL2.gz",
