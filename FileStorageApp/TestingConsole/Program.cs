@@ -1,4 +1,15 @@
 ﻿using CryptoLib;
+using Org.BouncyCastle.Asn1.Nist;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.Sec;
+using Org.BouncyCastle.Asn1.X9;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,23 +21,42 @@ namespace TestingConsole
 {
     internal class Program
     {
+      
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
 
-            Stream streamFile = new FileStream("C:\\Users\\Jipi\\Desktop\\test.txt", FileMode.Open);
-            Console.WriteLine(streamFile.Length);
-            //string hash = CryptoLib.Utils.GetHashOfFile(streamFile);
-            //Console.WriteLine(hash);
+            var keyGen = Utils.GenerateECKeysGenerator();
+            AsymmetricCipherKeyPair aliceDHKeys = keyGen.GenerateKeyPair();
+            AsymmetricCipherKeyPair bobDHKeys = keyGen.GenerateKeyPair();
 
-            //streamFile = new FileStream("C:\\Users\\Jipi\\Desktop\\test.txt", FileMode.Open);
-            MerkleTree MT = CryptoLib.Utils.GetMerkleTree(streamFile);
-            foreach (MTMember b in MT.HashTree)
+            Utils.WritePrivateKeyToFile(aliceDHKeys.Private, "Aliceprivate.pem");
+            Utils.WritePrivateKeyToFile(bobDHKeys.Private, "Bobprivate.pem");
+
+            Utils.WritePublicKeyToFile(aliceDHKeys.Public, "Alicepublic.pem");
+            Utils.WritePublicKeyToFile(bobDHKeys.Public, "Bobpublic.pem");
+
+            DHPublicKeyParameters alicePublicKey = (DHPublicKeyParameters)aliceDHKeys.Public;
+            DHPublicKeyParameters bobPublicKey = (DHPublicKeyParameters)bobDHKeys.Public;
+
+            BigInteger aliceSharedSecret = Utils.GenerateSharedSecret(bobPublicKey, aliceDHKeys.Private);
+            BigInteger bobSharedSecret = Utils.GenerateSharedSecret(alicePublicKey, bobDHKeys.Private);
+
+
+            // Ensure that both parties have derived the same shared secret
+            if (aliceSharedSecret.Equals(bobSharedSecret))
             {
-                Console.WriteLine("Level: "+b._level.ToString()+" -> "+CryptoLib.Utils.ByteToHex(b._hash));
+                Console.WriteLine("Shared Secret: " + aliceSharedSecret.ToString(16));
+            }
+            else
+            {
+                Console.WriteLine("Key agreement failed: Alice and Bob have different shared secrets.");
             }
 
+            Console.WriteLine("gata");
             Console.ReadKey();
+
         }
     }
 }

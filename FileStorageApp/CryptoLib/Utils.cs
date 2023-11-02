@@ -1,4 +1,9 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+﻿using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Encoders;
 using System;
@@ -127,6 +132,101 @@ namespace CryptoLib
             GetLeaves(ref MT, count);
 
             return MT;
+        }
+
+        static public AsymmetricCipherKeyPair GenerateRSAKeyPair()
+        {
+            int modulus = 2048;
+            RsaKeyPairGenerator g = new RsaKeyPairGenerator();
+            g.Init(new KeyGenerationParameters(new SecureRandom(), modulus));
+            AsymmetricCipherKeyPair keys = g.GenerateKeyPair();
+
+            return keys;
+        }
+
+        static public void WritePrivateKeyToFile(AsymmetricKeyParameter privKey, string privFileName)
+        {
+            TextWriter textWriterPrivate = new StringWriter();
+            PemWriter pemWriterPrivate = new PemWriter(textWriterPrivate);
+            pemWriterPrivate.WriteObject(privKey);
+            File.WriteAllText(privFileName, textWriterPrivate.ToString());
+        }
+
+        static public void WritePublicKeyToFile(AsymmetricKeyParameter pubKey, string pubFileName)
+        {
+            TextWriter textWriterPrivate = new StringWriter();
+            PemWriter pemWriterPrivate = new PemWriter(textWriterPrivate);
+            pemWriterPrivate.WriteObject(pubKey);
+            File.WriteAllText(pubFileName, textWriterPrivate.ToString());
+        }
+
+        static public AsymmetricKeyParameter ReadRSAPrivateKeyFromFile(string privFileName)
+        {
+            TextReader textReaderPrivate = new StringReader(File.ReadAllText(privFileName));
+            PemReader pemReaderPrivate = new PemReader(textReaderPrivate);
+            AsymmetricCipherKeyPair keyPair = (AsymmetricCipherKeyPair)pemReaderPrivate.ReadObject();
+            return keyPair.Private;
+        }
+
+        static public AsymmetricKeyParameter ReadRSAPublicKeyFromFile(string pubFileName)
+        {
+            TextReader textReaderPublic = new StringReader(File.ReadAllText(pubFileName));
+            PemReader pemReaderPublic = new PemReader(textReaderPublic);
+            AsymmetricKeyParameter pubKey = (AsymmetricKeyParameter)pemReaderPublic.ReadObject();
+            return pubKey;
+        }   
+
+        static public IAsymmetricCipherKeyPairGenerator GenerateECKeysGenerator()
+        {
+            var generator = new DHParametersGenerator();
+            generator.Init(512, 30, new SecureRandom());
+            DHParameters parameters = generator.GenerateParameters();
+            var keyGen = GeneratorUtilities.GetKeyPairGenerator("DH");
+            var kgp = new DHKeyGenerationParameters(new SecureRandom(), parameters);
+            keyGen.Init(kgp);
+
+            return keyGen;
+        }
+
+        static public BigInteger GenerateSharedSecret(DHPublicKeyParameters pubKey, AsymmetricKeyParameter privKey)
+        {
+            var keyAgreement = AgreementUtilities.GetBasicAgreement("DH");
+            keyAgreement.Init(privKey);
+            return keyAgreement.CalculateAgreement(pubKey);
+            
+
+            //Exemplu de folosire DH
+            //Console.WriteLine("Hello World!");
+
+            //var keyGen = Utils.GenerateECKeysGenerator();
+            //AsymmetricCipherKeyPair aliceDHKeys = keyGen.GenerateKeyPair();
+            //AsymmetricCipherKeyPair bobDHKeys = keyGen.GenerateKeyPair();
+
+            //Utils.WritePrivateKeyToFile(aliceDHKeys.Private, "Aliceprivate.pem");
+            //Utils.WritePrivateKeyToFile(bobDHKeys.Private, "Bobprivate.pem");
+
+            //Utils.WritePublicKeyToFile(aliceDHKeys.Public, "Alicepublic.pem");
+            //Utils.WritePublicKeyToFile(bobDHKeys.Public, "Bobpublic.pem");
+
+            //DHPublicKeyParameters alicePublicKey = (DHPublicKeyParameters)aliceDHKeys.Public;
+            //DHPublicKeyParameters bobPublicKey = (DHPublicKeyParameters)bobDHKeys.Public;
+
+            //BigInteger aliceSharedSecret = Utils.GenerateSharedSecret(bobPublicKey, aliceDHKeys.Private);
+            //BigInteger bobSharedSecret = Utils.GenerateSharedSecret(alicePublicKey, bobDHKeys.Private);
+
+
+            //// Ensure that both parties have derived the same shared secret
+            //if (aliceSharedSecret.Equals(bobSharedSecret))
+            //{
+            //    Console.WriteLine("Shared Secret: " + aliceSharedSecret.ToString(16));
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Key agreement failed: Alice and Bob have different shared secrets.");
+            //}
+
+            //Console.WriteLine("gata");
+            //Console.ReadKey();
         }
     }
 }
