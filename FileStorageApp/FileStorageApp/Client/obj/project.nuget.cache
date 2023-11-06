@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "i/elV78inStNOJ36WddyLWviX80Grmrem1MHDQ1/31Y0frLJQwNkkjg7n+0e3ys4PpeT7BsdfPM2vb0fu3HbGA==",
+  "dgSpecHash": "FqNwAi2Du9uZh6kdbaIrZ1Y/wq32Id6TnjESOpI4eSkEOlnThMd2ZYeevPFnEHSRJR406vz8b2Ygvhetvx/s1A==",
   "success": true,
   "projectFilePath": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\FileStorageApp.Client.csproj",
   "expectedPackageFiles": [
@@ -36,6 +36,7 @@
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.jsinterop\\7.0.12\\microsoft.jsinterop.7.0.12.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.jsinterop.webassembly\\7.0.12\\microsoft.jsinterop.webassembly.7.0.12.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.net.http.headers\\2.2.0\\microsoft.net.http.headers.2.2.0.nupkg.sha512",
+    "C:\\Users\\Jipi\\.nuget\\packages\\portable.bouncycastle\\1.9.0\\portable.bouncycastle.1.9.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\system.buffers\\4.5.0\\system.buffers.4.5.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\system.io.pipelines\\7.0.0\\system.io.pipelines.7.0.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\system.text.encodings.web\\7.0.0\\system.text.encodings.web.7.0.0.nupkg.sha512",

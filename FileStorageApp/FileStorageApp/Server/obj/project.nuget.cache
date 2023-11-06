@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "HQ2bRCbfbowZfJJQDB94wZX/M+1nB0j8GRaZDGGhDM9s9N0mYkHTJAkkFRj3fxLX1CxRwR66757I/QEoRAN+fQ==",
+  "dgSpecHash": "LfB8h2Mi0HqYs+l0BOqJjnaiaPvdefcVf0WHGnCdYVVq9lNYdSBD292OCo1hK4PH6nupubcwu2jq5/bKlZN19A==",
   "success": true,
   "projectFilePath": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\FileStorageApp.Server.csproj",
   "expectedPackageFiles": [
@@ -68,6 +68,7 @@
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
+    "C:\\Users\\Jipi\\.nuget\\packages\\portable.bouncycastle\\1.9.0\\portable.bouncycastle.1.9.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",

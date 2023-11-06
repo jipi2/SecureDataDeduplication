@@ -13,7 +13,6 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -23,12 +22,13 @@ builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configura
 //Repositories
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<RoleRepository>();
-
+builder.Services.AddScoped<FileRepository>();
 
 //Services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<SecurityManager>();
+builder.Services.AddScoped<FileService>();
 
 
 //swagg ---------------------------------------------------------------

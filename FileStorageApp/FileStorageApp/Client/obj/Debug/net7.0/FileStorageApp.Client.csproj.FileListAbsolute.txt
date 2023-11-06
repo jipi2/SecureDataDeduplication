@@ -866,3 +866,15 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\TYjHXknc.gz
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\FXpY+ccq.gz
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\I5Bek10U.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\BouncyCastle.Crypto.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\CryptoLib.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\CryptoLib.pdb
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\BouncyCastle.Crypto.dll.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\CryptoLib.dll.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\CryptoLib.pdb.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\CryptoLib.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\BouncyCastle.Crypto.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\CryptoLib.pdb
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\Ke+2Bpdb.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\uKCq7cdG.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\nA1+uGWF.gz

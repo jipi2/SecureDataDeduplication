@@ -1,15 +1,42 @@
 ﻿@using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization;
 @using System.Text;
+@using Org.BouncyCastle.Crypto;
+@using Org.BouncyCastle.Crypto.Generators;
+@using CryptoLib;
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
 @page "/uploadPage"
-
 
 <h3>Upload File here:</h3>
 <InputFile OnChange="@LoadFiles" class="form-control" accept=".png,.jpg,.jpeg, .pdf" />
 
 @code {
+
+    private CryptoService _cryptoService = new CryptoService();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string token = await LocalStorage.GetItemAsync<string>("token");
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        Dictionary<string, string> result = await Http.GetFromJsonAsync<Dictionary<string, string>>("api/File/dfParameters");
+
+        if (result == null)
+            Console.WriteLine("result is null");
+        else
+        {
+            Dictionary<string, string> stringKeys =await  _cryptoService.GenerateKeys(result);
+            await LocalStorage.SetItemAsync("PublicKey", stringKeys["Public"]);
+            await LocalStorage.SetItemAsync("PrivateKey", stringKeys["Private"]);
+            await LocalStorage.SetItemAsync("Base64SymKey", stringKeys["SymKey"]);
+            await LocalStorage.SetItemAsync("A", stringKeys["A"]);
+            var res = await Http.PostAsJsonAsync("api/File/DFexchange", stringKeys["A"]);
+            Console.WriteLine(res.Content.ToString());
+
+        }
+    }
+
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
 

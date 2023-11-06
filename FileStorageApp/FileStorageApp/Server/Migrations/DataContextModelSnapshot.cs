@@ -124,10 +124,16 @@ namespace FileStorageApp.Server.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("G")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("P")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -135,6 +141,15 @@ namespace FileStorageApp.Server.Migrations
 
                     b.Property<string>("Salt")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServerDHPrivate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServerDHPublic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SymKey")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isDeleted")

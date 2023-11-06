@@ -548,6 +548,19 @@
           }
         }
       },
+      "Portable.BouncyCastle/1.9.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "System.Buffers/4.5.0": {
         "type": "package",
         "compile": {
@@ -612,6 +625,15 @@
         },
         "build": {
           "buildTransitive/net6.0/System.Text.Json.targets": {}
+        }
+      },
+      "CryptoLib/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/CryptoLib.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CryptoLib.dll": {}
         }
       },
       "FileStorageApp.Shared/1.0.0": {
@@ -1172,6 +1194,19 @@
           }
         }
       },
+      "Portable.BouncyCastle/1.9.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "System.Buffers/4.5.0": {
         "type": "package",
         "compile": {
@@ -1230,6 +1265,15 @@
         },
         "build": {
           "buildTransitive/net6.0/System.Text.Json.targets": {}
+        }
+      },
+      "CryptoLib/1.0.0": {
+        "type": "project",
+        "compile": {
+          "bin/placeholder/CryptoLib.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CryptoLib.dll": {}
         }
       },
       "FileStorageApp.Shared/1.0.0": {
@@ -2067,6 +2111,21 @@
         "microsoft.net.http.headers.nuspec"
       ]
     },
+    "Portable.BouncyCastle/1.9.0": {
+      "sha512": "eZZBCABzVOek+id9Xy04HhmgykF0wZg9wpByzrWN7q8qEI0Qen9b7tfd7w8VA3dOeesumMG7C5ZPy0jk7PSRHw==",
+      "type": "package",
+      "path": "portable.bouncycastle/1.9.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/BouncyCastle.Crypto.dll",
+        "lib/net40/BouncyCastle.Crypto.xml",
+        "lib/netstandard2.0/BouncyCastle.Crypto.dll",
+        "lib/netstandard2.0/BouncyCastle.Crypto.xml",
+        "portable.bouncycastle.1.9.0.nupkg.sha512",
+        "portable.bouncycastle.nuspec"
+      ]
+    },
     "System.Buffers/4.5.0": {
       "sha512": "pL2ChpaRRWI/p4LXyy4RgeWlYF2sgfj/pnVMvBqwNFr5cXg7CXNnWZWxrOONLg8VGdFB8oB+EG2Qw4MLgTOe+A==",
       "type": "package",
@@ -2225,6 +2284,11 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "CryptoLib/1.0.0": {
+      "type": "project",
+      "path": "../../CryptoLib/CryptoLib.csproj",
+      "msbuildProject": "../../CryptoLib/CryptoLib.csproj"
+    },
     "FileStorageApp.Shared/1.0.0": {
       "type": "project",
       "path": "../Shared/FileStorageApp.Shared.csproj",
@@ -2234,11 +2298,13 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "Blazored.LocalStorage >= 4.4.0",
+      "CryptoLib >= 1.0.0",
       "FileStorageApp.Shared >= 1.0.0",
       "Microsoft.AspNetCore.Components.Authorization >= 7.0.13",
       "Microsoft.AspNetCore.Components.WebAssembly >= 7.0.12",
       "Microsoft.AspNetCore.Components.WebAssembly.DevServer >= 7.0.12",
-      "Microsoft.AspNetCore.Http >= 2.2.2"
+      "Microsoft.AspNetCore.Http >= 2.2.2",
+      "Portable.BouncyCastle >= 1.9.0"
     ]
   },
   "packageFolders": {
@@ -2273,6 +2339,9 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
+            "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj": {
+              "projectPath": "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj"
+            },
             "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\FileStorageApp.Shared.csproj": {
               "projectPath": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\FileStorageApp.Shared.csproj"
             }
@@ -2309,6 +2378,10 @@
           "Microsoft.AspNetCore.Http": {
             "target": "Package",
             "version": "[2.2.2, )"
+          },
+          "Portable.BouncyCastle": {
+            "target": "Package",
+            "version": "[1.9.0, )"
           }
         },
         "imports": [

@@ -32,7 +32,7 @@ namespace FileStorageApp.Server.Repositories
             if (!regUser.Password.Equals(regUser.Password))
                 return (new Response { Succes = false, Message = "Confirm passowrd field is different from password field" });
 
-            byte[] salt = Utils.generateRandomByres(16);
+            byte[] salt = Utils.generateRandomBytes(16);
 
             var newUser = new Entity.User
             {
@@ -68,5 +68,35 @@ namespace FileStorageApp.Server.Repositories
         {
             return user.Roles[0].RoleName;
         }
+
+        public async Task<User> GetUserById(int id)
+        {
+            try
+            {
+                return await _context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("User with id: " + id + " not found");
+                return null;
+            }
+        }
+
+        public async Task SaveServerDFKeysForUser(User user, string serverPublicKey, string serverPrivateKey, string P, string G)
+        {
+            user.ServerDHPublic = serverPublicKey;
+            user.ServerDHPrivate = serverPrivateKey;
+            user.P = P;
+            user.G = G;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SaveSymKey(int userId, string symKey)
+        {
+            User user = await GetUserById(userId);
+            user.SymKey = symKey;
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

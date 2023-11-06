@@ -17,6 +17,11 @@ namespace FileStorageApp.Server.Entity
         [PasswordPropertyText]
         public string Password { get; set; }
         public string Salt { get; set; }
+        public string? ServerDHPrivate { get; set; }
+        public string? ServerDHPublic { get; set; }
+        public string? G { get; set; }
+        public string? P { get; set; }
+        public string? SymKey { get; set; }
         public bool isDeleted { get; set; }
         public List<Role> Roles { get; set; }
     }

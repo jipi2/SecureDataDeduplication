@@ -4,6 +4,8 @@ using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
+using System.Security.Claims;
 
 namespace FileStorageApp.Server.Controllers
 {

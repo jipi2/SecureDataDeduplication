@@ -4,6 +4,21 @@
     "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\FileStorageApp.Client.csproj": {}
   },
   "projects": {
+    "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj",
+        "projectName": "CryptoLib",
+        "projectPath": "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj",
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {}
+      }
+    },
     "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\FileStorageApp.Client.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -32,6 +47,9 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
+              "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj": {
+                "projectPath": "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\CryptoLib.csproj"
+              },
               "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\FileStorageApp.Shared.csproj": {
                 "projectPath": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\FileStorageApp.Shared.csproj"
               }
@@ -68,6 +86,10 @@
             "Microsoft.AspNetCore.Http": {
               "target": "Package",
               "version": "[2.2.2, )"
+            },
+            "Portable.BouncyCastle": {
+              "target": "Package",
+              "version": "[1.9.0, )"
             }
           },
           "imports": [
