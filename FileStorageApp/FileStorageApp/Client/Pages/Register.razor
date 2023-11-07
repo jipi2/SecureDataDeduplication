@@ -51,6 +51,7 @@ else
 
     private async Task RegisterFunction()
     {
+        
        var result = await Http.PostAsJsonAsync("api/User/Register", user);
         
         if (result.IsSuccessStatusCode)

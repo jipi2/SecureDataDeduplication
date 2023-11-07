@@ -21,6 +21,21 @@ namespace FileStorageApp.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FileMetadataUser", b =>
+                {
+                    b.Property<int>("FilesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FilesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("UserFiles", (string)null);
+                });
+
             modelBuilder.Entity("FileStorageApp.Server.Entity.Challenge", b =>
                 {
                     b.Property<int>("Id")
@@ -54,11 +69,18 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Iv")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tag")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<string>("key")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -173,6 +195,21 @@ namespace FileStorageApp.Server.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("UserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("FileMetadataUser", b =>
+                {
+                    b.HasOne("FileStorageApp.Server.Entity.FileMetadata", null)
+                        .WithMany()
+                        .HasForeignKey("FilesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FileStorageApp.Server.Entity.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FileStorageApp.Server.Entity.Challenge", b =>

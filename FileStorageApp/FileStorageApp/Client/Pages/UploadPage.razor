@@ -17,23 +17,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string token = await LocalStorage.GetItemAsync<string>("token");
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-        Dictionary<string, string> result = await Http.GetFromJsonAsync<Dictionary<string, string>>("api/File/dfParameters");
 
-        if (result == null)
-            Console.WriteLine("result is null");
-        else
+        if (await LocalStorage.GetItemAsync<string>("Base64SymKey") == null)
         {
-            Dictionary<string, string> stringKeys =await  _cryptoService.GenerateKeys(result);
-            await LocalStorage.SetItemAsync("PublicKey", stringKeys["Public"]);
-            await LocalStorage.SetItemAsync("PrivateKey", stringKeys["Private"]);
-            await LocalStorage.SetItemAsync("Base64SymKey", stringKeys["SymKey"]);
-            await LocalStorage.SetItemAsync("A", stringKeys["A"]);
-            var res = await Http.PostAsJsonAsync("api/File/DFexchange", stringKeys["A"]);
-            Console.WriteLine(res.Content.ToString());
+            string token = await LocalStorage.GetItemAsync<string>("token");
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
+            Dictionary<string, string> result = await Http.GetFromJsonAsync<Dictionary<string, string>>("api/File/dfParameters");
+
+            if (result == null)
+                Console.WriteLine("result is null");
+            else
+            {
+                Dictionary<string, string> stringKeys = await _cryptoService.GenerateKeys(result);
+                await LocalStorage.SetItemAsync("PublicKey", stringKeys["Public"]);
+                await LocalStorage.SetItemAsync("PrivateKey", stringKeys["Private"]);
+                await LocalStorage.SetItemAsync("Base64SymKey", stringKeys["SymKey"]);
+                await LocalStorage.SetItemAsync("A", stringKeys["A"]);
+                var res = await Http.PostAsJsonAsync("api/File/DFexchange", stringKeys["A"]);
+                Console.WriteLine(res.Content.ToString());
+
+            }
         }
     }
 
@@ -59,25 +64,54 @@
 
         // }
         long maxFileSize = 200000 * 1024 * 10;
+        Stream streamFile;
 
-        Stream streamFile = file.OpenReadStream(maxFileSize);
-        byte[] buffer = new byte[1024];
-
-        int bytesRead;
-        long totalBytesRead = 0;
-
-
-        Console.WriteLine(file.Size);
-        while ((bytesRead = await streamFile.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        if (file != null)
         {
-            totalBytesRead += bytesRead;
-            // Console.WriteLine($"Read {bytesRead} bytes. Total read: {totalBytesRead} bytes.");
+            streamFile = file.OpenReadStream(maxFileSize);
 
-            // Process the chunk, e.g., display, save, or manipulate it as needed.
-            // In this example, we are just displaying the chunk.
-            // DisplayChunk(buffer, bytesRead);
+            byte[] buffer = new byte[1024];
+            byte[] bytesFile = new byte[file.Size];
+
+            int bytesRead;
+            long totalBytesRead = 0;
+
+            Console.WriteLine(file.Size);
+            while ((bytesRead = await streamFile.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                try
+                {
+                    buffer.CopyTo(bytesFile, totalBytesRead);
+                    totalBytesRead += bytesRead;
+                }
+                catch(Exception)
+                {
+                    Console.WriteLine(totalBytesRead);
+                    Console.WriteLine(bytesFile.Length);
+                }
+            }
+            streamFile.Close();
+
+            string base64File = Convert.ToBase64String(bytesFile);
+            string base64KeyAndIv = await _cryptoService.GetHashInBase64(bytesFile, 512);
+            string base64Key = await _cryptoService.ExtractKey(Convert.FromBase64String(base64KeyAndIv), 32);
+            string base64Iv = await _cryptoService.ExtractIv(Convert.FromBase64String(base64KeyAndIv),32 ,16);
+            string base64EncFile = await _cryptoService.GetEcnryptedFileBase64(base64Key, base64Iv, bytesFile);
+            string TAG = await _cryptoService.GetHashInBase64(Convert.FromBase64String(base64EncFile), 256);
+            string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
+            Dictionary<string, string> fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey);
+
+            fileParams.Add("base64EncFile", base64EncFile);
+
+            string token = await LocalStorage.GetItemAsync<string>("token");
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+            var result = await Http.PostAsJsonAsync("api/File/uploadFile", fileParams);
+            if (result.IsSuccessStatusCode)
+            {
+                Console.WriteLine(result.Content.ToString());
+            }
         }
-        Console.WriteLine($"Read {bytesRead} bytes. Total read: {totalBytesRead} bytes.");
-        streamFile.Close();
     }
 }

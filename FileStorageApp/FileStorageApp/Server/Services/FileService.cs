@@ -66,5 +66,47 @@ namespace FileStorageApp.Server.Services
             }
 
         }
+
+        public async Task<bool> ComputeFileMetadata(Dictionary<string, string> fileParams, string base64EncFile, string userId)
+        {
+            try
+            {
+                User user = await _userService.GetUserById(userId);
+                string base64SymKey;
+                if (user.SymKey != null)
+                    base64SymKey = user.SymKey;
+                else
+                    return false;
+
+                string base64Tag = Utils.DecryptAes(Convert.FromBase64String(fileParams["base64TagEnc"]), Convert.FromBase64String(base64SymKey));
+                string base64Key = Utils.DecryptAes(Convert.FromBase64String(fileParams["base64KeyEnc"]), Convert.FromBase64String(base64SymKey));
+                string base64Iv = Utils.DecryptAes(Convert.FromBase64String(fileParams["base64IvEnc"]), Convert.FromBase64String(base64SymKey));
+
+                string HexTag = Utils.ByteToHex(Convert.FromBase64String(base64Tag));
+                if (await _fileRepo.GetFileMetaByTag(HexTag) == false)
+                {
+                    FileMetadata fileMeta = new FileMetadata
+                    {
+                        BlobLink = "Link for Bob",
+                        isDeleted = false,
+                        Key = base64Key,
+                        Iv = base64Iv,
+                        Tag = HexTag,
+                    };
+
+                    await _fileRepo.SaveFile(fileMeta);
+                    await _userService.AddFile(userId, fileMeta);
+                }
+                else
+                    Console.WriteLine("This file exists");
+
+                return true;
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
     }
 }

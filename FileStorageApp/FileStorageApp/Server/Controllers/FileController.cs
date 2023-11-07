@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
@@ -34,6 +35,10 @@ namespace FileStorageApp.Server.Controllers
         public async Task<IActionResult> GetId()
         {
             string token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid toke");
+            }
             string id = await _userService.GetUserIdFromJWT(token);
             return Ok(id);
         }
@@ -42,7 +47,11 @@ namespace FileStorageApp.Server.Controllers
         [Authorize(Roles = "client")]
         public async Task<Dictionary<string, string>> GetDFParameters()
         {
-            string token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
             string id = await _userService.GetUserIdFromJWT(token);
             Dictionary<string, string> parameters = await _fileService.GetDFParameters(id);
 
@@ -53,12 +62,33 @@ namespace FileStorageApp.Server.Controllers
         [Authorize(Roles = "client")]
         public async Task<IActionResult> DFkeyExchange([FromBody] string pubKey)
         {
-            string token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid toke");
+            }
             string id = await _userService.GetUserIdFromJWT(token);
             if (await _fileService.DFkeyExchange(pubKey, id))
                 return Ok("Succes");
             else
                 return BadRequest("Fail");
+        }
+
+        [HttpPost("uploadFile")]
+        [Authorize(Roles = "client")]
+        public async Task<IActionResult> GetTagAndEncFile([FromBody] Dictionary<string, string> fileParams)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid toke");
+            }
+            string id = await _userService.GetUserIdFromJWT(token);
+            bool result = await _fileService.ComputeFileMetadata(fileParams, fileParams["base64EncFile"], id);
+            
+            if(result == true)
+                return Ok("Tag and encrypted file recieved");
+            return BadRequest("Ceva nu a mers bine sefule");
         }
     }
 }

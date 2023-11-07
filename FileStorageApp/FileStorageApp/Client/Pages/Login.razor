@@ -46,6 +46,7 @@
 
     private async Task LoginFunction()
     {
+
        var result = await Http.PostAsJsonAsync("api/User/login", user);
         Console.WriteLine("merge?");
         if (result.IsSuccessStatusCode)

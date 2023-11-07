@@ -22,6 +22,11 @@ namespace FileStorageApp.Server.Database
                 .HasMany(x => x.Roles)
                 .WithMany(y => y.Users)
                 .UsingEntity(j => j.ToTable("UserRoles"));
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Files)
+                .WithMany(y => y.Users)
+                .UsingEntity(j => j.ToTable("UserFiles"));
         }
     }
 }

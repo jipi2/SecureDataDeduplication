@@ -23,7 +23,7 @@ namespace CryptoLib
 {
     public class Utils
     {
-        static public byte[] generateRandomBytes(int length)
+        static public byte[] GenerateRandomBytes(int length)
         {
             var randomGenerator = new SecureRandom();
             var randomBytes = new byte[length];
@@ -62,7 +62,7 @@ namespace CryptoLib
         }
         static public byte[] ComputeHash(byte[] array, int hashSize = 256)
         {
-            byte[] h = new byte[hashSize];
+            byte[] h = new byte[hashSize/8];
             var sha3_256 = new Sha3Digest(hashSize);
 
             sha3_256.BlockUpdate(array, 0, array.Length);
@@ -285,102 +285,35 @@ namespace CryptoLib
                 Console.WriteLine("Error secret");
              */
         }
-
-
-
-        //static public byte[] EncryptAesGcm(byte[] plainText, byte[] key)
-        //{
-        //    var nonce = new byte[8];
-        //    var random = new SecureRandom();
-        //    random.NextBytes(nonce, 0, nonce.Length);
-
-
-        //    var tagLength = 16;
-        //    var cipher = new GcmBlockCipher(new AesEngine());
-        //    var parameters = new AeadParameters(new KeyParameter(key), tagLength*8, nonce);  //este folosit pt tagul de autenticitate\
-        //    cipher.Init(true, parameters);
-
-        //    var cipherText = new byte[cipher.GetOutputSize(plainText.Length)+16];
-        //    var len = cipher.ProcessBytes(plainText, 0, plainText.Length, cipherText, 0);
-        //    cipher.DoFinal(cipherText, len);
-
-        //    Console.WriteLine("ciphertext: " + ByteToHex(cipherText));
-
-        //    using (var combinedStream = new MemoryStream())
-        //    {
-        //        using (var binaryWriter = new BinaryWriter(combinedStream))
-        //        {
-        //            //Prepend Nonce
-        //            binaryWriter.Write(nonce);
-        //            //Write Cipher Text
-        //            binaryWriter.Write(cipherText);
-        //        }
-        //        return combinedStream.ToArray();
-        //    }
-        //}
-
-        //static public byte[] DecryptAesGcm(byte[] encBlob, byte[] key)
-        //{
-
-        //    var tageLength = 16;
-        //    using (var cipherStream = new MemoryStream(encBlob))
-        //    using (var cipherReader = new BinaryReader(cipherStream))
-        //    {
-        //        var nonce = cipherReader.ReadBytes(8);
-
-        //        var cipher = new GcmBlockCipher(new AesEngine());
-        //        var parameters = new AeadParameters(new KeyParameter(key), tageLength*8, nonce);
-        //        cipher.Init(false, parameters);
-
-        //        var cipherText = cipherReader.ReadBytes(encBlob.Length-nonce.Length);
-        //        var plainText = new byte[cipher.GetOutputSize(cipherText.Length)];
-
-        //        var len = cipher.ProcessBytes(cipherText, 0, cipherText.Length, plainText, 0);
-        //        try
-        //        {
-        //            cipher.DoFinal(plainText, len);
-        //        }
-        //        catch (InvalidCipherTextException e)
-        //        {
-        //            Console.WriteLine(e.ToString());
-        //            return null;
-        //        }
-
-        //        return plainText;
-        //    }
-        //}
-
-        static public string EncryptAes(string plainText, string keyString, string ivString)
+        static public string EncryptAesWithIv(byte[] plainTextBytes, byte[] key, byte[] iv)
         {
-           var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-           var key = Convert.FromBase64String(keyString);
-           var iv = Convert.FromBase64String(ivString); 
-           var cipher = new CbcBlockCipher(new AesEngine());
-           var parameters = new ParametersWithIV(new KeyParameter(key), iv);
-           cipher.Init(true, parameters);
+            var cipher = new CbcBlockCipher(new AesEngine());
+            var parameters = new ParametersWithIV(new KeyParameter(key), iv);
+            cipher.Init(true, parameters);
 
             int blockSize = cipher.GetBlockSize();
             int padding = blockSize - (plainTextBytes.Length % blockSize);
             byte[] paddedInput = new byte[plainTextBytes.Length + padding];
             Array.Copy(plainTextBytes, paddedInput, plainTextBytes.Length);
-            for(int i=plainTextBytes.Length; i<paddedInput.Length; i++)
+            for (int i = plainTextBytes.Length; i < paddedInput.Length; i++)
             {
                 paddedInput[i] = (byte)padding;
             }
             byte[] cipherText = new byte[paddedInput.Length];
-           
-           for(int i = 0; i<plainTextBytes.Length; i+=16) 
-              cipher.ProcessBlock(paddedInput, i, cipherText, i);
-           
 
-           return Convert.ToBase64String(cipherText);
+            for (int i = 0; i < plainTextBytes.Length; i += 16)
+                cipher.ProcessBlock(paddedInput, i, cipherText, i);
+
+
+            return Convert.ToBase64String(cipherText);
         }
 
-        static public string DecryptAes(string cipherText, string keyString, string ivString)
+        static public string DecryptAesWithIv(string cipherText, byte[] key, byte[] iv)
         {
             var cipherTextBytes = Convert.FromBase64String(cipherText);
-            var key = Convert.FromBase64String(keyString);
-            var iv = Convert.FromBase64String(ivString);
+            /*  var key = Convert.FromBase64String(keyString);*/
+            /* var iv = Convert.FromBase64String(ivString)*/
+            ;
             var cipher = new CbcBlockCipher(new AesEngine());
             var parameters = new ParametersWithIV(new KeyParameter(key), iv);
             cipher.Init(false, parameters);
@@ -397,38 +330,113 @@ namespace CryptoLib
 
             return Convert.ToBase64String(unpaddedOutput);
         }
-        static public string EncryptWithGCM(string plaintext, byte[] key, byte[] nonce)
+        static public string EncryptAes(byte[] plainTextBytes, byte[] key, byte[] iv = null)
         {
-            var tagLength = 16;
+            //var cipher = new CbcBlockCipher(new AesEngine());
+            //var parameters = new KeyParameter(key);
+            //cipher.Init(true, parameters);
 
-            var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
-            var ciphertextTagBytes = new byte[plaintextBytes.Length + tagLength];
+            // int blockSize = cipher.GetBlockSize();
+            // int padding = blockSize - (plainTextBytes.Length % blockSize);
+            // byte[] paddedInput = new byte[plainTextBytes.Length + padding];
+            // Array.Copy(plainTextBytes, paddedInput, plainTextBytes.Length);
+            // for(int i=plainTextBytes.Length; i<paddedInput.Length; i++)
+            // {
+            //     paddedInput[i] = (byte)padding;
+            // }
+            // byte[] cipherText = new byte[paddedInput.Length];
 
-            var cipher = new GcmBlockCipher(new AesEngine());
-            var parameters = new AeadParameters(new KeyParameter(key), tagLength * 8, nonce);
-            cipher.Init(true, parameters);
+            //for(int i = 0; i<plainTextBytes.Length; i+=16) 
+            //   cipher.ProcessBlock(paddedInput, i, cipherText, i);
 
-            var offset = cipher.ProcessBytes(plaintextBytes, 0, plaintextBytes.Length, ciphertextTagBytes, 0);
-            cipher.DoFinal(ciphertextTagBytes, offset); // create and append tag: ciphertext | tag
 
-            return Convert.ToBase64String(ciphertextTagBytes);
+            //return Convert.ToBase64String(cipherText);
+
+            var cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
+            if(iv == null)
+                cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), new byte[16]));
+            else
+                cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+
+            return Convert.ToBase64String(cipher.DoFinal(plainTextBytes));
         }
 
-        public static string DecryptWithGCM(string ciphertextTag, byte[] key, byte[] nonce)
+        static public string DecryptAes(byte[] cipherText, byte[] key, byte[] iv = null)
         {
-            var tagLength = 16;
+            //  var cipherTextBytes = Convert.FromBase64String(cipherText);
+            ///*  var key = Convert.FromBase64String(keyString);*/
+            // /* var iv = Convert.FromBase64String(ivString)*/;
+            //  var cipher = new CbcBlockCipher(new AesEngine());
+            //  var parameters = new KeyParameter(key);
+            //  cipher.Init(false, parameters);
 
-            var ciphertextTagBytes = Convert.FromBase64String(ciphertextTag);
-            var plaintextBytes = new byte[ciphertextTagBytes.Length - tagLength];
+            //  var plaintextBytes = new byte[cipherTextBytes.Length];
 
-            var cipher = new GcmBlockCipher(new AesEngine());
-            var parameters = new AeadParameters(new KeyParameter(key), tagLength * 8, nonce);
-            cipher.Init(false, parameters);
+            //  for (int i = 0; i < cipherTextBytes.Length; i += 16)
+            //      cipher.ProcessBlock(cipherTextBytes, i, plaintextBytes, i);
 
-            var offset = cipher.ProcessBytes(ciphertextTagBytes, 0, ciphertextTagBytes.Length, plaintextBytes, 0);
-            cipher.DoFinal(plaintextBytes, offset); // authenticate data via tag
+            //  byte paddingValue = plaintextBytes[plaintextBytes.Length - 1];
+            //  int unpaddedLength = cipherTextBytes.Length - paddingValue;
+            //  byte[] unpaddedOutput = new byte[unpaddedLength];
+            //  Array.Copy(plaintextBytes, unpaddedOutput, unpaddedLength);
 
-            return Encoding.UTF8.GetString(plaintextBytes);
+            //  return Convert.ToBase64String(unpaddedOutput);
+
+            var cipher = CipherUtilities.GetCipher("AES/CTR/NoPadding");
+            if(iv == null)
+                cipher.Init(false, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), new byte[16]));
+            else
+                cipher.Init(false, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key),iv));
+            return Convert.ToBase64String(cipher.DoFinal(cipherText));
+        }
+        static public string EncryptWithGCM(string plaintext, byte[] key/*, byte[] nonce*/)
+        {
+            try 
+            { 
+                var tagLength = 16;
+
+                var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+                var ciphertextTagBytes = new byte[plaintextBytes.Length + tagLength];
+
+                var cipher = new GcmBlockCipher(new AesEngine());
+                var parameters = new AeadParameters(new KeyParameter(key), tagLength * 8, new byte[8]);  //al treilea parametru trebuia sa fie nonce
+                cipher.Init(true, parameters);
+
+                var offset = cipher.ProcessBytes(plaintextBytes, 0, plaintextBytes.Length, ciphertextTagBytes, 0);
+                cipher.DoFinal(ciphertextTagBytes, offset); // create and append tag: ciphertext | tag
+
+                return Convert.ToBase64String(ciphertextTagBytes);
+            }
+            catch (InvalidCipherTextException e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }
+        }
+
+        public static string DecryptWithGCM(string ciphertextTag, byte[] key/*, byte[] nonce*/)
+        {
+            try
+            {
+                var tagLength = 16;
+
+                var ciphertextTagBytes = Convert.FromBase64String(ciphertextTag);
+                var plaintextBytes = new byte[ciphertextTagBytes.Length - tagLength];
+
+                var cipher = new GcmBlockCipher(new AesEngine());
+                var parameters = new AeadParameters(new KeyParameter(key), tagLength * 8, new byte[8]); //al treilea parametru trebuia sa fie nonce
+                cipher.Init(false, parameters);
+
+                var offset = cipher.ProcessBytes(ciphertextTagBytes, 0, ciphertextTagBytes.Length, plaintextBytes, 0);
+                cipher.DoFinal(plaintextBytes, offset); // authenticate data via tag
+
+                return Convert.ToBase64String(plaintextBytes);
+            }
+            catch (InvalidCipherTextException e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ using Org.BouncyCastle.Security;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -81,37 +82,13 @@ namespace TestingConsole
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Incepem");
+            string plaintext = "vyfWwE6aJbNHR4WKoI7WTIHBf0OCJx3W1uK8OFWh5AY=sdkjnhdlabsflkjbadskjhbjkasdbfkusdbfkhasbhkfvbaksvdfkhjavbshf";
+            byte[] key = Utils.GenerateRandomBytes(32);
+            byte[] iv = Utils.GenerateRandomBytes(16);
+            string ciphertext = Utils.EncryptAes(Encoding.UTF8.GetBytes(plaintext), key);
+            string dec = Utils.DecryptAes(Utils.HexToByte(ciphertext), key);    
 
-            DHParameters parameters = Utils.GenerateParameters();
-
-            string G = Utils.GetG(parameters);
-            string P = Utils.GetP(parameters);
-
-            DHParameters parameters2 = Utils.GenerateParameters(G, P);
-
-            AsymmetricCipherKeyPair bobKeys = Utils.GenerateDFKeys(parameters);
-            AsymmetricCipherKeyPair aliceKeys = Utils.GenerateDFKeys(parameters2);
-
-            string bobPublicKey = Utils.GetPublicKey(bobKeys);
-            string alicePublicKey = Utils.GetPublicKey(aliceKeys);
-
-            string bobPrivString = Utils.GetPemAsString(bobKeys.Private);
-            string alicePrivString = Utils.GetPemAsString(aliceKeys.Private);
-                
-            AsymmetricKeyParameter aux = (AsymmetricKeyParameter)Utils.ReadPrivateKeyFromPemString(bobPrivString);
-            AsymmetricKeyParameter aux2 = (AsymmetricKeyParameter)Utils.ReadPrivateKeyFromPemString(alicePrivString);
-
-            BigInteger secretBob = Utils.ComputeSharedSecret(alicePublicKey, aux, parameters2);
-            BigInteger secretAlice =Utils.ComputeSharedSecret(bobPublicKey, aux2, parameters2);
-
-            if (secretBob.Equals(secretAlice))
-                Console.WriteLine("The secret is oke");
-            else
-                Console.WriteLine("Error secret");
-
-            Console.WriteLine(Utils.GetPemAsString( bobKeys.Private));
-           
+            Console.WriteLine(dec);
 
             Console.Read();
         }

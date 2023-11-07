@@ -38,7 +38,7 @@ namespace FileStorageApp.Server.Services
 
         public async Task<string> GetUserIdFromJWT(string jwt)
         {
-            string id = _secManager.GetUserIdFromJWT(jwt);
+            string id =  _secManager.GetUserIdFromJWT(jwt);
             return id;
         }
 
@@ -92,6 +92,11 @@ namespace FileStorageApp.Server.Services
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        public async Task AddFile(string userId, FileMetadata fileMeta)
+        {
+            await _userRepo.AddFile(userId, fileMeta);
         }
     }
 }

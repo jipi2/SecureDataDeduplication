@@ -7,6 +7,7 @@ using FileStorageApp.Server.Services;
 using FileStorageApp.Server.Entity;
 using Azure.Core;
 using FileStorageApp.Server.SecurityFolder;
+using FileStorageApp.Client.Pages;
 
 namespace FileStorageApp.Server.Repositories
 {
@@ -32,7 +33,7 @@ namespace FileStorageApp.Server.Repositories
             if (!regUser.Password.Equals(regUser.Password))
                 return (new Response { Succes = false, Message = "Confirm passowrd field is different from password field" });
 
-            byte[] salt = Utils.generateRandomBytes(16);
+            byte[] salt = Utils.GenerateRandomBytes(16);
 
             var newUser = new Entity.User
             {
@@ -42,7 +43,8 @@ namespace FileStorageApp.Server.Repositories
                 Password = Utils.HashTextWithSalt(regUser.Password, salt),
                 Salt = Utils.ByteToHex(salt),
                 isDeleted = false,
-                Roles = new List<Entity.Role>()
+                Roles = new List<Entity.Role>(),
+                Files = new List<Entity.FileMetadata>()
             };
             newUser.Roles.Add( await _roleService.GetRoleByName("client"));
             
@@ -98,5 +100,13 @@ namespace FileStorageApp.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddFile(string userId,FileMetadata fileMeta)
+        {
+            User user = await GetUserById(Convert.ToInt32(userId));
+            if(user.Files == null)
+                user.Files = new List<FileMetadata>();
+            user.Files.Add(fileMeta);
+            await _context.SaveChangesAsync();
+        }
     }
 }
