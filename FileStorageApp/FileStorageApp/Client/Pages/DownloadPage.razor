@@ -1,0 +1,79 @@
+﻿@page "/downloadPage"
+@attribute [Authorize]
+
+
+<h3>Download your File from Cloud</h3>
+
+@if (userFileNames == null)
+{
+    <p><em>Loading..</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Upload Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var fileData in userFileNames)
+            {
+                <tr @onclick="() => DownloadFile(fileData.FileName) ">
+                    <td>@fileData.FileName</td>
+                    <td>@fileData.UploadDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script>
+    window.downloadFile = function (fileName, content) {
+        const blob = new Blob([content]);
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+@code {
+    private List<FilesNameDate>? userFileNames;
+    private CryptoService _cryptoService = new CryptoService();
+    private string? jwt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+        userFileNames = await Http.GetFromJsonAsync<List<FilesNameDate>?>("api/File/getUploadedFileNamesAndDates");
+        Console.WriteLine("gata");
+    }
+
+    public async void DownloadFile(string fileName)
+    {
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+        var response = await Http.PostAsJsonAsync("api/File/getFileFromStorage", fileName);
+        ServerBlobFIle? serverFile = response.Content.ReadFromJsonAsync<ServerBlobFIle>().Result;
+
+        string base64SymKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
+        string base64FileKey = _cryptoService.DecryptString(Convert.FromBase64String(serverFile.FileKey), Convert.FromBase64String(base64SymKey));
+        string base64FileIv = _cryptoService.DecryptString(Convert.FromBase64String(serverFile.FileIv), Convert.FromBase64String(base64SymKey));
+
+        if(serverFile != null)
+        {
+            byte[] fileContent = await _cryptoService.GetDecryptedFile(serverFile.EncBase64File, base64FileKey,base64FileIv);
+            await JSRuntime.InvokeAsync<object>("downloadFile",fileName, fileContent);
+        }
+        else
+            Console.WriteLine("serverFile is null");
+    }
+}

@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\FileStorageApp.Client.styles.css"
     },
     {
+      "Id": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\FileDownload.js",
+      "PackagePath": "staticwebassets\\FileDownload.js"
+    },
+    {
       "Id": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\css\\app.css",
       "PackagePath": "staticwebassets\\css\\app.css"
     },

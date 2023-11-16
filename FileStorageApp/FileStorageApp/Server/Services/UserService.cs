@@ -42,7 +42,7 @@ namespace FileStorageApp.Server.Services
             return id;
         }
 
-        public async Task<User> GetUserById(string id)
+        public async Task<User>? GetUserById(string id)
         {
             try
             {

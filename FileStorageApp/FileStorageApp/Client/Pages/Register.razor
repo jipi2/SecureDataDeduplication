@@ -1,7 +1,4 @@
 ﻿@page "/Register"
-@using FileStorageApp.Shared.Dto;
-@using FileStorageApp.Shared;
-@inject HttpClient Http
 
 <h3>Register here</h3>
 
@@ -51,6 +48,10 @@ else
 
     private async Task RegisterFunction()
     {
+        await LocalStorage.RemoveItemAsync("PublicKey");
+        await LocalStorage.RemoveItemAsync("PrivateKey");
+        await LocalStorage.RemoveItemAsync("Base64SymKey");
+        await LocalStorage.RemoveItemAsync("A");
         
        var result = await Http.PostAsJsonAsync("api/User/Register", user);
         
@@ -58,6 +59,7 @@ else
         {
             Response registrationResponse = await result.Content.ReadFromJsonAsync<Response>();
             isRegistered = true;
+            Navigation.NavigateTo("/Login");
 
         }
       

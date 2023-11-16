@@ -1,4 +1,5 @@
 ﻿using CryptoLib;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -51,23 +52,56 @@ namespace FileStorageApp.Client
         {
             byte[] key = Convert.FromBase64String(base64FileKey);
             byte[] iv = Convert.FromBase64String(base64IvFile);
-
             string cipherText = Utils.EncryptAesWithIv(byteFile, key, iv);
+
             return await Task.FromResult(cipherText);
         }
 
-        public async Task<Dictionary<string, string>> GetEncryptedFileParameters(string base64Tag, string base64Key, string base64Iv, string base64SymKey)
+        public async Task<byte[]> GetDecryptedFile(string encBase64File, string base64FileKey, string base64IvFile)
+        {
+            byte[] key = Convert.FromBase64String(base64FileKey);
+            byte[] iv = Convert.FromBase64String(base64IvFile);
+
+           string fileContent = Utils.DecryptAesWithIv(encBase64File, key, iv);
+           return await Task.FromResult(Convert.FromBase64String(fileContent));
+        }
+
+        public async Task<Dictionary<string, string>> GetEncryptedFileParameters(string base64Tag, string base64Key, string base64Iv, string base64SymKey, string fileName)
         {
             Dictionary<string, string> fileParams = new Dictionary<string, string>();
             string base64TagEnc = Utils.EncryptAes(Convert.FromBase64String(base64Tag), Convert.FromBase64String(base64SymKey));
             string base64KeyEnc = Utils.EncryptAes(Convert.FromBase64String(base64Key), Convert.FromBase64String(base64SymKey));
             string base64IvEnc = Utils.EncryptAes(Convert.FromBase64String(base64Iv), Convert.FromBase64String(base64SymKey));
+            string encFileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(base64SymKey));
 
             fileParams.Add("base64TagEnc", base64TagEnc);
             fileParams.Add("base64KeyEnc", base64KeyEnc);
             fileParams.Add("base64IvEnc", base64IvEnc);
+            fileParams.Add("encFileName", encFileName);
 
             return await Task.FromResult(fileParams);
         }
+
+        public string? DecryptString(byte[] ciphertext, byte[] key, byte[] iv = null)
+        {
+
+            try
+            {
+                string plaintext;
+                if (iv != null)
+                    plaintext = Utils.DecryptAes(ciphertext, key, iv);
+                else
+                    plaintext = Utils.DecryptAes(ciphertext, key);
+
+                return plaintext;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+            
+        }
+
     }
 }

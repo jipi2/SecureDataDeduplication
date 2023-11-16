@@ -1,4 +1,5 @@
 ﻿using FileStorageApp.Server.Services;
+using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
@@ -89,6 +90,35 @@ namespace FileStorageApp.Server.Controllers
             if(result == true)
                 return Ok("Tag and encrypted file recieved");
             return BadRequest("Ceva nu a mers bine sefule");
+        }
+
+        [HttpGet("getUploadedFileNamesAndDates")]
+        [Authorize(Roles = "client")]
+        public async Task<List<FilesNameDate>?> GetFileNamesAndDates()
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
+            string id = await _userService.GetUserIdFromJWT(token);
+            List<FilesNameDate>? result = await _fileService.GetFileNamesAndDatesOfUser(id);
+            
+            return result;
+        }
+
+        [HttpPost("getFileFromStorage")]
+        [Authorize(Roles = "client")]
+        public async Task<ServerBlobFIle> GetFileFromStorage([FromBody] string fileName)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
+            string id = await _userService.GetUserIdFromJWT(token);
+            ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, fileName);
+            return severFile;
         }
     }
 }

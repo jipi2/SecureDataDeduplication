@@ -75,7 +75,7 @@ namespace FileStorageApp.Server.Repositories
         {
             try
             {
-                return await _context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+                return await _context.Users.Include(u => u.Files).Include(u => u.Roles).Where(u => u.Id == id).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {

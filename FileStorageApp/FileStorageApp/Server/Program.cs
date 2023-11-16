@@ -29,7 +29,8 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<SecurityManager>();
 builder.Services.AddScoped<FileService>();
-
+//builder.Services.AddScoped<IConfiguration>();
+builder.Services.AddScoped<AzureBlobService>();
 
 //swagg ---------------------------------------------------------------
 builder.Services.AddControllers();

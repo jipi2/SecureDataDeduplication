@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "fiC9DBfQztu/pztYk20UMvCZoYBdIoe8EQ2W9V3WcZc=",
+  "Hash": "ryQq+QFYnI+55QvmzMj+SZDg4xYyDD3PYMmwUXWnUsY=",
   "Source": "FileStorageApp.Server",
   "BasePath": "_content/FileStorageApp.Server",
   "Mode": "Default",
@@ -7558,6 +7558,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\FileDownload.js",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Project",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "FileDownload.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\FileDownload.js"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\icon-192.png",

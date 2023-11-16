@@ -107,3 +107,6 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\CryptoLi
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Blazored.LocalStorage.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Microsoft.AspNetCore.Components.Authorization.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Azure.Storage.Blobs.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Azure.Storage.Common.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\System.IO.Hashing.dll
