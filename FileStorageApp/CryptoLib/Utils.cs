@@ -13,8 +13,10 @@ using Org.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,30 +103,42 @@ namespace CryptoLib
 
         static private void GetLeaves(ref MerkleTree MT, int count)
         {
-            while (count > 1)
+            try
             {
-                count = 0;
-                int level = MT.Levels+1;
-                int n = MT.HashTree.Count;
-                MerkleTree aux = new MerkleTree();
+                while (count > 1)
+                {
+                    count = 0;
+                    int level = MT.Levels + 1;
+                    int n = MT.HashTree.Count;
+                    MerkleTree aux = new MerkleTree();
 
 
-                for(int i = MT.IndexOfLevel[MT.Levels]; i<n; i+=2)
-                {
-                    byte[] h = new byte[32];
-                    var sha3_256 = new Sha3Digest(256);
-                    sha3_256.BlockUpdate(MT.HashTree[i]._hash, 0, MT.HashTree[i]._hash.Length);
-                    sha3_256.BlockUpdate(MT.HashTree[i + 1]._hash, 0, MT.HashTree[i + 1]._hash.Length);
-                    sha3_256.DoFinal(h, 0);
-                    aux.HashTree.Add(new MTMember(level, h));
-                    count++;
+                    for (int i = MT.IndexOfLevel[MT.Levels]; i < n; i += 2)
+                    {
+                        byte[] h = new byte[32];
+                        var sha3_256 = new Sha3Digest(256);
+                        sha3_256.BlockUpdate(MT.HashTree[i]._hash, 0, MT.HashTree[i]._hash.Length);
+                        sha3_256.BlockUpdate(MT.HashTree[i + 1]._hash, 0, MT.HashTree[i + 1]._hash.Length);
+                        sha3_256.DoFinal(h, 0);
+                        aux.HashTree.Add(new MTMember(level, h));
+                        count++;
+                    }
+                    foreach (MTMember m in aux.HashTree)
+                    {
+                        MT.HashTree.Add(m);
+                    }
+                    if (count % 2 != 0 && count != 1)
+                    {
+                        MT.HashTree.Add(MT.HashTree[MT.HashTree.Count - 1]);
+                        count++;
+                    }
+                    MT.IndexOfLevel.Add(MT.HashTree.Count - count);
+                    MT.Levels++;
                 }
-                foreach(MTMember m in aux.HashTree)
-                {
-                    MT.HashTree.Add(m);
-                }
-                MT.IndexOfLevel.Add(MT.HashTree.Count - count);
-                MT.Levels++;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -155,7 +169,45 @@ namespace CryptoLib
 
             return MT;
         }
+        static public byte[] GetSeedFromTag(byte[] tag, byte[] secret)
+        {
+            int len = tag.Length+secret.Length;
+            byte[] aux = new byte[len];
 
+            Array.Copy(aux, tag, tag.Length);
+            Array.Copy(secret, 0, aux, tag.Length, secret.Length);
+
+            var randomGenerator = new SecureRandom(aux);
+            var randomBytes = new byte[4];
+
+            randomGenerator.NextBytes(randomBytes);
+            return randomBytes;
+        }
+
+        static public byte[] GenerateResp(MerkleTree mt, ref int n1, ref int n2, ref int n3)  //cele 3 pozitii din MT
+        {
+            int mtNodes = mt.HashTree.Count;
+            byte[] Resp = new byte[mt.HashTree[0]._hash.Length];
+            byte[] aux = new byte[4]; 
+
+            var randomGen = new SecureRandom();
+
+            randomGen.NextBytes(aux);
+            n1 = Math.Abs( BitConverter.ToInt32(aux, 0) % mtNodes);
+
+            randomGen.NextBytes(aux);
+            n2 = Math.Abs(BitConverter.ToInt32(aux, 0) % mtNodes);
+
+            randomGen.NextBytes(aux);
+            n3 = Math.Abs(BitConverter.ToInt32(aux, 0) % mtNodes);
+
+            for(int i=0;i<Resp.Length;i++)
+            {
+                Resp[i] = (byte)(mt.HashTree[n1]._hash[i] ^ mt.HashTree[n2]._hash[i] ^ mt.HashTree[n3]._hash[i]);
+            }
+
+            return Resp;
+        }
         static public AsymmetricCipherKeyPair GenerateRSAKeyPair()
         {
             int modulus = 2048;

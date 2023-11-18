@@ -85,11 +85,22 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest("Invalid toke");
             }
             string id = await _userService.GetUserIdFromJWT(token);
-            bool result = await _fileService.ComputeFileMetadata(fileParams, fileParams["base64EncFile"], id);
+            FileMetaChallenge result = await _fileService.ComputeFileMetadata(fileParams, fileParams["base64EncFile"], id);
             
-            if(result == true)
-                return Ok("Tag and encrypted file recieved");
-            return BadRequest("Ceva nu a mers bine sefule");
+            if(result == null)
+            {
+                return BadRequest("Error");
+            }
+
+            if(result.id == "")
+                return Ok(result);
+            if(result.id == "File name already exists!")
+                return BadRequest("A file with this name already exists!");
+            else if (result.id != "")
+            {   
+                return Ok(result);
+            }
+            return BadRequest("Error");
         }
 
         [HttpGet("getUploadedFileNamesAndDates")]
@@ -119,6 +130,22 @@ namespace FileStorageApp.Server.Controllers
             string id = await _userService.GetUserIdFromJWT(token);
             ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, fileName);
             return severFile;
+        }
+
+        [HttpPost("verifyFileChallenge")]
+        [Authorize(Roles = "client")]
+        public async Task<IActionResult> GetChallengeResponse([FromBody] FileResp fr)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid toke");
+            }
+            string id = await _userService.GetUserIdFromJWT(token);
+            bool result = await _fileService.SaveFileToUser(id, fr);
+            if (result == false)
+                return BadRequest("The answer for challenge was wrong!");
+            return Ok("You're file has been uploaded");
         }
     }
 }

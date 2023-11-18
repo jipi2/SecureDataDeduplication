@@ -37,27 +37,6 @@ namespace FileStorageApp.Server.Migrations
                     b.ToTable("UserFiles", (string)null);
                 });
 
-            modelBuilder.Entity("FileStorageApp.Server.Entity.Challenge", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FileMetadataId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Seed")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileMetadataId");
-
-                    b.ToTable("Challenges");
-                });
-
             modelBuilder.Entity("FileStorageApp.Server.Entity.FileMetadata", b =>
                 {
                     b.Property<int>("Id")
@@ -107,7 +86,16 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ChallengeId")
+                    b.Property<int>("FileMetadataId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Position_1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Position_2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Position_3")
                         .HasColumnType("int");
 
                     b.Property<bool>("wasUsed")
@@ -115,7 +103,7 @@ namespace FileStorageApp.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChallengeId");
+                    b.HasIndex("FileMetadataId");
 
                     b.ToTable("Resps");
                 });
@@ -220,26 +208,15 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FileStorageApp.Server.Entity.Challenge", b =>
+            modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
                 {
                     b.HasOne("FileStorageApp.Server.Entity.FileMetadata", "FileMetadata")
-                        .WithMany("Challenges")
+                        .WithMany("Resps")
                         .HasForeignKey("FileMetadataId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("FileMetadata");
-                });
-
-            modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
-                {
-                    b.HasOne("FileStorageApp.Server.Entity.Challenge", "Challenge")
-                        .WithMany("Resps")
-                        .HasForeignKey("ChallengeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Challenge");
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -257,14 +234,9 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FileStorageApp.Server.Entity.Challenge", b =>
-                {
-                    b.Navigation("Resps");
-                });
-
             modelBuilder.Entity("FileStorageApp.Server.Entity.FileMetadata", b =>
                 {
-                    b.Navigation("Challenges");
+                    b.Navigation("Resps");
                 });
 #pragma warning restore 612, 618
         }

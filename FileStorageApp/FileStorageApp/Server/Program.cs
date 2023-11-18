@@ -23,6 +23,7 @@ builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configura
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<FileRepository>();
+builder.Services.AddScoped<RespRepository>();
 
 //Services
 builder.Services.AddScoped<UserService>();

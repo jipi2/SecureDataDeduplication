@@ -1,10 +1,12 @@
 ﻿using CryptoLib;
+using FileStorageApp.Shared.Dto;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
+using System.Formats.Asn1;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -101,6 +103,38 @@ namespace FileStorageApp.Client
                 return null;
             }
             
+        }
+        private async Task<MerkleTree> GetMerkleTree(string base64EncFile)
+        {
+            byte[] bytesEncFile = Convert.FromBase64String(base64EncFile);
+            Stream stream = new MemoryStream(bytesEncFile);
+            MerkleTree mt = Utils.GetMerkleTree(stream);
+            Console.WriteLine(mt.HashTree.Count);
+            return mt;
+        }
+        public async Task<FileResp> GetFileResp(FileMetaChallenge fmc, string encBase64File, string fileName, string base64SymKey)
+        {
+            MerkleTree mt = await GetMerkleTree(encBase64File);
+            byte[] answ = new byte[mt.HashTree[0]._hash.Length];
+            byte[] byteSymKey = Convert.FromBase64String(base64SymKey);
+
+            int Id = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.id), byteSymKey)));
+            int n1 = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.n1), byteSymKey)));
+            int n2 = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.n2), byteSymKey)));
+            int n3 = BitConverter.ToInt32(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(fmc.n3), byteSymKey)));
+
+            for (int i = 0; i < answ.Length; i++)
+            {
+                answ[i] = (byte)(mt.HashTree[n1]._hash[i] ^ mt.HashTree[n2]._hash[i] ^ mt.HashTree[n3]._hash[i]);
+            }
+
+            FileResp fr = new FileResp
+            {
+                Answer = Utils.EncryptAes(answ, byteSymKey),
+                Id = fmc.id,
+                FileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), byteSymKey)
+            };
+            return fr;
         }
 
     }

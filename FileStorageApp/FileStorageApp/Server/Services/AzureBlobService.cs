@@ -18,7 +18,7 @@ namespace FileStorageApp.Server.Services
         public AzureBlobService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _containerName = "files-container";
+            _containerName = _configuration["ContainerName"];
             _blobServiceClient = new BlobServiceClient(_configuration["AzureBlobConnectionString"]);
             _blobContainerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
              

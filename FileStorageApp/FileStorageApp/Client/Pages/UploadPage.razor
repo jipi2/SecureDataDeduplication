@@ -36,6 +36,22 @@
         }
     }
 
+    private async Task<Dictionary<string, string>> GetFileParams(byte[] bytesFile, IBrowserFile file)
+    {
+        string base64File = Convert.ToBase64String(bytesFile);
+        string base64KeyAndIv = await _cryptoService.GetHashInBase64(bytesFile, 512);
+        string base64Key = await _cryptoService.ExtractKey(Convert.FromBase64String(base64KeyAndIv), 32);
+        string base64Iv = await _cryptoService.ExtractIv(Convert.FromBase64String(base64KeyAndIv), 32, 16);
+        string base64EncFile = await _cryptoService.GetEcnryptedFileBase64(base64Key, base64Iv, bytesFile);
+        string TAG = await _cryptoService.GetHashInBase64(Convert.FromBase64String(base64EncFile), 256);
+        string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
+        Dictionary<string, string> fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey, file.Name);
+
+        fileParams.Add("base64EncFile", base64EncFile);
+
+        return fileParams;
+    }
+
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
 
@@ -70,16 +86,7 @@
             }
             streamFile.Close();
 
-            string base64File = Convert.ToBase64String(bytesFile);
-            string base64KeyAndIv = await _cryptoService.GetHashInBase64(bytesFile, 512);
-            string base64Key = await _cryptoService.ExtractKey(Convert.FromBase64String(base64KeyAndIv), 32);
-            string base64Iv = await _cryptoService.ExtractIv(Convert.FromBase64String(base64KeyAndIv),32 ,16);
-            string base64EncFile = await _cryptoService.GetEcnryptedFileBase64(base64Key, base64Iv, bytesFile);
-            string TAG = await _cryptoService.GetHashInBase64(Convert.FromBase64String(base64EncFile), 256);
-            string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
-            Dictionary<string, string> fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey, file.Name);
-
-            fileParams.Add("base64EncFile", base64EncFile);
+            Dictionary<string, string> fileParams = await GetFileParams(bytesFile, file);
 
             string token = await LocalStorage.GetItemAsync<string>("token");
             Http.DefaultRequestHeaders.Remove("Authorization");
@@ -88,7 +95,27 @@
             var result = await Http.PostAsJsonAsync("api/File/uploadFile", fileParams);
             if (result.IsSuccessStatusCode)
             {
-                Console.WriteLine(result.Content.ToString());
+                FileMetaChallenge? fmc = result.Content.ReadFromJsonAsync<FileMetaChallenge>().Result;
+                if(fmc == null)
+                    Console.WriteLine("E null\n");
+               
+                string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
+                FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams["base64EncFile"], file.Name, symKey);
+
+                var res = await Http.PostAsJsonAsync("api/File/verifyFileChallenge", userResp);
+                if (res.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("File uploaded successfully");
+                }
+                else
+                {
+                    Console.WriteLine("Error: " + res.StatusCode);
+                }
+                
+            }
+            else
+            {
+                Console.WriteLine("Error: " + result.StatusCode);
             }
         }
     }

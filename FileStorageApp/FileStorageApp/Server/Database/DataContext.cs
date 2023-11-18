@@ -13,7 +13,6 @@ namespace FileStorageApp.Server.Database
         public DbSet<Entity.User> Users { get; set; }
         public DbSet<Entity.Role> Roles { get; set; }
         public DbSet<Entity.FileMetadata> FilesMetadata { get; set; }
-        public DbSet<Entity.Challenge> Challenges { get; set; }
         public DbSet<Entity.Resp> Resps { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
