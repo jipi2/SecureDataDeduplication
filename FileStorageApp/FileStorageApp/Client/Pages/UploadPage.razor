@@ -4,13 +4,24 @@
 <h3>Upload File here:</h3>
 <InputFile OnChange="@LoadFiles" class="form-control" accept=".png,.jpg,.jpeg, .pdf" />
 
-
 @code {
 
     private CryptoService _cryptoService = new CryptoService();
 
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool isAuthenticated;
+
     protected override async Task OnInitializedAsync()
     {
+        var authState = await authenticationStateTask;
+        isAuthenticated = authState.User.Identity.IsAuthenticated;
+
+        if (!isAuthenticated)
+        {
+            // Redirect to the login page or another page for unauthenticated users
+            Navigation.NavigateTo("/Login");
+        }
 
         if (await LocalStorage.GetItemAsync<string>("Base64SymKey") == null)
         {

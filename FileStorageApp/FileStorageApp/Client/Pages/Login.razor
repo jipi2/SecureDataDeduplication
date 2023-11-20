@@ -40,6 +40,22 @@
     private LoginUser user = new LoginUser();
     private CryptoService cryptoService = new CryptoService();
 
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateTask;
+        isAuthenticated = authState.User.Identity.IsAuthenticated;
+
+        if (isAuthenticated)
+        {
+            // Redirect to the login page or another page for unauthenticated users
+            Navigation.NavigateTo("/uploadPage");
+        }
+    }
+
     private async Task LoginFunction()
     {
         await LocalStorage.RemoveItemAsync("PublicKey");

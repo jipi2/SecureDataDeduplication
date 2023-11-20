@@ -8,7 +8,7 @@
 }
 else
 {
-    <EditForm Model="@user" OnInvalidSubmit="RegisterFunction">
+    <EditForm Model="@user" OnValidSubmit="RegisterFunction">
         <DataAnnotationsValidator />
         <div class="form-group">
             <label for="lastName">last Name</label>
@@ -46,6 +46,22 @@ else
     private bool isRegistered;
     private RegisterUser user = new RegisterUser();
 
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateTask;
+        isAuthenticated = authState.User.Identity.IsAuthenticated;
+
+        if (isAuthenticated)
+        {
+            // Redirect to the login page or another page for unauthenticated users
+            Navigation.NavigateTo("/uploadPage");
+        }
+    }
+
     private async Task RegisterFunction()
     {
         await LocalStorage.RemoveItemAsync("PublicKey");
@@ -53,7 +69,7 @@ else
         await LocalStorage.RemoveItemAsync("Base64SymKey");
         await LocalStorage.RemoveItemAsync("A");
         
-       var result = await Http.PostAsJsonAsync("api/User/Register", user);
+        var result = await Http.PostAsJsonAsync("api/User/Register", user);
         
         if (result.IsSuccessStatusCode)
         {
