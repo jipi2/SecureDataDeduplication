@@ -21,16 +21,31 @@ namespace FileStorageApp.Server.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<Response> Register(RegisterUser regUser)
+        public async Task<IActionResult> Register(RegisterUser regUser) 
         {
-            return await _userService.Register(regUser);
+            try
+            {
+                return Ok(await _userService.Register(regUser));
+            }
+            catch(ExceptionModel e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<Response> Login(LoginUser loginUser)
+        public async Task<IActionResult> Login(LoginUser loginUser)
         {
-            return await _userService.Login(loginUser);
+            try
+            {
+                Response resp =  await _userService.Login(loginUser);
+                return Ok(resp);
+            }
+            catch(ExceptionModel e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
 

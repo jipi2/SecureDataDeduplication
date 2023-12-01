@@ -1,6 +1,7 @@
 ﻿using CryptoLib;
 using FileStorageApp.Server.Entity;
 using FileStorageApp.Server.Repositories;
+using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Azure;
@@ -30,24 +31,34 @@ namespace FileStorageApp.Server.Services
             _respRepo = respRepo;
         }
 
-        public async Task<Dictionary<string, string>> GetDFParameters(string Userid)
+        public async Task<DFparametersDto> GetDFParameters(string Userid)
         {
-            User user = await _userService.GetUserById(Userid);
+            try
+            {
+                User user = await _userService.GetUserById(Userid);
 
-            DHParameters parameters = Utils.GenerateParameters();
-            AsymmetricCipherKeyPair serverKeys = Utils.GenerateDFKeys(parameters);
+                DHParameters parameters = Utils.GenerateParameters();
+                AsymmetricCipherKeyPair serverKeys = Utils.GenerateDFKeys(parameters);
 
-            user.ServerDHPrivate = Utils.GetPemAsString(serverKeys.Private);
-            user.ServerDHPublic = Utils.GetPemAsString(serverKeys.Public);
+                user.ServerDHPrivate = Utils.GetPemAsString(serverKeys.Private);
+                user.ServerDHPublic = Utils.GetPemAsString(serverKeys.Public);
 
-            await _userService.SaveServerDFKeysForUser(user, serverKeys, Utils.GetP(parameters), Utils.GetG(parameters));
+                await _userService.SaveServerDFKeysForUser(user, serverKeys, Utils.GetP(parameters), Utils.GetG(parameters));
 
-            Dictionary<string, string> stringParams = new Dictionary<string, string>();
-            stringParams.Add("G", Utils.GetG(parameters));
-            stringParams.Add("P", Utils.GetP(parameters));
-            stringParams.Add("ServerPubKey", Utils.GetPublicKey(serverKeys));
+                DFparametersDto dFparams = new DFparametersDto
+                {
+                    G = Utils.GetG(parameters),
+                    P = Utils.GetP(parameters),
+                    ServerPubKey = Utils.GetPublicKey(serverKeys)
+                };
 
-            return stringParams;
+                return dFparams;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public async Task<bool> DFkeyExchange(string pubKey, string userId)
@@ -164,7 +175,7 @@ namespace FileStorageApp.Server.Services
             }
             return false;
         }   
-        public async Task<FileMetaChallenge?> ComputeFileMetadata(Dictionary<string, string> fileParams, string base64EncFile, string userId)
+        public async Task<FileMetaChallenge?> ComputeFileMetadata(FileParamsDto fileParams, string userId)
         {
             try
             {
@@ -175,10 +186,10 @@ namespace FileStorageApp.Server.Services
                 else
                     return null;
 
-                string base64Tag = Utils.DecryptAes(Convert.FromBase64String(fileParams["base64TagEnc"]), Convert.FromBase64String(base64SymKey));
-                string base64Key = Utils.DecryptAes(Convert.FromBase64String(fileParams["base64KeyEnc"]), Convert.FromBase64String(base64SymKey));
-                string base64Iv = Utils.DecryptAes(Convert.FromBase64String(fileParams["base64IvEnc"]), Convert.FromBase64String(base64SymKey));
-                string fileName = Encoding.UTF8.GetString( Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fileParams["encFileName"]), Convert.FromBase64String(base64SymKey))));
+                string base64Tag = Utils.DecryptAes(Convert.FromBase64String(fileParams.base64TagEnc), Convert.FromBase64String(base64SymKey));
+                string base64Key = Utils.DecryptAes(Convert.FromBase64String(fileParams.base64KeyEnc), Convert.FromBase64String(base64SymKey));
+                string base64Iv = Utils.DecryptAes(Convert.FromBase64String(fileParams.base64IvEnc), Convert.FromBase64String(base64SymKey));
+                string fileName = Encoding.UTF8.GetString( Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fileParams.encFileName), Convert.FromBase64String(base64SymKey))));
 
                 FileMetaChallenge fmc = new FileMetaChallenge();
                 fmc.id = "";
@@ -215,7 +226,7 @@ namespace FileStorageApp.Server.Services
                     MerkleTree mt = await GetMerkleTree(base64EncFile);
                     await GenerateMerkleTreeChallenges(fileMeta.Id, mt);*/
 
-                    await SaveBlob(base64EncFile, base64Tag, fileName, base64Key, base64Iv, userId);
+                    await SaveBlob(fileParams.base64EncFile, base64Tag, fileName, base64Key, base64Iv, userId);
                    
                 }      
                 

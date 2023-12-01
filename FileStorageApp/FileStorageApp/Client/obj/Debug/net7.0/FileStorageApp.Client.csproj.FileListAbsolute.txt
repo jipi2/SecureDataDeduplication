@@ -878,3 +878,7 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\CryptoLi
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\Ke+2Bpdb.gz
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\uKCq7cdG.gz
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\nA1+uGWF.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\CurrieTechnologies.Razor.SweetAlert2.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\wwwroot\_framework\CurrieTechnologies.Razor.SweetAlert2.dll.gz
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\bin\Debug\net7.0\CurrieTechnologies.Razor.SweetAlert2.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Client\obj\Debug\net7.0\build-gz\ut63+MOK.gz

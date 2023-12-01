@@ -8,6 +8,7 @@
   "resources": {
     "assembly": {
       "Blazored.LocalStorage.dll": "sha256-5V8ovY1srbIIz7lzzMhLd3nNJ9LJ6bHoBOnLJahv8Go=",
+      "CurrieTechnologies.Razor.SweetAlert2.dll": "sha256-jaHzMzp157atLBDyTfDX4LuHLGBZ1q\/5g\/2s83upTCk=",
       "Microsoft.AspNetCore.Authorization.dll": "sha256-rtkwhICTsYE9Dtvit4qmKukHxhcBii8IGbm5icnCWbM=",
       "Microsoft.AspNetCore.Components.dll": "sha256-Qv8HUc4bc7hrinChcgqA5WvNTVXrGrA7KqK+y9K08KM=",
       "Microsoft.AspNetCore.Components.Authorization.dll": "sha256-eBWkcevUCIzUfxOs+\/P3yeZfLVGOTHjjTAmVXxoxTJ0=",
@@ -208,16 +209,16 @@
       "netstandard.dll": "sha256-urq+e2ZQXxmOWMRxTR92529HnUVu6+kyVnfF6SoLad8=",
       "System.Private.CoreLib.dll": "sha256-ixnF\/wVKLHZM1N0lfJufpZ41EC2LvvyiSqdW43h3Xew=",
       "CryptoLib.dll": "sha256-+fAuFc+k2wUCqyW9zil6lhKJ5ZccjEgR4rS58fPFPig=",
-      "FileStorageApp.Shared.dll": "sha256-vrVtLsQAvTig6zlMgv+rCRjYXSc8hK8L6+we1vuJKpY=",
-      "FileStorageApp.Client.dll": "sha256-h2w6WRab7xqAqFJy0EbEb\/jUAeyuhAWDvNja5gTnyYs="
+      "FileStorageApp.Shared.dll": "sha256-0SbDHF7px9Mw74egGOhKJzpKrB8SwQF3lw0f7PSOLbg=",
+      "FileStorageApp.Client.dll": "sha256-3y0JonNAo+IJOmKTXnO2K9GeRlNagxJNy1N2Vt12mKY="
     },
     "extensions": null,
     "lazyAssembly": null,
     "libraryInitializers": null,
     "pdb": {
       "CryptoLib.pdb": "sha256-nRwhFeUaATIkgQ2\/GCLPwRif0AM8BsyTZ7tSjkETIXA=",
-      "FileStorageApp.Shared.pdb": "sha256-T0C2\/oWkRMJs3RyqzMc6nChz68W1w0FDJ2\/Vt9QKkkU=",
-      "FileStorageApp.Client.pdb": "sha256-CSn3O9+mbvZ36uodItS3QxRMcLwhfnHwpzQXrV6GxXk="
+      "FileStorageApp.Shared.pdb": "sha256-s4O6\/taNq+PywoDU9HVlFIGgSZcAZtL9aHfBXXytrcg=",
+      "FileStorageApp.Client.pdb": "sha256-oqz4JRlt6tzt1nHsy77Qf3X8p1yY1OqYghpWt2Zyhy4="
     },
     "runtime": {
       "dotnet.7.0.12.2ns971qm01.js": "sha256-cPJgWy8SjMaYFeimGkYy23ls+rDZVmoC\/eMoHpqRc+4=",

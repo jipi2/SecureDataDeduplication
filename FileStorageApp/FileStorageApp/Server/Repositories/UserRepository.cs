@@ -8,6 +8,7 @@ using FileStorageApp.Server.Entity;
 using Azure.Core;
 using FileStorageApp.Server.SecurityFolder;
 using FileStorageApp.Client.Pages;
+using Microsoft.Extensions.Logging;
 
 namespace FileStorageApp.Server.Repositories
 {
@@ -66,6 +67,18 @@ namespace FileStorageApp.Server.Repositories
 
         }
 
+        public async Task SaveUser(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            var user = await _context.Users.Include(u => u.Roles).Where(u => u.Email.ToLower().Equals(email)).FirstOrDefaultAsync();
+            if(user == null) return null;
+            return user;
+        }
         public string GetUserRoleName(User user)
         {
             return user.Roles[0].RoleName;
@@ -84,6 +97,11 @@ namespace FileStorageApp.Server.Repositories
             }
         }
 
+        public async Task<User?> GetUserbyEmail(string Email)
+        {
+            var user = await _context.Users.Where(u => u.Email.ToLower().Equals(Email)).FirstOrDefaultAsync();
+            return user;
+        }
         public async Task SaveServerDFKeysForUser(User user, string serverPublicKey, string serverPrivateKey, string P, string G)
         {
             user.ServerDHPublic = serverPublicKey;

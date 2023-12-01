@@ -29,25 +29,28 @@
             Http.DefaultRequestHeaders.Remove("Authorization");
             Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
-            Dictionary<string, string> result = await Http.GetFromJsonAsync<Dictionary<string, string>>("api/File/dfParameters");
+            var result = await Http.GetAsync("api/File/dfParameters");
 
-            if (result == null)
-                Console.WriteLine("result is null");
-            else
+            if(result.IsSuccessStatusCode)
             {
-                Dictionary<string, string> stringKeys = await _cryptoService.GenerateKeys(result);
-                await LocalStorage.SetItemAsync("PublicKey", stringKeys["Public"]);
-                await LocalStorage.SetItemAsync("PrivateKey", stringKeys["Private"]);
-                await LocalStorage.SetItemAsync("Base64SymKey", stringKeys["SymKey"]);
-                await LocalStorage.SetItemAsync("A", stringKeys["A"]);
-                var res = await Http.PostAsJsonAsync("api/File/DFexchange", stringKeys["A"]);
+                DFparametersDto dfParams = await result.Content.ReadFromJsonAsync<DFparametersDto>();
+                CryptoParams stringKeys = await _cryptoService.GenerateKeys(dfParams);
+                await LocalStorage.SetItemAsync("PublicKey", stringKeys.Public);
+                await LocalStorage.SetItemAsync("PrivateKey", stringKeys.Private);
+                await LocalStorage.SetItemAsync("Base64SymKey", stringKeys.SymKey);
+                await LocalStorage.SetItemAsync("A", stringKeys.A);
+                var res = await Http.PostAsJsonAsync("api/File/DFexchange", stringKeys.A);
                 Console.WriteLine(res.Content.ToString());
 
+            }
+            else
+            {
+                
             }
         }
     }
 
-    private async Task<Dictionary<string, string>> GetFileParams(byte[] bytesFile, IBrowserFile file)
+    private async Task<FileParamsDto> GetFileParams(byte[] bytesFile, IBrowserFile file)
     {
         string base64File = Convert.ToBase64String(bytesFile);
         string base64KeyAndIv = await _cryptoService.GetHashInBase64(bytesFile, 512);
@@ -56,9 +59,9 @@
         string base64EncFile = await _cryptoService.GetEcnryptedFileBase64(base64Key, base64Iv, bytesFile);
         string TAG = await _cryptoService.GetHashInBase64(Convert.FromBase64String(base64EncFile), 256);
         string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
-        Dictionary<string, string> fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey, file.Name);
+        FileParamsDto fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey, file.Name);
 
-        fileParams.Add("base64EncFile", base64EncFile);
+        fileParams.base64EncFile= base64EncFile;
 
         return fileParams;
     }
@@ -97,7 +100,7 @@
             }
             streamFile.Close();
 
-            Dictionary<string, string> fileParams = await GetFileParams(bytesFile, file);
+            FileParamsDto fileParams = await GetFileParams(bytesFile, file);
 
             string token = await LocalStorage.GetItemAsync<string>("token");
             Http.DefaultRequestHeaders.Remove("Authorization");
@@ -111,22 +114,46 @@
                     Console.WriteLine("E null\n");
                
                 string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
-                FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams["base64EncFile"], file.Name, symKey);
+                FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams.base64EncFile, file.Name, symKey);
 
                 var res = await Http.PostAsJsonAsync("api/File/verifyFileChallenge", userResp);
                 if (res.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("File uploaded successfully");
+                    var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                        {
+                            Title = "Success",
+                            Text = "File was uploaded!",
+                            Icon = SweetAlertIcon.Success,
+                            ShowCancelButton = false,
+                            ConfirmButtonText = "Ok"
+                        });
                 }
                 else
                 {
-                    Console.WriteLine("Error: " + res.StatusCode);
+                    var errorContent = await res.Content.ReadAsStringAsync();
+                    var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                        {
+                            Title = "Error",
+                            Text = errorContent,
+                            Icon = SweetAlertIcon.Error,
+                            ShowCancelButton = false,
+                            ConfirmButtonText = "Ok"
+                        });
                 }
                 
             }
             else
             {
-                Console.WriteLine("Error: " + result.StatusCode);
+                var errorContent = await result.Content.ReadAsStringAsync();
+
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "Error",
+                        Text = errorContent,
+                        Icon = SweetAlertIcon.Error,
+                        ShowCancelButton = false,
+                        ConfirmButtonText = "Ok"
+                    });
             }
         }
     }

@@ -70,6 +70,10 @@
               "target": "Package",
               "version": "[4.4.0, )"
             },
+            "CurrieTechnologies.Razor.SweetAlert2": {
+              "target": "Package",
+              "version": "[5.5.0, )"
+            },
             "Microsoft.AspNetCore.Components.Authorization": {
               "target": "Package",
               "version": "[7.0.13, )"

@@ -68,16 +68,38 @@ else
         await LocalStorage.RemoveItemAsync("PrivateKey");
         await LocalStorage.RemoveItemAsync("Base64SymKey");
         await LocalStorage.RemoveItemAsync("A");
-        
+
         var result = await Http.PostAsJsonAsync("api/User/Register", user);
-        
+
         if (result.IsSuccessStatusCode)
         {
-            Response registrationResponse = await result.Content.ReadFromJsonAsync<Response>();
+            Response registrationResponse = result.Content.ReadFromJsonAsync<Response>().Result;
             isRegistered = true;
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Succes",
+                    Text = registrationResponse.Message,
+                    Icon = SweetAlertIcon.Success,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
             Navigation.NavigateTo("/Login");
 
         }
-      
+        else
+        {
+            var errorContent =  await result.Content.ReadAsStringAsync();
+
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Error",
+                Text = errorContent,
+                Icon = SweetAlertIcon.Error,
+                ShowCancelButton = false,
+                ConfirmButtonText = "Ok"
+            });
+
+        }
+
     }
 }

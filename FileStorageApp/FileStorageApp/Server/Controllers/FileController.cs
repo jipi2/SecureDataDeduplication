@@ -1,4 +1,5 @@
 ﻿using FileStorageApp.Server.Services;
+using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
@@ -46,17 +47,24 @@ namespace FileStorageApp.Server.Controllers
 
         [HttpGet("dfParameters")]
         [Authorize(Roles = "client")]
-        public async Task<Dictionary<string, string>> GetDFParameters()
+        public async Task<IActionResult> GetDFParameters()
         {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
+            try
             {
-                return null;
-            }
-            string id = await _userService.GetUserIdFromJWT(token);
-            Dictionary<string, string> parameters = await _fileService.GetDFParameters(id);
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return null;
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                DFparametersDto parameters = await _fileService.GetDFParameters(id);
 
-            return parameters;
+                return Ok(parameters);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Server Error");
+            }
         }
 
         [HttpPost("DFexchange")]
@@ -77,7 +85,7 @@ namespace FileStorageApp.Server.Controllers
 
         [HttpPost("uploadFile")]
         [Authorize(Roles = "client")]
-        public async Task<IActionResult> GetTagAndEncFile([FromBody] Dictionary<string, string> fileParams)
+        public async Task<IActionResult> GetTagAndEncFile([FromBody] FileParamsDto fileParams)
         {
             string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
             if (token.IsNullOrEmpty())
@@ -85,7 +93,7 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest("Invalid toke");
             }
             string id = await _userService.GetUserIdFromJWT(token);
-            FileMetaChallenge result = await _fileService.ComputeFileMetadata(fileParams, fileParams["base64EncFile"], id);
+            FileMetaChallenge result = await _fileService.ComputeFileMetadata(fileParams, id);
             
             if(result == null)
             {

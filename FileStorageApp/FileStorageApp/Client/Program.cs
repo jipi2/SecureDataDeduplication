@@ -1,4 +1,5 @@
 global using Blazored.LocalStorage;
+using CurrieTechnologies.Razor.SweetAlert2;
 using FileStorageApp.Client;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -15,6 +16,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<CryptoService>();
+builder.Services.AddSweetAlert2();
 
 //for file upload
 /*builder.WebHost.ConfigureKestrel(options =>

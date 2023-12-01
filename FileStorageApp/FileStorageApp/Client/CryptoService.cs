@@ -1,4 +1,5 @@
 ﻿using CryptoLib;
+using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
@@ -14,20 +15,21 @@ namespace FileStorageApp.Client
 {
     public class CryptoService
     {
-        public async Task<Dictionary<string, string>> GenerateKeys(Dictionary<string, string> stringParams)
+        public async Task<CryptoParams> GenerateKeys(DFparametersDto dfParams)
         {
 
-            DHParameters parameters = Utils.GenerateParameters(stringParams["G"], stringParams["P"]);
+            DHParameters parameters = Utils.GenerateParameters(dfParams.G, dfParams.P);
             AsymmetricCipherKeyPair keys = Utils.GenerateDFKeys(parameters);
-            Dictionary<string, string> stringKeys = new Dictionary<string, string>();
+           // Dictionary<string, string> stringKeys = new Dictionary<string, string>();
+           CryptoParams stringKeys = new CryptoParams();
 
-            BigInteger bigSymKey = Utils.ComputeSharedSecret(stringParams["ServerPubKey"], keys.Private, parameters);
+            BigInteger bigSymKey = Utils.ComputeSharedSecret(dfParams.ServerPubKey, keys.Private, parameters);
             byte[] byteSymKey = bigSymKey.ToByteArray();
            
-            stringKeys.Add("SymKey", Convert.ToBase64String(Utils.ComputeHash(byteSymKey)));
-            stringKeys.Add("Public",Utils.GetPemAsString(keys.Public));
-            stringKeys.Add("Private", Utils.GetPemAsString(keys.Private));
-            stringKeys.Add("A", Utils.GetPublicKey(keys));
+            stringKeys.SymKey =  Convert.ToBase64String(Utils.ComputeHash(byteSymKey));
+            stringKeys.Public = Utils.GetPemAsString(keys.Public);
+            stringKeys.Private = Utils.GetPemAsString(keys.Private);
+            stringKeys.A =  Utils.GetPublicKey(keys);
            
             return stringKeys;
         }
@@ -68,18 +70,18 @@ namespace FileStorageApp.Client
            return await Task.FromResult(Convert.FromBase64String(fileContent));
         }
 
-        public async Task<Dictionary<string, string>> GetEncryptedFileParameters(string base64Tag, string base64Key, string base64Iv, string base64SymKey, string fileName)
+        public async Task<FileParamsDto> GetEncryptedFileParameters(string base64Tag, string base64Key, string base64Iv, string base64SymKey, string fileName)
         {
-            Dictionary<string, string> fileParams = new Dictionary<string, string>();
+            FileParamsDto fileParams = new FileParamsDto();
             string base64TagEnc = Utils.EncryptAes(Convert.FromBase64String(base64Tag), Convert.FromBase64String(base64SymKey));
             string base64KeyEnc = Utils.EncryptAes(Convert.FromBase64String(base64Key), Convert.FromBase64String(base64SymKey));
             string base64IvEnc = Utils.EncryptAes(Convert.FromBase64String(base64Iv), Convert.FromBase64String(base64SymKey));
             string encFileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(base64SymKey));
 
-            fileParams.Add("base64TagEnc", base64TagEnc);
-            fileParams.Add("base64KeyEnc", base64KeyEnc);
-            fileParams.Add("base64IvEnc", base64IvEnc);
-            fileParams.Add("encFileName", encFileName);
+            fileParams.base64TagEnc = base64TagEnc;
+            fileParams.base64KeyEnc = base64KeyEnc;
+            fileParams.base64IvEnc = base64IvEnc;
+            fileParams.encFileName =  encFileName;
 
             return await Task.FromResult(fileParams);
         }
@@ -118,7 +120,7 @@ namespace FileStorageApp.Client
             byte[] answ = new byte[mt.HashTree[0]._hash.Length];
             byte[] byteSymKey = Convert.FromBase64String(base64SymKey);
 
-            int Id = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.id), byteSymKey)));
+           // int Id = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.id), byteSymKey)));
             int n1 = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.n1), byteSymKey)));
             int n2 = BitConverter.ToInt32(Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fmc.n2), byteSymKey)));
             int n3 = BitConverter.ToInt32(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(fmc.n3), byteSymKey)));

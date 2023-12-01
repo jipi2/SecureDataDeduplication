@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "FqNwAi2Du9uZh6kdbaIrZ1Y/wq32Id6TnjESOpI4eSkEOlnThMd2ZYeevPFnEHSRJR406vz8b2Ygvhetvx/s1A==",
+  "dgSpecHash": "g7yGUl/nO4FhgSLmJ0JEtNC5EkYtQ3OAndg7Y6aKglzYllnCiC2M2Mur0Bvois6fMUGb8M2OqMoX+fmYdciaOw==",
   "success": true,
   "projectFilePath": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\FileStorageApp.Client.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Jipi\\.nuget\\packages\\blazored.localstorage\\4.4.0\\blazored.localstorage.4.4.0.nupkg.sha512",
+    "C:\\Users\\Jipi\\.nuget\\packages\\currietechnologies.razor.sweetalert2\\5.5.0\\currietechnologies.razor.sweetalert2.5.5.0.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.authorization\\7.0.13\\microsoft.aspnetcore.authorization.7.0.13.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components\\7.0.13\\microsoft.aspnetcore.components.7.0.13.nupkg.sha512",
     "C:\\Users\\Jipi\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\7.0.13\\microsoft.aspnetcore.components.analyzers.7.0.13.nupkg.sha512",

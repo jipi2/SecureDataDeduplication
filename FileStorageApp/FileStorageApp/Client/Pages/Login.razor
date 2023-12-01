@@ -63,7 +63,7 @@
         await LocalStorage.RemoveItemAsync("Base64SymKey");
         await LocalStorage.RemoveItemAsync("A");
 
-       var result = await Http.PostAsJsonAsync("api/User/login", user);
+        var result = await Http.PostAsJsonAsync("api/User/login", user);
         Console.WriteLine("merge?");
         if (result.IsSuccessStatusCode)
         {
@@ -80,6 +80,19 @@
                 Navigation.NavigateTo("/uploadPage");
             }
         }
-    
+        else
+        {
+            var errorContent = await result.Content.ReadAsStringAsync();
+
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = errorContent,
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using FileStorageApp.Server.Repositories;
 using FileStorageApp.Server.SecurityFolder;
 using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 
@@ -12,20 +13,52 @@ namespace FileStorageApp.Server.Services
     public class UserService
     {
         public UserRepository _userRepo { get; set; }
+        public RoleRepository _roleRepo { get; set; }
         public SecurityManager _secManager { get; set; }
-        public UserService(UserRepository userRepository, SecurityManager secManager)
+        
+        public UserService(UserRepository userRepository, SecurityManager secManager, RoleRepository roleRepository)
         {
             _userRepo = userRepository;
             _secManager = secManager;
+            _roleRepo = roleRepository;
         }
 
         public async Task<Response> Register(RegisterUser regUser)
         {
-            return await _userRepo.Register(regUser);
+            var user = _userRepo.GetUserbyEmail(regUser.Email).Result;
+            if (user != null)
+                throw new ExceptionModel("Email already exists", 1);
+            if (!regUser.Password.Equals(regUser.Password))
+                throw new ExceptionModel("Confirm passowrd field is different from password field", 1);
+
+            byte[] salt = Utils.GenerateRandomBytes(16);
+
+            var newUser = new Entity.User
+            {
+                FirstName = regUser.FirstName,
+                LastName = regUser.LastName,
+                Email = regUser.Email,
+                Password = Utils.HashTextWithSalt(regUser.Password, salt),
+                Salt = Utils.ByteToHex(salt),
+                isDeleted = false,
+                Roles = new List<Entity.Role>(),
+                Files = new List<Entity.FileMetadata>()
+            };
+            newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
+
+            _userRepo.SaveUser(newUser);
+
+            return (new Response { Succes = true, Message = "User registered successfully", AccessToken = _secManager.GetNewJwt(newUser) }); ;
         }
         public async Task<Response> Login(LoginUser logUser)
         {
-            return await _userRepo.Login(logUser);
+            var user = _userRepo.GetUserByEmail(logUser.Email).Result;
+            if (user == null)
+                throw new ExceptionModel("Login faild!", 1);
+            if (!user.Password.Equals(Utils.HashTextWithSalt(logUser.password, Utils.HexToByte(user.Salt))))
+                throw new ExceptionModel("Login faild!", 1);
+
+            return (new Response { Succes = true, Message = "Login successfully", AccessToken = _secManager.GetNewJwt(user) });
         }
 
         public bool isUserAdmin(User user)

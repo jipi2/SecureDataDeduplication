@@ -110,3 +110,4 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Microsof
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Azure.Storage.Blobs.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\Azure.Storage.Common.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\System.IO.Hashing.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\bin\Debug\net7.0\CurrieTechnologies.Razor.SweetAlert2.dll
