@@ -5,6 +5,7 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStor
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStorageApp.Shared.AssemblyInfoInputs.cache
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStorageApp.Shared.AssemblyInfo.cs
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStorageApp.Shared.csproj.CoreCompileInputs.cache
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStorageApp.Shared.sourcelink.json
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStorageApp.Shared.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\refint\FileStorageApp.Shared.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Shared\obj\Debug\net7.0\FileStorageApp.Shared.pdb

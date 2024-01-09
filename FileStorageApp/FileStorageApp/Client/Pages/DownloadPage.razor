@@ -48,12 +48,32 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        jwt = await LocalStorage.GetItemAsync<string>("token");
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+        // jwt = await LocalStorage.GetItemAsync<string>("token");
+        // Http.DefaultRequestHeaders.Remove("Authorization");
+        // Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
-        userFileNames = await Http.GetFromJsonAsync<List<FilesNameDate>?>("api/File/getUploadedFileNamesAndDates");
+        // userFileNames = await Http.GetFromJsonAsync<List<FilesNameDate>?>("api/File/getUploadedFileNamesAndDates");
+        await GetFilesNamesAndDatesThroughProxy();
         Console.WriteLine("gata");
+    }
+
+    public async Task GetFilesNamesAndDatesThroughProxy()
+    {
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+
+        try
+        {
+            HttpClient httpClient = HttpServiceCustom.GetProxyClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+       
+            userFileNames = await httpClient.GetFromJsonAsync<List<FilesNameDate>?>("getFileNamesAndDates");
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
     }
 
     public async void DownloadFile(string fileName)

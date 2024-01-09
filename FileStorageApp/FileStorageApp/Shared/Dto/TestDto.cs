@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.AccessControl;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FileStorageApp.Shared.Dto
+{
+    public class TestDto
+    {
+        string Message1 { get; set; }
+        string Message2 { get; set; }
+    }
+}

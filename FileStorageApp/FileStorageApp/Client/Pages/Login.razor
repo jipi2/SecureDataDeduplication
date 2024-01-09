@@ -64,7 +64,6 @@
         await LocalStorage.RemoveItemAsync("A");
 
         var result = await Http.PostAsJsonAsync("api/User/login", user);
-        Console.WriteLine("merge?");
         if (result.IsSuccessStatusCode)
         {
             Response loginResponse = await result.Content.ReadFromJsonAsync<Response>();

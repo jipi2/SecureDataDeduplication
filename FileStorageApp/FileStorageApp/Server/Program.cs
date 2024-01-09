@@ -1,6 +1,7 @@
 using FileStorageApp.Server.Database;
 using FileStorageApp.Server.Repositories;
 using FileStorageApp.Server.SecurityFolder;
+using FileStorageApp.Server.SeederClass;
 using FileStorageApp.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
@@ -9,8 +10,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//http client
+builder.Services.AddHttpClient();
+
+//CORS
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin()
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod();
+                      });
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -33,7 +52,11 @@ builder.Services.AddScoped<FileService>();
 //builder.Services.AddScoped<IConfiguration>();
 builder.Services.AddScoped<AzureBlobService>();
 
+//Seeder
+builder.Services.AddScoped<DataSeeder>();
+
 //swagg ---------------------------------------------------------------
+builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -109,6 +132,9 @@ else
     app.UseHsts();
 }
 
+//CORS
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
@@ -132,5 +158,15 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 });
 //swagg ---------------------------------------------------------------
+
+//Seeder
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var seeder = serviceProvider.GetRequiredService<DataSeeder>();
+
+    // Ensure that SeedData is asynchronous and returns Task
+    await seeder.SeedData();
+}
 
 app.Run();

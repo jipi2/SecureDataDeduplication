@@ -1,4 +1,5 @@
 ﻿@page "/uploadPage"
+@using System.Net
 @attribute [Authorize]
 
 <h3>Upload File here:</h3>
@@ -35,8 +36,8 @@
             {
                 DFparametersDto dfParams = await result.Content.ReadFromJsonAsync<DFparametersDto>();
                 CryptoParams stringKeys = await _cryptoService.GenerateKeys(dfParams);
-                await LocalStorage.SetItemAsync("PublicKey", stringKeys.Public);
-                await LocalStorage.SetItemAsync("PrivateKey", stringKeys.Private);
+                // await LocalStorage.SetItemAsync("PublicKey", stringKeys.Public);
+                // await LocalStorage.SetItemAsync("PrivateKey", stringKeys.Private);
                 await LocalStorage.SetItemAsync("Base64SymKey", stringKeys.SymKey);
                 await LocalStorage.SetItemAsync("A", stringKeys.A);
                 var res = await Http.PostAsJsonAsync("api/File/DFexchange", stringKeys.A);
@@ -45,7 +46,7 @@
             }
             else
             {
-                
+
             }
         }
     }
@@ -106,55 +107,94 @@
             Http.DefaultRequestHeaders.Remove("Authorization");
             Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
-            var result = await Http.PostAsJsonAsync("api/File/uploadFile", fileParams);
+            //adaugam adresa proxy-ului
+            await UploadFileThroughProxy(fileParams);
+
+            /*var result = await Http.PostAsJsonAsync("api/File/uploadFile", fileParams);
             if (result.IsSuccessStatusCode)
             {
-                FileMetaChallenge? fmc = result.Content.ReadFromJsonAsync<FileMetaChallenge>().Result;
-                if(fmc == null)
-                    Console.WriteLine("E null\n");
-               
-                string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
-                FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams.base64EncFile, file.Name, symKey);
+            FileMetaChallenge? fmc = result.Content.ReadFromJsonAsync<FileMetaChallenge>().Result;
+            if(fmc == null)
+                Console.WriteLine("E null\n");
 
-                var res = await Http.PostAsJsonAsync("api/File/verifyFileChallenge", userResp);
-                if (res.IsSuccessStatusCode)
-                {
-                    var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
+                        FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams.base64EncFile, file.Name, symKey);
+
+                        var res = await Http.PostAsJsonAsync("api/File/verifyFileChallenge", userResp);
+                        if (res.IsSuccessStatusCode)
                         {
-                            Title = "Success",
-                            Text = "File was uploaded!",
-                            Icon = SweetAlertIcon.Success,
-                            ShowCancelButton = false,
-                            ConfirmButtonText = "Ok"
-                        });
-                }
-                else
+                        var alertBox = await Swal.FireAsync(new SweetAlertOptions
                 {
-                    var errorContent = await res.Content.ReadAsStringAsync();
-                    var alertBox = await Swal.FireAsync(new SweetAlertOptions
-                        {
-                            Title = "Error",
-                            Text = errorContent,
-                            Icon = SweetAlertIcon.Error,
-                            ShowCancelButton = false,
-                            ConfirmButtonText = "Ok"
+                Title = "Success",
+                Text = "File was uploaded!",
+                Icon = SweetAlertIcon.Success,
+                ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
                         });
+                        }
+                        else
+                        {
+                        var errorContent = await res.Content.ReadAsStringAsync();
+                        var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                        {
+                        Title = "Error",
+                        Text = errorContent,
+            Icon = SweetAlertIcon.Error,
+        ShowCancelButton = false,
+            ConfirmButtonText = "Ok"
+            });
                 }
-                
+
             }
             else
             {
-                var errorContent = await result.Content.ReadAsStringAsync();
+            var errorContent = await result.Content.ReadAsStringAsync();
 
                 var alertBox = await Swal.FireAsync(new SweetAlertOptions
                     {
-                        Title = "Error",
-                        Text = errorContent,
-                        Icon = SweetAlertIcon.Error,
-                        ShowCancelButton = false,
-                        ConfirmButtonText = "Ok"
-                    });
-            }
+                    Title = "Error",
+                    Text = errorContent,
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+    });
+    }*/
         }
+    }
+
+    private async Task UploadFileThroughProxy(FileParamsDto fileParams)
+    {
+        HttpClient httpClient = HttpServiceCustom.GetProxyClient();
+
+        string jwt = await LocalStorage.GetItemAsync<string>("token");
+        httpClient.DefaultRequestHeaders.Remove("Authorization");
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+        var result = await httpClient.PostAsJsonAsync("uploadFile", fileParams);
+        if (!result.IsSuccessStatusCode)
+        {
+            var errorContent = await result.Content.ReadAsStringAsync();
+
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Error",
+                Text = errorContent,
+                Icon = SweetAlertIcon.Error,
+                ShowCancelButton = false,
+                ConfirmButtonText = "Ok"
+            });
+        }
+        else
+        {
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Success",
+                Text = "File was uploaded!",
+                Icon = SweetAlertIcon.Success,
+                ShowCancelButton = false,
+                ConfirmButtonText = "Ok"
+            });
+        }
+
     }
 }

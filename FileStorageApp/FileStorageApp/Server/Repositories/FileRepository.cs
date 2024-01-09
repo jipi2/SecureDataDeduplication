@@ -1,6 +1,7 @@
 ﻿using FileStorageApp.Server.Database;
 using FileStorageApp.Server.Entity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace FileStorageApp.Server.Repositories
 {
@@ -38,6 +39,22 @@ namespace FileStorageApp.Server.Repositories
         {
             FileMetadata? fileMetadata = await _context.FilesMetadata.Where(f => f.Id == id).FirstOrDefaultAsync();
             return fileMetadata;
+        }
+
+        public async Task<FileMetadata?> GetFileMetaByTagIfExists(string base64Tag)
+        {
+            FileMetadata fileMeta = _context.FilesMetadata.Where(f => f.Tag == base64Tag).FirstOrDefault();
+            if (fileMeta == null)
+                return null;
+            return fileMeta;
+        }
+
+        public async Task<FileMetadata?> GetFileMetaByTagAndFilename(string base64Tag, string filename)
+        {
+            FileMetadata? fileMeta = _context.FilesMetadata.Where(f => f.Tag == base64Tag && f.FileName == filename).FirstOrDefault();
+            if(fileMeta == null)
+                return null;
+            return fileMeta;
         }
     }
 }

@@ -36,6 +36,11 @@ namespace FileStorageApp.Server.SecurityFolder
             IEnumerable<Claim> claims = GetTokenClaims(jwt);
             return claims.Where(c => c.Type.Equals("UserID")).FirstOrDefault().Value;
         }
+        public string GetUserEmailFromJwt(string jwt)
+        {
+            IEnumerable<Claim> claims = GetTokenClaims(jwt);
+            return claims.Where(c => c.Type.Equals(ClaimTypes.Name)).FirstOrDefault().Value;
+        }
         public IEnumerable<Claim> GetTokenClaims(string jwt)
         {
             var payload = jwt.Split('.')[1];

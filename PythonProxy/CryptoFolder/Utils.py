@@ -1,6 +1,9 @@
 import hashlib
 from .MerkleTree import MerkleTree
 from .MTMember import MTMember
+from Dto.FileMetaChallenge import FileMetaChallenge
+from Dto.FileResp import FileResp
+
 import io
 import jwt
 import base64
@@ -64,8 +67,18 @@ def get_merkle_tree(file: io.BytesIO) -> MerkleTree:
     return MT
 
 
-
-def verify_challenge(base64EncFile: str, base64TagEnc:str):
-    print("")
+def getRespForchallenge(mt:MerkleTree, fileChallenge:FileMetaChallenge, fileName:str):
+    n1 = int(fileChallenge.n1)
+    n2 = int(fileChallenge.n2)
+    n3 = int(fileChallenge.n3)
+    
+    answ = bytearray(len(mt._HashTree[0]._hash))
+    
+    for i in range(len(answ)):
+        answ[i] = mt._HashTree[n1]._hash[i] ^ mt._HashTree[n2]._hash[i] ^ mt._HashTree[n3]._hash[i]
+    
+    #fileChallenge.id, base64.b64encode(answ).decode(), fileName
+    fileResp = FileResp(Id = fileChallenge.id, FileName = fileName, Answer= base64.b64encode(answ).decode())
+    return fileResp    
     
     

@@ -32,7 +32,6 @@ namespace FileStorageApp.Server.Services
 
                 //generam un strem din string-ul "encFileBase64"
                 Stream stream = Utils.GenerateStreamFromString(encFileBase64);
-                //gata
 
                 await bclient.UploadAsync(stream, true);
           
@@ -64,7 +63,6 @@ namespace FileStorageApp.Server.Services
             }
         }
 
-       
     }
     
 }

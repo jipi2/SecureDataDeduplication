@@ -50,6 +50,31 @@ namespace FileStorageApp.Server.Services
 
             return (new Response { Succes = true, Message = "User registered successfully", AccessToken = _secManager.GetNewJwt(newUser) }); ;
         }
+
+        public async Task<Response> AddProxy(RegisterProxyDto regProxy)
+        {
+            var user = _userRepo.GetUserbyEmail(regProxy.ProxyMail).Result;
+            if(user != null)
+                throw new ExceptionModel("Email already exists for this proxy", 1);
+
+            byte[] salt = Utils.GenerateRandomBytes(16);
+
+            var newProxy = new Entity.User
+            {
+                FirstName = regProxy.ProxyName,
+                LastName = regProxy.ProxyName,
+                Email = regProxy.ProxyMail,
+                Password = Utils.HashTextWithSalt(regProxy.ProxyPassword, salt),
+                Salt = Utils.ByteToHex(salt),
+                isDeleted = false,
+                Roles = new List<Entity.Role>(),
+                Files = new List<Entity.FileMetadata>()
+            };
+            newProxy.Roles.Add(await _roleRepo.getRoleByName("proxy"));
+            _userRepo.SaveUser(newProxy);
+
+            return (new Response { Succes = true, Message = "Proxy added successfully"}); ;
+        }
         public async Task<Response> Login(LoginUser logUser)
         {
             var user = _userRepo.GetUserByEmail(logUser.Email).Result;
@@ -130,6 +155,18 @@ namespace FileStorageApp.Server.Services
         public async Task AddFile(string userId, FileMetadata fileMeta)
         {
             await _userRepo.AddFile(userId, fileMeta);
+        }
+
+        public Task<string> GetUserEmail(string id)
+        {
+            var user = _userRepo.GetUserById(Convert.ToInt32(id)).Result;
+            return Task.FromResult(user.Email);
+        }
+
+        public async Task<string> GetUserIdByEmail(string email)
+        {
+            var user = await _userRepo.GetUserbyEmail(email);
+            return user.Id.ToString();
         }
     }
 }

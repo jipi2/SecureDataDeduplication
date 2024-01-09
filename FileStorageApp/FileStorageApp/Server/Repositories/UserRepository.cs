@@ -64,7 +64,6 @@ namespace FileStorageApp.Server.Repositories
                 return (new Response { Succes = false, Message = "Login faild" });
 
             return (new Response { Succes = true, Message = "Login successfully", AccessToken = _securityManager.GetNewJwt(user)});
-
         }
 
         public async Task SaveUser(User user)
@@ -75,7 +74,7 @@ namespace FileStorageApp.Server.Repositories
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            var user = await _context.Users.Include(u => u.Roles).Where(u => u.Email.ToLower().Equals(email)).FirstOrDefaultAsync();
+            var user = await _context.Users.Include(us => us.Files).Include(u => u.Roles).Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
             if(user == null) return null;
             return user;
         }
@@ -102,6 +101,7 @@ namespace FileStorageApp.Server.Repositories
             var user = await _context.Users.Where(u => u.Email.ToLower().Equals(Email)).FirstOrDefaultAsync();
             return user;
         }
+
         public async Task SaveServerDFKeysForUser(User user, string serverPublicKey, string serverPrivateKey, string P, string G)
         {
             user.ServerDHPublic = serverPublicKey;
@@ -125,6 +125,11 @@ namespace FileStorageApp.Server.Repositories
                 user.Files = new List<FileMetadata>();
             user.Files.Add(fileMeta);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<FilesNameDate>> GetFilesNameDate(string userId)
+        {
+            return null;
         }
     }
 }

@@ -83,6 +83,28 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest("Fail");
         }
 
+        [HttpPost("checkEncTag")]
+        [Authorize(Roles = "client")]
+        public async Task<IActionResult> CheckEncTag([FromBody] TagDto encTag)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Invalid toke");
+            }
+            string id = await _userService.GetUserIdFromJWT(token);
+            bool tagExists = false;
+            try
+            {
+                tagExists = await _fileService.CheckEncTag(id, encTag.encTag);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            return Ok(tagExists);
+        }
+
         [HttpPost("uploadFile")]
         [Authorize(Roles = "client")]
         public async Task<IActionResult> GetTagAndEncFile([FromBody] FileParamsDto fileParams)
@@ -154,6 +176,104 @@ namespace FileStorageApp.Server.Controllers
             if (result == false)
                 return BadRequest("The answer for challenge was wrong!");
             return Ok("You're file has been uploaded");
+        }
+
+
+        //proxy endpoints
+
+        [HttpPost("checkTag")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> checkTag([FromBody] string base64tag)
+        {
+            //we will need to add crypto
+            bool fileExists = await _fileService.CheckTagAvailabilityInCloud(base64tag);
+            return Ok(fileExists);
+        }
+
+        [HttpPost("getChallenge")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> getChallengeForTag([FromBody] string base64tag)
+        {
+            FileMetaChallenge? fmc = await _fileService.GetChallengeForTag(base64tag);
+            if(fmc == null)
+                return BadRequest("Something went wrong!");
+            return Ok(fmc); 
+        }
+
+        [HttpPost("verifyFileChallengeForProxy")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> GetChallengeResponseForProxy([FromBody] FileResp fr)
+        {
+            bool result = await _fileService.VerifyChallengeResponseFromProxy(fr);
+            if (result == false)
+                return BadRequest(result);
+            return Ok(result);
+        }
+
+        [HttpPost("getDecryptedFileParams")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> GetDecryptedFileParams([FromBody] FileEncDataDto filEncData)
+        {
+            try
+            {
+                FileDecDataDto fileDecData = await _fileService.GetDecryptedFileParams(filEncData);
+                return Ok(fileDecData);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("saveDeduplicateFileForUser")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> SaveDedupFileForUser([FromBody] FileDedupDto fileDedupDto)
+        {
+            try
+            {
+                await _fileService.SaveDedupFile(fileDedupDto);
+                return Ok("File uploaded");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("saveFileFromCache")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> SaveFileFromCache([FromBody] FileFromCacheDto cacheFiles)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Authorization Problems!");
+            }
+            try
+            {
+                await _fileService.SaveFileFromCache(cacheFiles);
+                return Ok("File uploaded");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
+        [HttpPost("getUploadedFileNamesAndDatesWithoutProxy")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> GetFileNamesAndDates([FromBody] string userEmail)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return BadRequest("Authorization Problems!");
+            }
+            string userId = await _userService.GetUserIdByEmail(userEmail);
+            List<FilesNameDate>? result = await _fileService.GetFileNamesAndDatesOfUser(userId);
+
+            return Ok(result);
         }
     }
 }
