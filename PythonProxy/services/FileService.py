@@ -7,8 +7,11 @@ from Dto.FileResp import FileResp
 from Dto.FileDecDto import FileDecDto
 from Dto.FileEncDto import FileEncDto
 from Dto.FileDedupDto import FileDedupDto
+from Dto.ServerBlobFile import ServerBlobFile
+from Dto.EncryptParamsDto import EncryptParamsDto
 from Database.db import Base, User, File, user_file, BlobFile
 from Dto.FilesNameDate import FilesNameDate
+from Dto.EmailFilenameDto import EmailFilenameDto
 import asyncio
 from sqlalchemy.orm.exc import NoResultFound
 import base64
@@ -19,12 +22,13 @@ load_dotenv()
 
 
 class FileService():
-    def __init__(self, userToken:str, fileParams:FileParamsDto=None):
+    def __init__(self, userToken:str, fileParams:FileParamsDto=None, filename:str=None):
         self.userToken = userToken
         self.userEmail = ""
         self.fileParams = fileParams
+        self.filename = filename
         self.authService = ProxyClass()
-        self.gateWay = ApiCall("https://localhost:7109")
+        self.gateWay = ApiCall(os.environ.get("backendBaseUrl"))
     
     async def __getUserEmail(self):
         userEmail = await self.authService.getUserEmail(self.userToken)
@@ -62,7 +66,6 @@ class FileService():
         response = await self.gateWay.callBackendPostMethodDto("/api/File/getDecryptedFileParams",
                                                          self.authService.token,
                                                          fileEncDto)
-        print(response.text)
         if response.status_code != 200:
             raise Exception(response.text)
         
@@ -89,6 +92,9 @@ class FileService():
         session.commit()
     
     def __saveFile(self, tag, fileDecDto, session):
+        print('-----------------------------')
+        print(self.fileParams.base64EncFile)
+        print('-----------------------------')
         blob_file = BlobFile(base64EncFile=base64.b64decode(self.fileParams.base64EncFile))
         new_file = File(tag=tag, key=fileDecDto.base64Key, 
                         iv=fileDecDto.base64Iv, fileName=fileDecDto.fileName, 
@@ -121,6 +127,7 @@ class FileService():
                 file = session.query(File).filter(File.tag == base64tag, File.fileName == fileDecDto.fileName).first()
                 if not file:
                     blobFile = session.query(BlobFile).filter(BlobFile.id == blob_file_id).first()
+             
                     file = File(tag=base64tag, key=fileDecDto.base64Key, 
                             iv=fileDecDto.base64Iv, fileName=fileDecDto.fileName, 
                             blob_file=blobFile)
@@ -187,3 +194,33 @@ class FileService():
         filesAndDatesFromCache = await FileNameAndDateFromCacheTask
         filesList.extend([FilesNameDate(fileName=file_name, uploadDate=upload_date) for file_name, upload_date in filesAndDatesFromCache])
         return filesList
+    
+    async def getFileFromCache(self, filename:str):
+        try:
+            basedb = Base()
+            session = basedb.getSession()
+            result = session.query(File.iv, File.key, BlobFile.base64EncFile).join(user_file, File.id == user_file.c.file_id).join(User, User.id == user_file.c.user_id).join(BlobFile, BlobFile.id == File.blob_file_id).filter(File.fileName == filename,User.email == self.userEmail).first()
+            if result == None:
+                return None
+            else:
+                return result
+        except Exception as e:
+            raise e
+    
+    async def getFileFromStorage(self):
+        await self.authService.getProxyToken()
+        try:
+            await self.__getUserEmail()
+            
+            fileFromCache = await self.getFileFromCache(self.filename)
+            if fileFromCache == None:
+                emailFilename = EmailFilenameDto(userEmail=self.userEmail, fileName=self.filename)
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/proxyGetFileFromStorage", self.authService.token, emailFilename)
+                return ServerBlobFile(FileName=response.json()["fileName"], FileKey=response.json()["fileKey"], EncBase64File=response.json()["encBase64File"], FileIv=response.json()["fileIv"])
+            else:
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/encryptFileParamsForSendingToUser", self.authService.token, EncryptParamsDto(userEmail=self.userEmail, fileName=self.filename, fileKey=fileFromCache.key, fileIv=fileFromCache.iv))
+                encParamsDto = EncryptParamsDto(**response.json())        
+                return ServerBlobFile(FileName=encParamsDto.fileName, FileKey=encParamsDto.fileKey, EncBase64File=base64.b64encode(fileFromCache.base64EncFile).decode('utf-8'), FileIv=encParamsDto.fileIv)
+        except Exception as e:
+            raise e
+        

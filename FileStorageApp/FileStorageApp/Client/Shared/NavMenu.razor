@@ -6,9 +6,9 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        width: 9%;
+        width: 13%;
         text-align: center;
-        padding: 10px;
+        padding: 5px;
         background-color: #333; /* Add your desired background color */
         color: white; /* Add your desired text color */
     }
@@ -25,21 +25,6 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-@*         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div> *@
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
         <AuthorizeView>
             <NotAuthorized>
                 <div class="nav-item px-3">
@@ -74,9 +59,8 @@
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>
-                <!-- Add logout button for logged-in users -->
                 <div class="nav-item px-3">
-                    <button class="nav-link logout-button" @onclick="Logout">
+                    <button class="btn btn-primary logout-button" @onclick="Logout">
                         <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
                     </button>
                 </div>

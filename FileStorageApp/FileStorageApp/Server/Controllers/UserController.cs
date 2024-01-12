@@ -92,7 +92,7 @@ namespace FileStorageApp.Server.Controllers
         }
 
         [HttpGet ("testProxyController")]
-        [Authorize (Roles ="proxy")]
+        [Authorize(Roles = "proxy")]
         public async Task<IActionResult> testProxyController()
         {
             return Ok("Succes!");

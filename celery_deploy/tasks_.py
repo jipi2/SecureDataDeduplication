@@ -16,11 +16,12 @@ celery = Celery("tasks", broker=os.environ.get("REDIS_URL"), backend=os.environ.
 @celery.task()
 def sendFilesToServer():
     try:
-        gateWay = ApiCall(os.getenv("backendBaseUrl"))
+        gateWay = ApiCall(os.environ.get("backendBaseUrl"))
         pc = ProxyClass()
         pc.getProxyTokenSYNC()
         basedb = Base()
         session = basedb.getSession()
+        print('---------------------------------------')
         blobs = session.query(BlobFile).all()
         if len(blobs) == 0:
             return
@@ -60,6 +61,7 @@ def sendFilesToServer():
         print(f"Error fetching files and dates: {str(e)}")
     finally:
         session.close()
+        print('finally')
 
 
 @celery.task()

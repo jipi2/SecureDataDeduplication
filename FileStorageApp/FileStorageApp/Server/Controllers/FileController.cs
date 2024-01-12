@@ -275,5 +275,42 @@ namespace FileStorageApp.Server.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("encryptFileParamsForSendingToUser")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> GetFileNamesAndDates([FromBody] EncryptParamsDto decParams)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Authorization Problems!");
+                }
+                string userId = await _userService.GetUserIdByEmail(decParams.userEmail);
+                EncryptParamsDto? result = await _fileService.encryptParams(userId, decParams);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("proxyGetFileFromStorage")]
+        [Authorize(Roles = "proxy")]
+        public async Task<ServerBlobFIle> GetFileFromStorage([FromBody] EmailFilenameDto paramsDto)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            string id = await _userService.GetUserIdByEmail(paramsDto.userEmail);
+            ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, paramsDto.fileName);
+            return severFile;
+        }
     }
 }

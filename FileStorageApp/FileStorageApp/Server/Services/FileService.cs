@@ -428,10 +428,12 @@ namespace FileStorageApp.Server.Services
             if (user == null)
                 throw new Exception("User does not exist!");
 
+   
             fileDecData.base64key = Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64KeyEnc), Convert.FromBase64String(user.SymKey));
             fileDecData.base64iv = Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64IvEnc), Convert.FromBase64String(user.SymKey));
             fileDecData.fileName = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(fileEncData.encFileName), Convert.FromBase64String(user.SymKey))));
-
+            
+   
             if (await CheckIfFileNameExists(user, fileDecData.fileName) == true)
                 throw new Exception("User has allready a file with this name!");
 
@@ -507,6 +509,16 @@ namespace FileStorageApp.Server.Services
                     await GenerateMerkleTreeChallenges(file.Id, mt);
                 }
             }
+        }
+
+        public async Task<EncryptParamsDto> encryptParams(string userId, EncryptParamsDto paramsDto)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            paramsDto.fileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(paramsDto.fileName), Convert.FromBase64String(user.SymKey));
+            paramsDto.fileKey = Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileKey), Convert.FromBase64String(user.SymKey));
+            paramsDto.fileIv = Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileIv), Convert.FromBase64String(user.SymKey));
+
+            return paramsDto;
         }
     }
 }

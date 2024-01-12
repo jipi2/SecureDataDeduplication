@@ -1,8 +1,15 @@
 ﻿@page "/downloadPage"
+@using System.Net
 @attribute [Authorize]
-
+@inject IJSRuntime JS
 
 <h3>Download your File from Cloud</h3>
+
+<script>
+    window.doSomething = () => {
+        console.log("doSomething");
+    };
+</script>
 
 @if (userFileNames == null)
 {
@@ -20,7 +27,7 @@ else
         <tbody>
             @foreach(var fileData in userFileNames)
             {
-                <tr @onclick="() => DownloadFile(fileData.FileName) ">
+                <tr @onmouseover="() => ChangeCursorStyle(true)" @onmouseout="() => ChangeCursorStyle(false)" @onclick="() => DownloadFile(fileData.FileName)" style="@cursorStyle">
                     <td>@fileData.FileName</td>
                     <td>@fileData.UploadDate</td>
                 </tr>
@@ -29,17 +36,15 @@ else
     </table>
 }
 
-<script>
-    window.downloadFile = function (fileName, content) {
-        const blob = new Blob([content]);
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+@code
+{
+    private string cursorStyle = "";
+
+    private void ChangeCursorStyle(bool isHovered)
+    {
+        cursorStyle = isHovered ? "cursor: pointer;" : "";
     }
-</script>
+}
 
 @code {
     private List<FilesNameDate>? userFileNames;
@@ -66,7 +71,6 @@ else
             HttpClient httpClient = HttpServiceCustom.GetProxyClient();
             httpClient.DefaultRequestHeaders.Remove("Authorization");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
-       
             userFileNames = await httpClient.GetFromJsonAsync<List<FilesNameDate>?>("getFileNamesAndDates");
         }
         catch(Exception e)
@@ -78,10 +82,13 @@ else
 
     public async void DownloadFile(string fileName)
     {
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+        HttpClient httpClient = HttpServiceCustom.GetProxyClient();
+        httpClient.DefaultRequestHeaders.Remove("Authorization");
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
-        var response = await Http.PostAsJsonAsync("api/File/getFileFromStorage", fileName);
+        var response = await httpClient.PostAsJsonAsync("/getFileFromStorage", fileName);
+        httpClient.Dispose();
+        Console.WriteLine(response.Content.ToString());
         ServerBlobFIle? serverFile = response.Content.ReadFromJsonAsync<ServerBlobFIle>().Result;
 
         string base64SymKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
@@ -91,7 +98,16 @@ else
         if(serverFile != null)
         {
             byte[] fileContent = await _cryptoService.GetDecryptedFile(serverFile.EncBase64File, base64FileKey,base64FileIv);
-            await JSRuntime.InvokeAsync<object>("downloadFile",fileName, fileContent);
+            string strFile = Encoding.UTF8.GetString(fileContent);
+            try
+            {
+                await JS.InvokeVoidAsync("downloadFile", fileName, fileContent);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        Console.WriteLine("aici");
         }
         else
             Console.WriteLine("serverFile is null");

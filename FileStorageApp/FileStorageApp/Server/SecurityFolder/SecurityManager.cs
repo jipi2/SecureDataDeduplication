@@ -26,7 +26,7 @@ namespace FileStorageApp.Server.SecurityFolder
                 new Claim("UserID", user.Id.ToString())
             };
 
-            var token = new JwtSecurityToken(issuer: "fileStorage.com", audience: "fileStorage.com", claims: claims, expires: DateTime.Now.AddMinutes(60), signingCredentials: credentials);
+            var token = new JwtSecurityToken(issuer: "fileStorage.com", audience: "fileStorage.com", claims: claims, expires: DateTime.Now.AddMonths(1), signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Body, Depends, HTTPException
 import httpx
 from auth.auth_bearer import JWTBearer
@@ -43,8 +44,8 @@ app.add_middleware(
 load_dotenv()
 
 # SSL
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-ssl_context.load_cert_chain('./SSL_Folder/fastApiServer.cer', './SSL_Folder/key_ca.prv')
+# ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+# ssl_context.load_cert_chain('./SSL_Folder/fastApiServer.cer', './SSL_Folder/key_ca.prv')
 
 # @app.on_event("startup")
 # @repeat_every(seconds=60)
@@ -53,24 +54,30 @@ ssl_context.load_cert_chain('./SSL_Folder/fastApiServer.cer', './SSL_Folder/key_
 #     sendFilesToServer.delay()
 
 
-# celery = Celery(
-#     "tasks",
-#     broker="redis://redis:6379/0",
-#     backend="redis://redis:6379/0",
-#     include=["tasks_"]
-# )
+celery = Celery(
+    "tasks",
+    broker="redis://redis:6379/0",
+    backend="redis://redis:6379/0",
+    include=["tasks_"]
+)
 
-# @app.on_event("startup")
-# @repeat_every(seconds=60*60)
-# def send_files_task():
-#     print('sending files to server')
-#     result = celery.send_task("tasks_.sendFilesToServer")
-#     return {"message": "Task enqueued", "task_id": result.id}
+@app.on_event("startup")
+@repeat_every(seconds=60*60)
+def send_files_task():
+    print('sending files to server')
+    result = celery.send_task("tasks_.sendFilesToServer")
+    return {"message": "Task enqueued", "task_id": result.id}
 
 @app.get("/")
 def root():
     print(os.environ.get('backendBaseUrl'))
     return {"message": "Hello World"}
+
+@app.get("/testBACK")
+def testBack():
+    with httpx.Client(verify=False) as client:
+        response = client.get("https://localhost:7109/api/User/testProxyController")
+        print(response.text)
 
 @app.get("/testMethod")   
 def testMethod():
@@ -103,3 +110,26 @@ async def getFilesNamesAndDates(request:Request):
         return filesList
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/getFileFromStorage", tags=['file'])
+async def getFileFromStorage(request:Request,filename:str = Body(...)):
+    authorization_header = request.headers.get("Authorization")
+    token=""
+    if authorization_header is not None:
+        token = authorization_header.split(" ")[1]
+    _fileService = FileService(userToken=token, filename=filename)
+    try:
+        result = await _fileService.getFileFromStorage()
+        return result
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+    
+if __name__== "__main__":
+    uvicorn.run("main:app",
+                host="0.0.0.0",
+                port=8000,
+                reload=True,
+                ssl_keyfile="./SSL_Folder/localhost+2-key.pem", 
+                ssl_certfile="./SSL_Folder/localhost+2.pem"
+            )

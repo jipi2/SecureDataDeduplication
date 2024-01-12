@@ -12,7 +12,7 @@ class ProxyClass():
         self.proxyMail = "pythonProxy"
         self.proxyPassword = "proxy"
         self.token = "empty"
-        self.gateWay = ApiCall("https://localhost:7109")
+        self.gateWay = ApiCall(os.environ.get("backendBaseUrl"))
     
     async def getProxyToken(self):
         # test expiration token and if it is expired, get a new one
