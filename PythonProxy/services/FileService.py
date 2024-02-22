@@ -55,14 +55,15 @@ class FileService():
                                                                             self.authService.token,
                                                                             base64tag)
         fileChallenge = FileMetaChallenge(**response.json())
-        print(fileChallenge)
+        # print(fileChallenge)
         return fileChallenge
     
     async def __getDecryptedFileParams(self):
         fileEncDto = FileEncDto(userEmail=self.userEmail,
                                 base64KeyEnc=self.fileParams.base64KeyEnc,
                                 base64IvEnc=self.fileParams.base64IvEnc,
-                                encFileName=self.fileParams.encFileName)
+                                encFileName=self.fileParams.encFileName,
+                                encBase64Tag=self.fileParams.base64TagEnc)
         response = await self.gateWay.callBackendPostMethodDto("/api/File/getDecryptedFileParams",
                                                          self.authService.token,
                                                          fileEncDto)
@@ -72,7 +73,8 @@ class FileService():
         fileDecDto = FileDecDto(
             base64Key=response.json()['base64key'],
             base64Iv=response.json()['base64iv'],
-            fileName=response.json()['fileName']
+            fileName=response.json()['fileName'],
+            tag=response.json()['tag']
         )
         
         return fileDecDto
@@ -92,9 +94,9 @@ class FileService():
         session.commit()
     
     def __saveFile(self, tag, fileDecDto, session):
-        print('-----------------------------')
-        print(self.fileParams.base64EncFile)
-        print('-----------------------------')
+        # print('-----------------------------')
+        # print(self.fileParams.base64EncFile)
+        # print('-----------------------------')
         blob_file = BlobFile(base64EncFile=base64.b64decode(self.fileParams.base64EncFile))
         new_file = File(tag=tag, key=fileDecDto.base64Key, 
                         iv=fileDecDto.base64Iv, fileName=fileDecDto.fileName, 
@@ -146,11 +148,13 @@ class FileService():
     async def computeFileVerification(self):
         await self.authService.getProxyToken()
         await self.__getUserEmail()
-        tag = self.__getFileBase64Tag(self.fileParams.base64EncFile)
+        # tag = self.__getFileBase64Tag(self.fileParams.base64EncFile)
+        fileDecDto = await self.__getDecryptedFileParams()
+        tag = fileDecDto.tag
         MakeMerkleTreetask = asyncio.create_task(self.__getMerkleTree())
         if await self.__verifyTag(tag) == False:
             print('save in cache')
-            fileDecDto = await self.__getDecryptedFileParams()
+            # fileDecDto = await self.__getDecryptedFileParams()
             await self.__saveInCache(tag, fileDecDto)
         else:
             fileChallenge = await self.__getChallenge(tag)
@@ -159,7 +163,7 @@ class FileService():
             response = await self.gateWay.callBackendPostMethodDto("/api/File/verifyFileChallengeForProxy", self.authService.token, fileResp)
             if(response == False):
                 raise Exception("File not verified")
-            fileDecDto = await self.__getDecryptedFileParams()
+            # fileDecDto = await self.__getDecryptedFileParams()
             await self.__saveDeduplicateFileForUser(tag, fileDecDto.fileName)
 
     async def __getFileNameAndDatesFromCache(self):

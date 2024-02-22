@@ -428,7 +428,7 @@ namespace FileStorageApp.Server.Services
             if (user == null)
                 throw new Exception("User does not exist!");
 
-   
+            fileDecData.tag = Utils.DecryptAes(Convert.FromBase64String(fileEncData.encBase64Tag), Convert.FromBase64String(user.SymKey));
             fileDecData.base64key = Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64KeyEnc), Convert.FromBase64String(user.SymKey));
             fileDecData.base64iv = Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64IvEnc), Convert.FromBase64String(user.SymKey));
             fileDecData.fileName = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(fileEncData.encFileName), Convert.FromBase64String(user.SymKey))));
@@ -439,6 +439,7 @@ namespace FileStorageApp.Server.Services
 
             return fileDecData;
         }
+
 
         public async Task SaveDedupFile(FileDedupDto fileDedupDto)
         {

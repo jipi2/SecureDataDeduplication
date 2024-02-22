@@ -18,7 +18,7 @@ from Database.db import Base
 # SSL
 import ssl
 
-#DTO-uri
+# #DTO-uri
 from Dto.LoginUserDto import LoginUserDto
 from  Dto.TestDto import TestDto
 from Dto.Resp import Resp
@@ -54,19 +54,19 @@ load_dotenv()
 #     sendFilesToServer.delay()
 
 
-celery = Celery(
-    "tasks",
-    broker="redis://redis:6379/0",
-    backend="redis://redis:6379/0",
-    include=["tasks_"]
-)
+# celery = Celery(
+#     "tasks",
+#     broker="redis://redis:6379/0",
+#     backend="redis://redis:6379/0",
+#     include=["tasks_"]
+# )
 
-@app.on_event("startup")
-@repeat_every(seconds=60*60)
-def send_files_task():
-    print('sending files to server')
-    result = celery.send_task("tasks_.sendFilesToServer")
-    return {"message": "Task enqueued", "task_id": result.id}
+# @app.on_event("startup")
+# @repeat_every(seconds=60*60)
+# def send_files_task():
+#     print('sending files to server')
+#     result = celery.send_task("tasks_.sendFilesToServer")
+#     return {"message": "Task enqueued", "task_id": result.id}
 
 @app.get("/")
 def root():

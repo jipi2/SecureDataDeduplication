@@ -5,3 +5,4 @@ class FileEncDto(BaseModel):
     base64KeyEnc: str
     base64IvEnc: str
     encFileName: str
+    encBase64Tag: str

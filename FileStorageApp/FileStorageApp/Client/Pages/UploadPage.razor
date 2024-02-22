@@ -63,6 +63,7 @@
         FileParamsDto fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey, file.Name);
 
         fileParams.base64EncFile= base64EncFile;
+       
 
         return fileParams;
     }
@@ -101,6 +102,7 @@
             }
             streamFile.Close();
 
+            
             FileParamsDto fileParams = await GetFileParams(bytesFile, file);
 
             string token = await LocalStorage.GetItemAsync<string>("token");

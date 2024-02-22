@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FileStorageApp.Client")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e70c7209a42529ab3269f61ed2399673633e8aa7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f45ae99e0b9d2c44d3f6e69fd4e470f92906213")]
 [assembly: System.Reflection.AssemblyProductAttribute("FileStorageApp.Client")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FileStorageApp.Client")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
