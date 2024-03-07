@@ -312,5 +312,28 @@ namespace FileStorageApp.Server.Controllers
             ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, paramsDto.fileName);
             return severFile;
         }
+
+        [HttpPost("deleteFile")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> deleteFile([FromBody] EmailFilenameDto paramsDto)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+
+                string id = await _userService.GetUserIdByEmail(paramsDto.userEmail);
+                await _fileService.DeleteFile(id, paramsDto.fileName);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            return Ok("File deleted");
+        }
+
     }
 }

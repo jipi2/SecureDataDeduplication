@@ -43,6 +43,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<FileRepository>();
 builder.Services.AddScoped<RespRepository>();
+builder.Services.AddScoped<UserFileRepo>();
 
 //Services
 builder.Services.AddScoped<UserService>();

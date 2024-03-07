@@ -4,6 +4,7 @@ using FileStorageApp.Server.Repositories;
 using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -17,13 +18,14 @@ namespace FileStorageApp.Server.Services
 {
     public class FileService
     {
+        public UserFileRepo _userFileRepo { get; set; }
         public FileRepository _fileRepo { get; set; }
         public RespRepository _respRepo { get; set; }
         public UserService _userService { get; set; }
         public UserRepository _userRepo { get; set; }
         public AzureBlobService _azureBlobService { get; set; } 
         IConfiguration _configuration { get; set; }
-        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo)
+        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepo userFileRepo)
         {
             _fileRepo = fileRepository;
             _userService = userService;
@@ -31,6 +33,7 @@ namespace FileStorageApp.Server.Services
             _configuration = configuration;
             _respRepo = respRepo;
             _userRepo = userRepo;
+            _userFileRepo = userFileRepo;
         }
 
         public async Task<DFparametersDto> GetDFParameters(string Userid)
@@ -93,15 +96,17 @@ namespace FileStorageApp.Server.Services
         public async Task<ServerBlobFIle>? GetFileFromBlob(string userId, string fileName)
         {
             User user = await _userService.GetUserById(userId);
-            FileMetadata file = user.Files.Where(f => f.FileName == fileName).FirstOrDefault();
+            UserFile userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fileName);
+            //FileMetadata file = user.Files.Where(f => f.Id == userFile.FileId).FirstOrDefault();
+            FileMetadata? file = await _fileRepo.GetFileMetaById(userFile.FileId);
 
             string base64file = await _azureBlobService.GetContentFileFromBlob(file.Tag);
 
             ServerBlobFIle serverFile = new ServerBlobFIle
             {
                 FileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(user.SymKey)),
-                FileKey = Utils.EncryptAes(Convert.FromBase64String(file.Key), Convert.FromBase64String(user.SymKey)),
-                FileIv = Utils.EncryptAes(Convert.FromBase64String(file.Iv), Convert.FromBase64String(user.SymKey)),
+                FileKey = Utils.EncryptAes(Convert.FromBase64String(userFile.Key), Convert.FromBase64String(user.SymKey)),
+                FileIv = Utils.EncryptAes(Convert.FromBase64String(userFile.Iv), Convert.FromBase64String(user.SymKey)),
                 EncBase64File = base64file
             };
 
@@ -156,18 +161,46 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("Url for Azure Blob Stroage is null");
             }
 
+            //FileMetadata fileMeta = new FileMetadata
+            //{
+            //    FileName = fileName,
+            //    BlobLink = blobUrl,
+            //    isDeleted = false,
+            //    Key = base64Key,
+            //    Iv = base64Iv,
+            //    Tag = base64Tag,
+            //    UploadDate = DateTime.UtcNow
+            //};
+
+            //cod modificat
+
             FileMetadata fileMeta = new FileMetadata
             {
-                FileName = fileName,
                 BlobLink = blobUrl,
                 isDeleted = false,
-                Key = base64Key,
-                Iv = base64Iv,
-                Tag = base64Tag,
-                UploadDate = DateTime.UtcNow
+                Tag = base64Tag
             };
 
+            //gata cod modificat
+
             await _fileRepo.SaveFile(fileMeta);
+
+            //si am mai adaugat asta
+
+            UserFile userFile = new UserFile
+            {
+                FileName = fileName,
+                Key = base64Key,
+                Iv = base64Iv,
+                UploadDate = DateTime.UtcNow,
+                FileId = fileMeta.Id,
+                UserId = Convert.ToInt32(userId)
+            };
+
+          
+            await _userFileRepo.SaveUserFile(userFile);
+            //gata cu adaugatul
+            
 /*            await _userService.AddFile(userId, fileMeta);*/
             MerkleTree mt = await GetMerkleTree(base64EncFile);
             await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
@@ -175,14 +208,23 @@ namespace FileStorageApp.Server.Services
 
         private async Task<bool> CheckIfFileNameExists(User user, string fileName)
         {
-            if (user.Files == null)
+            //if (user.Files == null)
+            //    return false;
+            //foreach (FileMetadata file in user.Files)
+            //{
+            //    if (file.FileName.Equals(fileName))
+            //        return true;
+            //}
+            //return false;
+
+            //cod modficat
+            UserFile uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fileName);
+            if(uf == null)
                 return false;
-            foreach (FileMetadata file in user.Files)
-            {
-                if (file.FileName.Equals(fileName))
-                    return true;
-            }
-            return false;
+            return true;
+
+            //gata cod modificat
+        
         }   
         public async Task<FileMetaChallenge?> ComputeFileMetadata(FileParamsDto fileParams, string userId)
         {
@@ -242,6 +284,18 @@ namespace FileStorageApp.Server.Services
                 FileMetadata? fileMeta = await _fileRepo.GetFileMetaWithResp(base64Tag);
                 if (fileMeta == null)
                     return null;
+
+                //aici am adaugat cod
+                UserFile uf = new UserFile
+                {
+                    FileName = fileName,
+                    Key = base64Key,
+                    Iv = base64Iv,
+                    UploadDate = DateTime.UtcNow,
+                    UserId = Convert.ToInt32(userId)
+                };
+                await _userFileRepo.SaveUserFile(uf);
+                //aici gata codul
 
                 Resp? resp = fileMeta.Resps.Where(r => r.wasUsed == false).FirstOrDefault();
                 if(resp == null)
@@ -307,29 +361,43 @@ namespace FileStorageApp.Server.Services
                 if (resp.Answer.Equals(userAnsw))
                 {
                     FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(resp.FileMetadataId);
-                    if(fileMeta == null)
+                    if (fileMeta == null)
                         return false;
-                    
-                    if (fileMeta.FileName.Equals(userFilename) == false)
+
+                    //if (fileMeta.FileName.Equals(userFilename) == false)
+                    //{
+                    //    FileMetadata userFile = new FileMetadata
+                    //    {
+                    //        FileName = userFilename,
+                    //        BlobLink = fileMeta.BlobLink,
+                    //        isDeleted = false,
+                    //        Key = fileMeta.Key,
+                    //        Iv = fileMeta.Iv,
+                    //        Tag = fileMeta.Tag,
+                    //        UploadDate = DateTime.UtcNow
+                    //    };
+                    //    await _fileRepo.SaveFile(userFile);
+                    //    await _userService.AddFile(userId, userFile);
+                    //}
+                    //else
+                    //    await _userService.AddFile(userId, fileMeta);
+
+                    UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, userFilename);
+                    if (uf != null)
                     {
-                        FileMetadata userFile = new FileMetadata
-                        {
-                            FileName = userFilename,
-                            BlobLink = fileMeta.BlobLink,
-                            isDeleted = false,
-                            Key = fileMeta.Key,
-                            Iv = fileMeta.Iv,
-                            Tag = fileMeta.Tag,
-                            UploadDate = DateTime.UtcNow
-                        };
-                        await _fileRepo.SaveFile(userFile);
-                        await _userService.AddFile(userId, userFile);
+                        uf.FileId = fileMeta.Id;
+                        await _userFileRepo.UpdateUserFile(uf);
                     }
-                    else
-                        await _userService.AddFile(userId, fileMeta);
+
                     return true;
                 }
-                return false;
+                else
+                {
+                    UserFile userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, userFilename);
+                    _userFileRepo.DeleteUserFile(userFile);
+
+                    return false;
+                }
             }
             catch (Exception e)
             {
@@ -342,14 +410,21 @@ namespace FileStorageApp.Server.Services
             User? user = await _userService.GetUserById(id);
             if (user == null)
                 return null;
-            List<FilesNameDate>? result = user.Files?.Select(fileMeta => new FilesNameDate
-            {
-                FileName = fileMeta.FileName,
-                UploadDate = fileMeta.UploadDate,
 
-            }).ToList();
+            //List<FilesNameDate>? result = user.Select(fileMeta => new FilesNameDate
+            //{
+            //    FileName = fileMeta.FileName,
+            //    UploadDate = fileMeta.UploadDate,
 
-            if (result == null)
+            //}).ToList();
+
+            //am modificat codul
+            List<UserFile>? list = await _userFileRepo.GetUserFileByUserId(Convert.ToInt32(id));
+            List<FilesNameDate> result = new List<FilesNameDate>();
+
+
+            //codul asta era, nu-l modifica
+            if (list == null)
             {
                 result = new List<FilesNameDate>();
                 result.Add(new FilesNameDate
@@ -358,12 +433,25 @@ namespace FileStorageApp.Server.Services
                     UploadDate = DateTime.UtcNow
                 });
             }
+            //gata codul care era, restul poti modifica
+            else
+            {
+                foreach (UserFile uf in list)
+                {
+                    result = list.Select(uf => new FilesNameDate
+                    {
+                        FileName = uf.FileName,
+                        UploadDate = uf.UploadDate
+
+                    }).ToList();
+                }
+            }
 
             return result;
         }
 
         //proxy logic
-        public async Task<bool> CheckTagAvailabilityInCloud(string base64tag)
+       public async Task<bool> CheckTagAvailabilityInCloud(string base64tag)
         {
             return await _fileRepo.GetFileMetaByTag(base64tag);
         }
@@ -451,23 +539,37 @@ namespace FileStorageApp.Server.Services
             if (fileMeta == null)
                 throw new Exception("The file with this tag does not exists!");
 
-            if (fileMeta.FileName.Equals(fileDedupDto.fileName) == false)
+            //if (fileMeta.FileName.Equals(fileDedupDto.fileName) == false)
+            //{
+            //    FileMetadata userFile = new FileMetadata
+            //    {
+            //        FileName = fileDedupDto.fileName,
+            //        BlobLink = fileMeta.BlobLink,
+            //        isDeleted = false,
+            //        Key = fileMeta.Key,
+            //        Iv = fileMeta.Iv,
+            //        Tag = fileMeta.Tag,
+            //        UploadDate = DateTime.UtcNow
+            //    };
+            //    await _fileRepo.SaveFile(userFile);
+            //    await _userService.AddFile(Convert.ToString(user.Id), userFile);
+            //}
+            //else
+            //    await _userService.AddFile(Convert.ToString(user.Id), fileMeta);
+
+
+            //aici ar trebui verificat daca userul nu cumva are deja fisierul asta
+            UserFile? uf = new UserFile
             {
-                FileMetadata userFile = new FileMetadata
-                {
-                    FileName = fileDedupDto.fileName,
-                    BlobLink = fileMeta.BlobLink,
-                    isDeleted = false,
-                    Key = fileMeta.Key,
-                    Iv = fileMeta.Iv,
-                    Tag = fileMeta.Tag,
-                    UploadDate = DateTime.UtcNow
-                };
-                await _fileRepo.SaveFile(userFile);
-                await _userService.AddFile(Convert.ToString(user.Id), userFile);
-            }
-            else
-                await _userService.AddFile(Convert.ToString(user.Id), fileMeta);
+                FileName = fileDedupDto.fileName,
+                Key = fileDedupDto.base64key,
+                Iv = fileDedupDto.base64iv,
+                UploadDate = DateTime.UtcNow,
+                UserId = user.Id,
+                FileId = fileMeta.Id
+            };
+
+            await _userFileRepo.SaveUserFile(uf);
         }
 
         public async Task SaveFileFromCache(FileFromCacheDto cacheFile)
@@ -479,7 +581,7 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("Url for Azure Blob Stroage is null");
             }
             List<string> fileNamesUsed = new List<string>();
-            foreach (UsersEmailsFilenames uef in cacheFile.emailsFilenames)
+            /*foreach (UsersEmailsFilenames uef in cacheFile.emailsFilenames)
             { 
                 User? user = await _userRepo.GetUserByEmail(uef.userEmail);
                 if (user == null)
@@ -509,6 +611,37 @@ namespace FileStorageApp.Server.Services
                     MerkleTree mt = await GetMerkleTree(cacheFile.base64EncFile);
                     await GenerateMerkleTreeChallenges(file.Id, mt);
                 }
+            }*/
+
+
+
+            FileMetadata fileMeta = new FileMetadata
+            {
+                BlobLink = blobUrl,
+                isDeleted = false,
+                Tag = cacheFile.base64Tag
+            };
+            await _fileRepo.SaveFile(fileMeta);
+            MerkleTree mt = await GetMerkleTree(cacheFile.base64EncFile);
+            await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
+
+            foreach (PersonalisedInfoDto pid in cacheFile.personalisedList)
+            {
+                User? user = await _userRepo.GetUserByEmail(pid.email);
+                if (user == null)
+                    throw new Exception("User does not exist!");
+
+                UserFile uf = new UserFile
+                {
+                    FileName = pid.fileName,
+                    Key = pid.base64key,
+                    Iv = pid.base64iv,
+                    UploadDate = DateTime.Parse(pid.UploadDate),
+                    UserId = user.Id,
+                    FileId = fileMeta.Id
+                };
+
+                await _userFileRepo.SaveUserFile(uf);
             }
         }
 
@@ -520,6 +653,33 @@ namespace FileStorageApp.Server.Services
             paramsDto.fileIv = Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileIv), Convert.FromBase64String(user.SymKey));
 
             return paramsDto;
+        }
+
+        public async Task DeleteFile(string userId, string fileName)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            UserFile? userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fileName);
+            if (userFile == null)
+                throw new Exception("File does not exist!");
+            List<UserFile>? luf = await _userFileRepo.GetUserFilesByFileId(userFile.FileId);
+            if(luf == null)
+                throw new Exception("File does not exist!");
+            if(luf.Count > 1)
+            {
+                await _userFileRepo.DeleteUserFile(userFile);
+            }
+            else
+            {
+                //aici trebuie sa stergem de pe peste tot
+                FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(userFile.FileId);
+                bool res = await _azureBlobService.DeleteFileFromCloud(fileMeta.Tag);
+                if (res == false)
+                {
+                    throw new Exception("Could not delete from cloud");
+                }
+                await _userFileRepo.DeleteUserFile(userFile);
+                await _fileRepo.DeleteFile(fileMeta);
+            }
         }
     }
 }

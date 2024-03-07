@@ -63,6 +63,21 @@ namespace FileStorageApp.Server.Services
             }
         }
 
+        public async Task<bool> DeleteFileFromCloud(string tag)
+        {
+            try
+            {
+                BlobClient blobClient = _blobContainerClient.GetBlobClient(tag);
+                await blobClient.DeleteIfExistsAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
     }
     
 }

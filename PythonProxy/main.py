@@ -92,6 +92,7 @@ async def uploadFile(request: Request, fileParams:FileParamsDto ):
         token = authorization_header.split(" ")[1]
     _fileService = FileService(token, fileParams)
     try:
+        print('Ajungem aici')
         await _fileService.computeFileVerification()
         return {"message": "File uploaded successfully"}
     except Exception as e:
@@ -124,7 +125,22 @@ async def getFileFromStorage(request:Request,filename:str = Body(...)):
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/deleteFile", tags=['file'])
+async def deleteFile(request:Request, file_name:str = Body(...)):
+    authorization_header = request.headers.get("Authorization")
+    token=""
+    if authorization_header is not None:
+        token = authorization_header.split(" ")[1]
+    _fileService = FileService(userToken=token, filename=file_name)
+    try:
+        result = await _fileService.deleteFile()
+        return result
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     
+
 if __name__== "__main__":
     uvicorn.run("main:app",
                 host="0.0.0.0",

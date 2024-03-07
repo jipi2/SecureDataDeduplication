@@ -146,6 +146,7 @@ namespace CryptoLib
         {
             MerkleTree MT = new MerkleTree();
             long fileSize = file.Length;
+            //byte[] buffer = new byte[16384];
             byte[] buffer = new byte[1024];
 
             int bytesRead = 0;

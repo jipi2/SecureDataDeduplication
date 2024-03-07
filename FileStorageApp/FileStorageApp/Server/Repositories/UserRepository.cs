@@ -45,7 +45,6 @@ namespace FileStorageApp.Server.Repositories
                 Salt = Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
-                Files = new List<Entity.FileMetadata>()
             };
             newUser.Roles.Add( await _roleService.GetRoleByName("client"));
             
@@ -74,7 +73,7 @@ namespace FileStorageApp.Server.Repositories
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            var user = await _context.Users.Include(us => us.Files).Include(u => u.Roles).Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
+            var user = await _context.Users.Include(u => u.Roles).Where(u => u.Email.ToLower().Equals(email.ToLower())).FirstOrDefaultAsync();
             if(user == null) return null;
             return user;
         }
@@ -87,7 +86,7 @@ namespace FileStorageApp.Server.Repositories
         {
             try
             {
-                return await _context.Users.Include(u => u.Files).Include(u => u.Roles).Where(u => u.Id == id).FirstOrDefaultAsync();
+                return await _context.Users.Include(u => u.Roles).Where(u => u.Id == id).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -118,14 +117,14 @@ namespace FileStorageApp.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddFile(string userId,FileMetadata fileMeta)
-        {
-            User user = await GetUserById(Convert.ToInt32(userId));
-            if(user.Files == null)
-                user.Files = new List<FileMetadata>();
-            user.Files.Add(fileMeta);
-            await _context.SaveChangesAsync();
-        }
+        //public async Task AddFile(string userId,FileMetadata fileMeta)
+        //{
+        //    User user = await GetUserById(Convert.ToInt32(userId));
+        //    if(user.Files == null)
+        //        user.Files = new List<FileMetadata>();
+        //    user.Files.Add(fileMeta);
+        //    await _context.SaveChangesAsync();
+        //}
 
         public async Task<List<FilesNameDate>> GetFilesNameDate(string userId)
         {

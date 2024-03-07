@@ -42,7 +42,7 @@ namespace FileStorageApp.Server.Services
                 Salt = Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
-                Files = new List<Entity.FileMetadata>()
+                //Files = new List<Entity.FileMetadata>()
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
 
@@ -68,7 +68,7 @@ namespace FileStorageApp.Server.Services
                 Salt = Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
-                Files = new List<Entity.FileMetadata>()
+                //Files = new List<Entity.FileMetadata>()
             };
             newProxy.Roles.Add(await _roleRepo.getRoleByName("proxy"));
             _userRepo.SaveUser(newProxy);
@@ -152,10 +152,10 @@ namespace FileStorageApp.Server.Services
             }
         }
 
-        public async Task AddFile(string userId, FileMetadata fileMeta)
-        {
-            await _userRepo.AddFile(userId, fileMeta);
-        }
+        //public async Task AddFile(string userId, FileMetadata fileMeta)
+        //{
+        //    await _userRepo.AddFile(userId, fileMeta);
+        //}
 
         public Task<string> GetUserEmail(string id)
         {

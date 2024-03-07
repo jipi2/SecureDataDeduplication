@@ -11,6 +11,22 @@
     };
 </script>
 
+<style>
+    .delete-button {
+        color: white;
+        /* Default background color */
+        background-color: transparent;
+        /* Border and padding styles */
+        border: 1px solid red;
+        padding: 5px 10px;
+    }
+
+        .delete-button:hover {
+            background-color: red;
+            /* Change background color on hover */
+        }
+</style>
+
 @if (userFileNames == null)
 {
     <p><em>Loading..</em></p>
@@ -22,18 +38,59 @@ else
             <tr>
                 <th>File Name</th>
                 <th>Upload Date</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach(var fileData in userFileNames)
             {
-                <tr @onmouseover="() => ChangeCursorStyle(true)" @onmouseout="() => ChangeCursorStyle(false)" @onclick="() => DownloadFile(fileData.FileName)" style="@cursorStyle">
-                    <td>@fileData.FileName</td>
+                <tr>
+                    <td @onmouseover="() => ChangeCursorStyle(true)" @onmouseout="() => ChangeCursorStyle(false)" @onclick="() => DownloadFile(fileData.FileName)" style="@cursorStyle">@fileData.FileName</td>
                     <td>@fileData.UploadDate</td>
+                    <td>
+                        <button @onclick="() => DeleteFile(fileData.FileName)" class="delete-button">Delete</button>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+}
+
+@code 
+{
+    public async void DeleteFile(string filename)
+    {
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+        HttpClient httpClient = HttpServiceCustom.GetProxyClient();
+        httpClient.DefaultRequestHeaders.Remove("Authorization");
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+        var response = await httpClient.PostAsJsonAsync("/deleteFile", filename);
+        if (response.IsSuccessStatusCode)
+        {
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Success",
+                    Text = "File was deleted!",
+                    Icon = SweetAlertIcon.Success,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+        }
+        else
+        {
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = "File could not be deleted!",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+        }
+
+
+    }
 }
 
 @code
@@ -53,13 +110,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // jwt = await LocalStorage.GetItemAsync<string>("token");
-        // Http.DefaultRequestHeaders.Remove("Authorization");
-        // Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+        //Http.DefaultRequestHeaders.Remove("Authorization");
+        //Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
-        // userFileNames = await Http.GetFromJsonAsync<List<FilesNameDate>?>("api/File/getUploadedFileNamesAndDates");
+        //userFileNames = await Http.GetFromJsonAsync<List<FilesNameDate>?>("api/File/getUploadedFileNamesAndDates");
         await GetFilesNamesAndDatesThroughProxy();
-        Console.WriteLine("gata");
     }
 
     public async Task GetFilesNamesAndDatesThroughProxy()

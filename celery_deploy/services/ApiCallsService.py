@@ -43,6 +43,7 @@ class ApiCall():
         else:
             headers = {} 
         json = param.model_dump()
-        with httpx.Client(verify=False) as client:
+        timeout_seconds = 60
+        with httpx.Client(verify=False, timeout=timeout_seconds) as client:
             response = client.post(self.api_url+endPointName, headers=headers, json=json)
         return response

@@ -35,7 +35,7 @@ namespace FileStorageApp.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<FileMetadata?> GetFileMetaById(int id)
+        public async Task<FileMetadata?> GetFileMetaById(int? id)
         {
             FileMetadata? fileMetadata = await _context.FilesMetadata.Where(f => f.Id == id).FirstOrDefaultAsync();
             return fileMetadata;
@@ -49,12 +49,18 @@ namespace FileStorageApp.Server.Repositories
             return fileMeta;
         }
 
-        public async Task<FileMetadata?> GetFileMetaByTagAndFilename(string base64Tag, string filename)
+        public async Task DeleteFile(FileMetadata fileMeta)
         {
-            FileMetadata? fileMeta = _context.FilesMetadata.Where(f => f.Tag == base64Tag && f.FileName == filename).FirstOrDefault();
-            if(fileMeta == null)
-                return null;
-            return fileMeta;
+            _context.FilesMetadata.Remove(fileMeta);
+            await _context.SaveChangesAsync();
         }
+
+        //public async Task<FileMetadata?> GetFileMetaByTagAndFilename(string base64Tag, string filename)
+        //{
+        //    FileMetadata? fileMeta = _context.FilesMetadata.Where(f => f.Tag == base64Tag && f.FileName == filename).FirstOrDefault();
+        //    if(fileMeta == null)
+        //        return null;
+        //    return fileMeta;
+        //}
     }
 }

@@ -14,6 +14,7 @@ namespace FileStorageApp.Server.Database
         public DbSet<Entity.Role> Roles { get; set; }
         public DbSet<Entity.FileMetadata> FilesMetadata { get; set; }
         public DbSet<Entity.Resp> Resps { get; set; }
+        public DbSet<Entity.UserFile> UserFiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,10 +23,10 @@ namespace FileStorageApp.Server.Database
                 .WithMany(y => y.Users)
                 .UsingEntity(j => j.ToTable("UserRoles"));
 
-            modelBuilder.Entity<User>()
-                .HasMany(x => x.Files)
-                .WithMany(y => y.Users)
-                .UsingEntity(j => j.ToTable("UserFiles"));
+            //modelBuilder.Entity<User>()
+            //    .HasMany(x => x.Files)
+            //    .WithMany(y => y.Users)
+            //    .UsingEntity(j => j.ToTable("UserFiles"));
         }
     }
 }

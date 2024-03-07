@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
+from pydantic import BaseModel, constr
 
 class FileParamsDto(BaseModel):
     base64EncFile: str

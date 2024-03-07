@@ -1,8 +1,8 @@
 from time import sleep
 from celery import Celery
 from celery.schedules import crontab
-from Database.db import Base, User, File, user_file, BlobFile
-from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames
+from Database.db import Base, User, File, UserFile, BlobFile
+from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames, PersonalisedInfoDto
 from services.ApiCallsService import ApiCall
 from services.AuthenticateService import ProxyClass
 import base64
@@ -28,26 +28,45 @@ def sendFilesToServer():
         
         for f in blobs:
             
+            # base64EncFile = base64.b64encode(f.base64EncFile).decode('utf-8')
+            # base64Tag = f.file[0].tag
+            # key = f.file[0].key
+            # iv = f.file[0].iv           
+            # files = session.query(File).filter(File.blob_file_id == f.id).all()
+            # emailsFilenames = []
+            
+            # for file in files:
+            #     users_and_uploadDates = session.query(user_file).filter(user_file.c.file_id == file.id).all()
+            #     for user_and_uploadDate in users_and_uploadDates:
+            #         user = session.query(User).filter(User.id == user_and_uploadDate.user_id).first()
+            #         emailsFilenames.append(UsersEmailsFileNames(userEmail=user.email, fileName=file.fileName, uploadTime=str(user_and_uploadDate.upload_date)))
+            
+            # #va trebui modificat si dto=ul asta, uita-te la cel din .NET
+            # filesMetaDto = FileFromCacheDto(base64EncFile=base64EncFile, base64Tag=base64Tag, key=key, iv=iv, emailsFilenames=emailsFilenames)
+            # response = gateWay.callBackendPostMethodDtoSYNC("/api/File/saveFileFromCache", pc.token, filesMetaDto)
+            # if response.status_code != 200:
+            #     raise Exception(response.text)
+            
             base64EncFile = base64.b64encode(f.base64EncFile).decode('utf-8')
             base64Tag = f.file[0].tag
-            key = f.file[0].key
-            iv = f.file[0].iv           
-            files = session.query(File).filter(File.blob_file_id == f.id).all()
-            emailsFilenames = []
-            
-            for file in files:
-                users_and_uploadDates = session.query(user_file).filter(user_file.c.file_id == file.id).all()
-                for user_and_uploadDate in users_and_uploadDates:
-                    user = session.query(User).filter(User.id == user_and_uploadDate.user_id).first()
-                    emailsFilenames.append(UsersEmailsFileNames(userEmail=user.email, fileName=file.fileName, uploadTime=str(user_and_uploadDate.upload_date)))
-            
-            filesMetaDto = FileFromCacheDto(base64EncFile=base64EncFile, base64Tag=base64Tag, key=key, iv=iv, emailsFilenames=emailsFilenames)
+            user_files = session.query(UserFile).filter(UserFile.file_id == f.file[0].id).all()
+            personalisedInfo = []
+            for uf in user_files:
+                user = session.query(User).filter(User.id == uf.user_id).first()
+                personalisedInfo.append(PersonalisedInfoDto(fileName=uf.fileName, base64key=uf.key, base64iv=uf.iv, email=user.email, UploadDate=str(uf.upload_date)))
+            filesMetaDto = FileFromCacheDto(base64EncFile=base64EncFile, base64Tag=base64Tag, personalisedList=personalisedInfo)
             response = gateWay.callBackendPostMethodDtoSYNC("/api/File/saveFileFromCache", pc.token, filesMetaDto)
+            
             if response.status_code != 200:
                 raise Exception(response.text)
+            
         
         files = session.query(File).all()
         blob_files = session.query(BlobFile).all()
+        user_files = session.query(UserFile).all()
+
+        for user_file in user_files:
+            session.delete(user_file)
 
         for file in files:
             session.delete(file)

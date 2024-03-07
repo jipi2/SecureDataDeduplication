@@ -22,21 +22,6 @@ namespace FileStorageApp.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("FileMetadataUser", b =>
-                {
-                    b.Property<int>("FilesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("FilesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("UserFiles", (string)null);
-                });
-
             modelBuilder.Entity("FileStorageApp.Server.Entity.FileMetadata", b =>
                 {
                     b.Property<int>("Id")
@@ -49,22 +34,9 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Iv")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Key")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Tag")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
@@ -178,6 +150,43 @@ namespace FileStorageApp.Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("FileStorageApp.Server.Entity.UserFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("FileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Iv")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFiles");
+                });
+
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.Property<int>("RolesId")
@@ -193,21 +202,6 @@ namespace FileStorageApp.Server.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("FileMetadataUser", b =>
-                {
-                    b.HasOne("FileStorageApp.Server.Entity.FileMetadata", null)
-                        .WithMany()
-                        .HasForeignKey("FilesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FileStorageApp.Server.Entity.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
                 {
                     b.HasOne("FileStorageApp.Server.Entity.FileMetadata", "FileMetadata")
@@ -217,6 +211,23 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("FileMetadata");
+                });
+
+            modelBuilder.Entity("FileStorageApp.Server.Entity.UserFile", b =>
+                {
+                    b.HasOne("FileStorageApp.Server.Entity.FileMetadata", "FileMetadata")
+                        .WithMany()
+                        .HasForeignKey("FileId");
+
+                    b.HasOne("FileStorageApp.Server.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FileMetadata");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RoleUser", b =>

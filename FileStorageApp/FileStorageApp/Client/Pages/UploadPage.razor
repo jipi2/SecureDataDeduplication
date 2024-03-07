@@ -1,5 +1,6 @@
 ﻿@page "/uploadPage"
 @using System.Net
+@using System.Diagnostics;
 @attribute [Authorize]
 
 <h3>Upload File here:</h3>
@@ -58,12 +59,13 @@
         string base64Key = await _cryptoService.ExtractKey(Convert.FromBase64String(base64KeyAndIv), 32);
         string base64Iv = await _cryptoService.ExtractIv(Convert.FromBase64String(base64KeyAndIv), 32, 16);
         string base64EncFile = await _cryptoService.GetEcnryptedFileBase64(base64Key, base64Iv, bytesFile);
+        //string base64EncFile = Encoding.UTF8.GetString(bytesFile); //linia asta trebuie eliminata dupa masurare
         string TAG = await _cryptoService.GetHashInBase64(Convert.FromBase64String(base64EncFile), 256);
         string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
         FileParamsDto fileParams = await _cryptoService.GetEncryptedFileParameters(TAG, base64Key, base64Iv, symKey, file.Name);
 
         fileParams.base64EncFile= base64EncFile;
-       
+
 
         return fileParams;
     }
@@ -102,8 +104,12 @@
             }
             streamFile.Close();
 
-            
+            Stopwatch encStopwatch = new Stopwatch();
+            encStopwatch.Start();
             FileParamsDto fileParams = await GetFileParams(bytesFile, file);
+            encStopwatch.Stop();
+            Console.WriteLine("Encryption time: " + encStopwatch.Elapsed);
+            encStopwatch.Reset();
 
             string token = await LocalStorage.GetItemAsync<string>("token");
             Http.DefaultRequestHeaders.Remove("Authorization");
@@ -111,56 +117,73 @@
 
             //adaugam adresa proxy-ului
             await UploadFileThroughProxy(fileParams);
+            //cand decomentam proxy-ul trebuie sa comentam tot ce e in continuare
 
-            /*var result = await Http.PostAsJsonAsync("api/File/uploadFile", fileParams);
-            if (result.IsSuccessStatusCode)
-            {
-            FileMetaChallenge? fmc = result.Content.ReadFromJsonAsync<FileMetaChallenge>().Result;
-            if(fmc == null)
-                Console.WriteLine("E null\n");
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
 
-                string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
-                        FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams.base64EncFile, file.Name, symKey);
+            // var result = await Http.PostAsJsonAsync("api/File/uploadFile", fileParams);
+            // if (result.IsSuccessStatusCode)
+            // {
+            //     FileMetaChallenge? fmc = result.Content.ReadFromJsonAsync<FileMetaChallenge>().Result;
+            //     if (fmc == null)
+            //         Console.WriteLine("E null\n");
 
-                        var res = await Http.PostAsJsonAsync("api/File/verifyFileChallenge", userResp);
-                        if (res.IsSuccessStatusCode)
-                        {
-                        var alertBox = await Swal.FireAsync(new SweetAlertOptions
-                {
-                Title = "Success",
-                Text = "File was uploaded!",
-                Icon = SweetAlertIcon.Success,
-                ShowCancelButton = false,
-                    ConfirmButtonText = "Ok"
-                        });
-                        }
-                        else
-                        {
-                        var errorContent = await res.Content.ReadAsStringAsync();
-                        var alertBox = await Swal.FireAsync(new SweetAlertOptions
-                        {
-                        Title = "Error",
-                        Text = errorContent,
-            Icon = SweetAlertIcon.Error,
-        ShowCancelButton = false,
-            ConfirmButtonText = "Ok"
-            });
-                }
+            //     string symKey = await LocalStorage.GetItemAsync<string>("Base64SymKey");
+            //     Stopwatch challengeStopwatch = new Stopwatch();
+            //     challengeStopwatch.Start();
 
-            }
-            else
-            {
-            var errorContent = await result.Content.ReadAsStringAsync();
+            //     //stopwatch.Stop();
+            //     FileResp userResp = await _cryptoService.GetFileResp(fmc, fileParams.base64EncFile, file.Name, symKey);
+            //     //stopwatch.Start();
 
-                var alertBox = await Swal.FireAsync(new SweetAlertOptions
-                    {
-                    Title = "Error",
-                    Text = errorContent,
-                    Icon = SweetAlertIcon.Error,
-                    ShowCancelButton = false,
-                    ConfirmButtonText = "Ok"
-    });
-    }*/
+            //     challengeStopwatch.Stop();
+            //     Console.WriteLine("Challenge time: " + challengeStopwatch.Elapsed);
+            //     challengeStopwatch.Reset();
+
+            //     var res = await Http.PostAsJsonAsync("api/File/verifyFileChallenge", userResp);
+            //     stopwatch.Stop();
+            //     Console.WriteLine("Elapsed time: " + stopwatch.Elapsed);
+            //     stopwatch.Reset();
+            //     if (res.IsSuccessStatusCode)
+            //     {
+            //         var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            //             {
+            //                 Title = "Success",
+            //                 Text = "File was uploaded!",
+            //                 Icon = SweetAlertIcon.Success,
+            //                 ShowCancelButton = false,
+            //                 ConfirmButtonText = "Ok"
+            //             });
+            //     }
+            //     else
+            //     {
+            //         var errorContent = await res.Content.ReadAsStringAsync();
+            //         var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            //             {
+            //                 Title = "Error",
+            //                 Text = errorContent,
+            //                 Icon = SweetAlertIcon.Error,
+            //                 ShowCancelButton = false,
+            //                 ConfirmButtonText = "Ok"
+            //             });
+            //     }
+
+            // }
+            // else
+            // {
+            //     var errorContent = await result.Content.ReadAsStringAsync();
+
+            //     var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            //         {
+            //             Title = "Error",
+            //             Text = errorContent,
+            //             Icon = SweetAlertIcon.Error,
+            //             ShowCancelButton = false,
+            //             ConfirmButtonText = "Ok"
+            //         });
+            // }
+            
         }
     }
 
@@ -171,20 +194,41 @@
         string jwt = await LocalStorage.GetItemAsync<string>("token");
         httpClient.DefaultRequestHeaders.Remove("Authorization");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+        httpClient.DefaultRequestHeaders.Add("Connection", "Keep-Alive");
 
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         var result = await httpClient.PostAsJsonAsync("uploadFile", fileParams);
+        stopwatch.Stop();
+        Console.WriteLine("Elapsed time: " + stopwatch.Elapsed);
         if (!result.IsSuccessStatusCode)
         {
             var errorContent = await result.Content.ReadAsStringAsync();
 
-            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            try
             {
-                Title = "Error",
-                Text = errorContent,
-                Icon = SweetAlertIcon.Error,
-                ShowCancelButton = false,
-                ConfirmButtonText = "Ok"
-            });
+                result.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine(e.Message);
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "Error",
+                        Text = e.Message,
+                        Icon = SweetAlertIcon.Error,
+                        ShowCancelButton = false,
+                        ConfirmButtonText = "Ok"
+                    });
+            }
+            // var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            // {
+            //     Title = "Error",
+            //     Text = errorContent,
+            //     Icon = SweetAlertIcon.Error,
+            //     ShowCancelButton = false,
+            //     ConfirmButtonText = "Ok"
+            // });
         }
         else
         {

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FileStorageApp.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f45ae99e0b9d2c44d3f6e69fd4e470f92906213")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f1943abcb9ab8cdcba8fb47b162d1c94edfc56b1")]
 [assembly: System.Reflection.AssemblyProductAttribute("FileStorageApp.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FileStorageApp.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

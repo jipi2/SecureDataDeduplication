@@ -24,6 +24,5 @@ namespace FileStorageApp.Server.Entity
         public string? SymKey { get; set; }
         public bool isDeleted { get; set; }
         public List<Role>? Roles { get; set; }
-        public List<FileMetadata>? Files { get; set; }
     }
 }
