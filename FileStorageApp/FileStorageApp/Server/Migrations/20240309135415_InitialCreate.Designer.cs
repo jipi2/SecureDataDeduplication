@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileStorageApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240304174059_ModUserEntity")]
-    partial class ModUserEntity
+    [Migration("20240309135415_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -108,6 +108,12 @@ namespace FileStorageApp.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Base64RSAEncPrivateKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Base64RSAPublicKey")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -161,10 +167,7 @@ namespace FileStorageApp.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FileId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FileMetadataId")
+                    b.Property<int?>("FileId")
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
@@ -180,12 +183,13 @@ namespace FileStorageApp.Server.Migrations
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileMetadataId");
+                    b.HasIndex("FileId");
 
                     b.HasIndex("UserId");
 
@@ -222,9 +226,7 @@ namespace FileStorageApp.Server.Migrations
                 {
                     b.HasOne("FileStorageApp.Server.Entity.FileMetadata", "FileMetadata")
                         .WithMany()
-                        .HasForeignKey("FileMetadataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FileId");
 
                     b.HasOne("FileStorageApp.Server.Entity.User", "User")
                         .WithMany()

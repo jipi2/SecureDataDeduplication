@@ -3,21 +3,25 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.Sec;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Agreement;
+using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -82,39 +86,41 @@ namespace TestingConsole
 
         static void Main(string[] args)
         {
-            //string str = "sakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsakldnfk;anfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenranfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenranfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenranfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenranfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenranfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenranfk asdkfnkjasdnfjka kjasdnkjdasnf askjdnfkjasndkfn askjdnkjansdfkja kasjdnkjasdn sakjdnfkajsndfkja aksjdnkasjnd askdjnaksjnfkjas kasjdnkdajsdnsdfafasdfakjnfblnwfhgjrsiojeriugjnirukjehgbrikjfbgiourtbgiukahgenr";
-            //string base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(str));
-            //Stream stream = new MemoryStream(Convert.FromBase64String(base64));
-            //MerkleTree mt = Utils.GetMerkleTree(stream);
+            AsymmetricCipherKeyPair aliceKeyPair  = Utils.GenerateRSAKeyPair();
+            string plaintext = "Ana are mere si mihai are o gramada de pere";
 
-            //for(int i = 0; i < mt.HashTree.Count; i++)
-            //{
-            //    //Console.WriteLine("Level: " + mt.HashTree[i]._level);
-            //    Console.WriteLine("Hash: " + Utils.ByteToHex(mt.HashTree[i]._hash));
-            //}
-            //Console.ReadKey();
+            //RsaPrivateCrtKeyParameters privateKeyParams = (RsaPrivateCrtKeyParameters)aliceKeyPair.Private;
+            //PrivateKeyInfo privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privateKeyParams);
+            //byte[] privateKeyBytes = privateKeyInfo.ToAsn1Object().GetDerEncoded();
+            //string serializedPrivateKey = Convert.ToBase64String(privateKeyBytes);
+            //RsaKeyParameters privateKeyParams2 = (RsaKeyParameters)PrivateKeyFactory.CreateKey(Convert.FromBase64String(serializedPrivateKey));
 
-            byte[] key = Utils.GenerateRandomBytes(32);
+            //SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(aliceKeyPair.Public);
+            //byte[] publicKeyBytes = publicKeyInfo.ToAsn1Object().GetDerEncoded();
+            //string serializedPublicKey = Convert.ToBase64String(publicKeyBytes);
+            //AsymmetricKeyParameter alicePublicKey2 = PublicKeyFactory.CreateKey(Convert.FromBase64String(serializedPublicKey));
 
-            string plaintextString = "This is a test";
-            byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintextString);
-            string base64encString = Utils.EncryptAes(plaintextBytes, key);
-            Console.WriteLine("Encrypted: " + base64encString);
+            //byte[] plaintextbytes = Encoding.UTF8.GetBytes(plaintext);
+            //IAsymmetricBlockCipher cipher = new RsaEngine();
+            //cipher.Init(true, alicePublicKey2);
+            //byte[] cipherBytes = cipher.ProcessBlock(plaintextbytes, 0, plaintextbytes.Length);
+            //string cipherText = Convert.ToBase64String(cipherBytes);
+            //Console.WriteLine("Encrypted message: " + cipherText);
 
-            //key[1]= 0x00;
-            //key = Utils.GenerateRandomBytes(32);
-            byte[]cyphertextBytes = Convert.FromBase64String(base64encString);
-            string decryptedStringBase64 = Utils.DecryptAes(cyphertextBytes, key);
-            if(decryptedStringBase64 == null)
-            {
-                Console.WriteLine("Decryption failed");
-                Console.ReadKey();
-                return;
-            }
-            string decryptedString = Encoding.UTF8.GetString(Convert.FromBase64String(decryptedStringBase64));
-            Console.WriteLine("Decrypted: " + decryptedString);
+            //cipher.Init(false, privateKeyParams2);
+            //byte[] decryptedBytes = cipher.ProcessBlock(cipherBytes, 0, cipherBytes.Length);
+            //string decryptedText = Encoding.UTF8.GetString(decryptedBytes);
+            //Console.WriteLine("Decrypted message: " + decryptedText);
 
-            Console.ReadKey();
+            byte[] privateKeyDerEnc = Utils.GetDerEncodedRSAPrivateKey(aliceKeyPair);
+            string base64PubKey = Utils.GetBase64RSAPublicKey(aliceKeyPair);
+
+            byte[] cipherBytes = Utils.EncryptRSAwithPublicKey(Encoding.UTF8.GetBytes(plaintext), base64PubKey);
+            byte[] decPlainTextBytes = Utils.DecryptRSAwithPrivateKey(cipherBytes, privateKeyDerEnc);
+            Console.WriteLine(Encoding.UTF8.GetString(decPlainTextBytes));
+
+            Console.ReadKey();  
+
         }
     }
 }

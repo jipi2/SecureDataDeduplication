@@ -24,6 +24,8 @@ from  Dto.TestDto import TestDto
 from Dto.Resp import Resp
 from Dto.FIleParamsDto import FileParamsDto
 from Dto.TagDto import TagDto
+from Dto.FileTransferDto import FileTransferDto
+from Dto.EmailFilenameDto import *
 
 #Services
 from services.FileService import FileService
@@ -54,12 +56,12 @@ load_dotenv()
 #     sendFilesToServer.delay()
 
 
-# celery = Celery(
-#     "tasks",
-#     broker="redis://redis:6379/0",
-#     backend="redis://redis:6379/0",
-#     include=["tasks_"]
-# )
+celery = Celery(
+    "tasks",
+    broker="redis://redis:6379/0",
+    backend="redis://redis:6379/0",
+    include=["tasks_"]
+)
 
 # @app.on_event("startup")
 # @repeat_every(seconds=60*60)
@@ -139,7 +141,34 @@ async def deleteFile(request:Request, file_name:str = Body(...)):
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/getPubKeyAndFileKey", tags = ['file'])
+async def getPubKeyAndFileKey(request:Request, emailFileNameDto:EmailFilenameDto):
+    authorization_header = request.headers.get("Authorization")
+    token=""
+    if authorization_header is not None:
+        token = authorization_header.split(" ")[1]
+    _fileService = FileService(userToken=token, recieverEmail=emailFileNameDto.userEmail ,filename=emailFileNameDto.fileName)
+    try:
+        result = await _fileService.getPubKeyAndFileKey()
+        return result
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     
+
+@app.post("/sendFile", tags = ['file'])
+async def sendFile(request:Request, fileTransferDto:FileTransferDto):
+    token = fileTransferDto.senderToken
+    _fileService = FileService(userToken=token, recieverEmail=fileTransferDto.recieverEmail, base64EncKey=fileTransferDto.base64EncKey, base64EncIv=fileTransferDto.base64EncIv,filename=fileTransferDto.fileName)
+    try:
+        result, userEmail = await _fileService.sendFile()
+        if result == True:
+            result = celery.send_task("tasks_.transferFileBetweenUsers", args=(userEmail, fileTransferDto.senderToken, fileTransferDto.recieverEmail, fileTransferDto.fileName, fileTransferDto.base64EncKey, fileTransferDto.base64EncIv))
+        return "Ok"
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__== "__main__":
     uvicorn.run("main:app",

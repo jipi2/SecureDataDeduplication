@@ -139,5 +139,45 @@ namespace FileStorageApp.Client
             return fr;
         }
 
+        public async Task<RsaDto?> GetRsaDto(string password)
+        {
+            try
+            {
+                byte[] key = new byte[16];
+                byte[] iv = new byte[16];
+
+                AsymmetricCipherKeyPair userKeyPair = Utils.GenerateRSAKeyPair();
+                string base64PubKey = Utils.GetBase64RSAPublicKey(userKeyPair);
+                byte[] privateKeyDerEnc = Utils.GetDerEncodedRSAPrivateKey(userKeyPair);
+                //facem hash 256 peste parola, jumate va fi cheia jumate va fi iv-ul
+                byte[] hash = Utils.ComputeHash(Encoding.UTF8.GetBytes(password));
+                Array.Copy(hash, key, 16);
+                Array.Copy(hash, hash.Length - 16, iv, 0, 16);
+
+                string base64EncPrivKey = Utils.EncryptAes(privateKeyDerEnc, key, iv);
+                RsaDto rsaDto = new RsaDto();
+                rsaDto.base64PubKey = base64PubKey;
+                rsaDto.base64EncPrivKey = base64EncPrivKey;
+                return rsaDto;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+
+        }
+
+        public async Task<Tuple<string, string>> GetRsaEncKeyAndIv(string base64PubKey, string base64fileKey, string base64fileIv)
+        {
+            byte[] fileKey = Convert.FromBase64String(base64fileKey);
+            byte[] fileIv = Convert.FromBase64String(base64fileIv);
+
+            string base64EncRsaFileKey = Convert.ToBase64String(Utils.EncryptRSAwithPublicKey(fileKey, base64PubKey));
+            string base64EncRsaFileIv = Convert.ToBase64String(Utils.EncryptRSAwithPublicKey(fileIv, base64PubKey));
+
+            return new Tuple<string, string>(base64EncRsaFileKey, base64EncRsaFileIv);
+        }
+
     }
 }

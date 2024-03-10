@@ -23,6 +23,8 @@ namespace FileStorageApp.Server.Entity
         public string? P { get; set; }
         public string? SymKey { get; set; }
         public bool isDeleted { get; set; }
+        public string? Base64RSAPublicKey { get; set; }
+        public string? Base64RSAEncPrivateKey { get; set; }
         public List<Role>? Roles { get; set; }
     }
 }

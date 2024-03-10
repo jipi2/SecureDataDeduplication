@@ -6,11 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FileStorageApp.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingUserFileEntity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "FilesMetadata",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BlobLink = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Tag = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FilesMetadata", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
@@ -40,56 +55,13 @@ namespace FileStorageApp.Server.Migrations
                     G = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     P = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SymKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Base64RSAPublicKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Base64RSAEncPrivateKey = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FilesMetadata",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BlobLink = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Tag = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FilesMetadata", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FilesMetadata_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserRoles",
-                columns: table => new
-                {
-                    RolesId = table.Column<int>(type: "int", nullable: false),
-                    UsersId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.RolesId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RolesId",
-                        column: x => x.RolesId,
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,8 +95,7 @@ namespace FileStorageApp.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    FileId = table.Column<int>(type: "int", nullable: false),
-                    FileMetadataId = table.Column<int>(type: "int", nullable: false),
+                    FileId = table.Column<int>(type: "int", nullable: true),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Key = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Iv = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -134,11 +105,10 @@ namespace FileStorageApp.Server.Migrations
                 {
                     table.PrimaryKey("PK_UserFiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserFiles_FilesMetadata_FileMetadataId",
-                        column: x => x.FileMetadataId,
+                        name: "FK_UserFiles_FilesMetadata_FileId",
+                        column: x => x.FileId,
                         principalTable: "FilesMetadata",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserFiles_Users_UserId",
                         column: x => x.UserId,
@@ -147,10 +117,29 @@ namespace FileStorageApp.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FilesMetadata_UserId",
-                table: "FilesMetadata",
-                column: "UserId");
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    RolesId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.RolesId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RolesId",
+                        column: x => x.RolesId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Resps_FileMetadataId",
@@ -158,9 +147,9 @@ namespace FileStorageApp.Server.Migrations
                 column: "FileMetadataId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserFiles_FileMetadataId",
+                name: "IX_UserFiles_FileId",
                 table: "UserFiles",
-                column: "FileMetadataId");
+                column: "FileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserFiles_UserId",

@@ -105,5 +105,30 @@ namespace FileStorageApp.Server.Controllers
             string id = await _userService.GetUserIdFromJWT(userJWT);
             return Ok(await _userService.GetUserEmail(id));
         }
+
+
+        [HttpPost("getUserRsaPubKey")]
+        [Authorize]
+        public async Task<IActionResult> getUserPubKey([FromBody] string userEmail)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string? userKey = await _userService.GetUserPubKey(userEmail);
+                if(userKey.IsNullOrEmpty())
+                {
+                    return BadRequest("User not found");
+                }
+                return Ok(userKey);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

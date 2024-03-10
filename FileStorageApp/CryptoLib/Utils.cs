@@ -1,4 +1,6 @@
-﻿using Org.BouncyCastle.Crypto;
+﻿using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Generators;
@@ -8,8 +10,10 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Encoders;
+using Org.BouncyCastle.X509;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -528,5 +532,70 @@ namespace CryptoLib
         //        return null;
         //    }
         //}
+
+        static public byte[] GetDerEncodedRSAPrivateKey(AsymmetricCipherKeyPair keyPair)
+        {
+            try
+            {
+                RsaPrivateCrtKeyParameters rsaPrivateKeyParams = (RsaPrivateCrtKeyParameters)keyPair.Private;
+                PrivateKeyInfo privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(rsaPrivateKeyParams);
+                return privateKeyInfo.ToAsn1Object().GetDerEncoded();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        static public string GetBase64RSAPublicKey(AsymmetricCipherKeyPair keyPair)
+        {
+            try
+            {
+                SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPair.Public);
+                byte[] publicKeyBytes = publicKeyInfo.ToAsn1Object().GetDerEncoded();
+                return Convert.ToBase64String(publicKeyBytes);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        static public byte[] EncryptRSAwithPublicKey(byte[] plaintextbytes, string base64publicKey)
+        {
+            try
+            {
+                AsymmetricKeyParameter pubKeyParameter = PublicKeyFactory.CreateKey(Convert.FromBase64String(base64publicKey));
+                IAsymmetricBlockCipher cipher = new RsaEngine();
+                cipher.Init(true, pubKeyParameter);
+                byte[] cipherBytes = cipher.ProcessBlock(plaintextbytes, 0, plaintextbytes.Length);
+                return cipherBytes;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        static public byte[] DecryptRSAwithPrivateKey(byte[] ciphertextbytes, byte[] derEncodedPrivateKey)
+        {
+            try
+            {
+                RsaKeyParameters privateKeyParams2 = (RsaKeyParameters)PrivateKeyFactory.CreateKey(derEncodedPrivateKey);
+                IAsymmetricBlockCipher cipher = new RsaEngine();
+                cipher.Init(false, privateKeyParams2);
+                byte[] plaintextbytes = cipher.ProcessBlock(ciphertextbytes, 0, ciphertextbytes.Length);
+                return plaintextbytes;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
     }
 }

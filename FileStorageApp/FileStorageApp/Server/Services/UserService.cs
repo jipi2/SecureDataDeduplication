@@ -42,6 +42,8 @@ namespace FileStorageApp.Server.Services
                 Salt = Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
+                Base64RSAEncPrivateKey = regUser.rsaKeys.base64EncPrivKey,
+                Base64RSAPublicKey = regUser.rsaKeys.base64PubKey
                 //Files = new List<Entity.FileMetadata>()
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
@@ -166,7 +168,17 @@ namespace FileStorageApp.Server.Services
         public async Task<string> GetUserIdByEmail(string email)
         {
             var user = await _userRepo.GetUserbyEmail(email);
+            if (user == null)
+                return null;
             return user.Id.ToString();
+        }
+
+        public async Task<string?> GetUserPubKey(string email)
+        {
+            var user = await _userRepo.GetUserbyEmail(email);
+            if (user == null)
+                return null;
+            return user.Base64RSAPublicKey;
         }
     }
 }

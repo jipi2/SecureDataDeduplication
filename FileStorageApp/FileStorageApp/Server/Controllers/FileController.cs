@@ -335,5 +335,48 @@ namespace FileStorageApp.Server.Controllers
             return Ok("File deleted");
         }
 
+        [HttpPost("getPubKeyAndFileKey")]
+        [Authorize]
+        public async Task<IActionResult> getRsaPubKeyAndFileKey([FromBody] EmailFilenameDto ef)
+        {
+            try 
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                RsaKeyFileKeyDto dto =  await _fileService.GetRsaPubKeyAndFileKey(ef, id);
+                return Ok(dto);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        }
+
+        [HttpPost("sendFile")]
+        [Authorize]
+        public async Task<IActionResult> sendFile([FromBody] FileTransferDto ftdto)
+        {
+            try
+            {
+                string? token = ftdto.senderToken;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _fileService.SendFile(ftdto, id);
+                return Ok("File send!");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

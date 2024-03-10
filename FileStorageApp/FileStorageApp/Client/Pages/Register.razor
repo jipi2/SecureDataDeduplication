@@ -45,6 +45,7 @@ else
 @code {
     private bool isRegistered;
     private RegisterUser user = new RegisterUser();
+    private CryptoService _cryptoService = new CryptoService();
 
     [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
 
@@ -62,6 +63,12 @@ else
         }
     }
 
+    private async Task<RsaDto?> ComputeRSAKeysForUser(string password)
+    {
+        RsaDto? rsaDto = await _cryptoService.GetRsaDto(password);
+        return rsaDto;
+    }
+
     private async Task RegisterFunction()
     {
         await LocalStorage.RemoveItemAsync("PublicKey");
@@ -69,6 +76,21 @@ else
         await LocalStorage.RemoveItemAsync("Base64SymKey");
         await LocalStorage.RemoveItemAsync("A");
 
+        RsaDto? rsaDto = await ComputeRSAKeysForUser(user.Password);
+        if(rsaDto == null)
+        {
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Error",
+                Text = "Error while generating RSA keys",
+                Icon = SweetAlertIcon.Error,
+                ShowCancelButton = false,
+                ConfirmButtonText = "Ok"
+            });
+            return;
+        }
+
+        user.rsaKeys = rsaDto;
         var result = await Http.PostAsJsonAsync("api/User/Register", user);
 
         if (result.IsSuccessStatusCode)
@@ -83,6 +105,7 @@ else
                     ShowCancelButton = false,
                     ConfirmButtonText = "Ok"
                 });
+
             Navigation.NavigateTo("/Login");
 
         }

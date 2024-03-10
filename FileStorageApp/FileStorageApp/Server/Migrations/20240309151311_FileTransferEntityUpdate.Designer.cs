@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileStorageApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240304170323_AddingUserFileEntity")]
-    partial class AddingUserFileEntity
+    [Migration("20240309151311_FileTransferEntityUpdate")]
+    partial class FileTransferEntityUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,17 +41,49 @@ namespace FileStorageApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FilesMetadata");
+                });
+
+            modelBuilder.Entity("FileStorageApp.Server.Entity.FileTransfer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecieverId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("base64EncKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RecieverId");
 
-                    b.ToTable("FilesMetadata");
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("FileTransfers");
                 });
 
             modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
@@ -113,6 +145,12 @@ namespace FileStorageApp.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Base64RSAEncPrivateKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Base64RSAPublicKey")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -166,10 +204,7 @@ namespace FileStorageApp.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FileId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FileMetadataId")
+                    b.Property<int?>("FileId")
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
@@ -185,12 +220,13 @@ namespace FileStorageApp.Server.Migrations
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileMetadataId");
+                    b.HasIndex("FileId");
 
                     b.HasIndex("UserId");
 
@@ -212,11 +248,21 @@ namespace FileStorageApp.Server.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("FileStorageApp.Server.Entity.FileMetadata", b =>
+            modelBuilder.Entity("FileStorageApp.Server.Entity.FileTransfer", b =>
                 {
-                    b.HasOne("FileStorageApp.Server.Entity.User", null)
-                        .WithMany("Files")
-                        .HasForeignKey("UserId");
+                    b.HasOne("FileStorageApp.Server.Entity.User", "Reciever")
+                        .WithMany()
+                        .HasForeignKey("RecieverId");
+
+                    b.HasOne("FileStorageApp.Server.Entity.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reciever");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
@@ -234,9 +280,7 @@ namespace FileStorageApp.Server.Migrations
                 {
                     b.HasOne("FileStorageApp.Server.Entity.FileMetadata", "FileMetadata")
                         .WithMany()
-                        .HasForeignKey("FileMetadataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FileId");
 
                     b.HasOne("FileStorageApp.Server.Entity.User", "User")
                         .WithMany()
@@ -267,11 +311,6 @@ namespace FileStorageApp.Server.Migrations
             modelBuilder.Entity("FileStorageApp.Server.Entity.FileMetadata", b =>
                 {
                     b.Navigation("Resps");
-                });
-
-            modelBuilder.Entity("FileStorageApp.Server.Entity.User", b =>
-                {
-                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

@@ -46,6 +46,42 @@ namespace FileStorageApp.Server.Migrations
                     b.ToTable("FilesMetadata");
                 });
 
+            modelBuilder.Entity("FileStorageApp.Server.Entity.FileTransfer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("base64EncIv")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("base64EncKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("FileTransfers");
+                });
+
             modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
                 {
                     b.Property<int>("Id")
@@ -104,6 +140,12 @@ namespace FileStorageApp.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Base64RSAEncPrivateKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Base64RSAPublicKey")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -200,6 +242,17 @@ namespace FileStorageApp.Server.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("UserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("FileStorageApp.Server.Entity.FileTransfer", b =>
+                {
+                    b.HasOne("FileStorageApp.Server.Entity.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>

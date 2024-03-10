@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "OIl/v2+6K+YyW1asE+v5dqXyNTMTnQIR87oYDDgTdlk=",
+  "Hash": "tbW29cfa9k2hBXokiKvlv2fdolI9mzYpTXm6bFZV95E=",
   "Source": "FileStorageApp.Client",
   "BasePath": "/",
   "Mode": "Root",
@@ -8928,6 +8928,25 @@
       "OriginalItemSpec": "wwwroot\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
+      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
+      "SourceId": "FileStorageApp.Client",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "css/open-iconic/FONT-LICENSE",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\open-iconic\\FONT-LICENSE"
+    },
+    {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\css\\open-iconic\\font\\css\\open-iconic-bootstrap.min.css",
       "SourceId": "FileStorageApp.Client",
       "SourceType": "Discovered",
@@ -9040,25 +9059,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\open-iconic\\font\\fonts\\open-iconic.woff"
-    },
-    {
-      "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\css\\open-iconic\\FONT-LICENSE",
-      "SourceId": "FileStorageApp.Client",
-      "SourceType": "Discovered",
-      "ContentRoot": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "css/open-iconic/FONT-LICENSE",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\open-iconic\\FONT-LICENSE"
     },
     {
       "Identity": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\wwwroot\\css\\open-iconic\\ICON-LICENSE",

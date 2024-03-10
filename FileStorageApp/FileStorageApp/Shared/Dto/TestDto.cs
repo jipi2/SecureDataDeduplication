@@ -9,7 +9,11 @@ namespace FileStorageApp.Shared.Dto
 {
     public class TestDto
     {
-        string Message1 { get; set; }
-        string Message2 { get; set; }
+        public string senderToken { get; set; }
+        public string recieverEmail { get; set; }
+            public string fileName { get; set; }
+        public string base64EncKey { get; set; }
+
+        public string base64EncIv { get; set; }
     }
 }

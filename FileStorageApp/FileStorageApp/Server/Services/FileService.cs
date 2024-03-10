@@ -6,6 +6,7 @@ using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
@@ -24,8 +25,9 @@ namespace FileStorageApp.Server.Services
         public UserService _userService { get; set; }
         public UserRepository _userRepo { get; set; }
         public AzureBlobService _azureBlobService { get; set; } 
+        public FileTransferRepo _fileTransferRepo { get; set; }
         IConfiguration _configuration { get; set; }
-        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepo userFileRepo)
+        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepo userFileRepo, FileTransferRepo fileTransferRepo)
         {
             _fileRepo = fileRepository;
             _userService = userService;
@@ -34,6 +36,7 @@ namespace FileStorageApp.Server.Services
             _respRepo = respRepo;
             _userRepo = userRepo;
             _userFileRepo = userFileRepo;
+            _fileTransferRepo = fileTransferRepo;
         }
 
         public async Task<DFparametersDto> GetDFParameters(string Userid)
@@ -614,7 +617,6 @@ namespace FileStorageApp.Server.Services
             }*/
 
 
-
             FileMetadata fileMeta = new FileMetadata
             {
                 BlobLink = blobUrl,
@@ -680,6 +682,60 @@ namespace FileStorageApp.Server.Services
                 await _userFileRepo.DeleteUserFile(userFile);
                 await _fileRepo.DeleteFile(fileMeta);
             }
+        }
+
+        public async Task SendFile(FileTransferDto ftdto, string senderid)
+        {
+            User? sender = await _userRepo.GetUserById(Convert.ToInt32(senderid));
+            User? reciever = await _userRepo.GetUserByEmail(ftdto.recieverEmail);
+            if(reciever == null)
+                throw new Exception("Reciever does not exist!");
+            if (sender == null)
+                throw new Exception("User does not exist!");
+            if(await CheckIfFileNameExists(sender, ftdto.fileName) == false)
+                throw new Exception("The sender does not have that file!");
+            if (sender == reciever)
+                throw new Exception("You cannot send a file to yourself!");
+
+            UserFile? ufrec = await _userFileRepo.GetUserFileByUserIdAndFileName(reciever.Id, ftdto.fileName);
+            if (ufrec != null)
+                throw new Exception("Reciever already has this file!");
+
+            FileTransfer fte = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, reciever.Id, ftdto.fileName);
+            if (fte != null)
+                throw new Exception("You already sent this file to this uer");
+
+            FileTransfer ft = new FileTransfer()
+            {
+                ReceiverId = reciever.Id,
+                SenderId = sender.Id,
+                FileName = ftdto.fileName,
+                base64EncKey = ftdto.base64EncKey,
+                base64EncIv = ftdto.base64EncIv,
+                isDeleted = false
+            };
+            await _fileTransferRepo.SaveFileTransfer(ft);
+        }
+
+        public async Task<RsaKeyFileKeyDto> GetRsaPubKeyAndFileKey(EmailFilenameDto ef, string id)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
+            if(user == null)
+                throw new Exception("User does not exist!");
+            User? reciever = await _userRepo.GetUserByEmail(ef.userEmail);
+            if(reciever == null)
+                throw new Exception("Reciever does not exist!");
+            UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, ef.fileName);        
+            if(uf == null)
+                throw new Exception("File does not exist!");
+
+            RsaKeyFileKeyDto rsaKeyFileKeyDto = new RsaKeyFileKeyDto
+            {
+                pubKey = reciever.Base64RSAPublicKey,
+                fileKey = uf.Key,
+                fileIv = uf.Iv
+            };
+            return rsaKeyFileKeyDto;
         }
     }
 }

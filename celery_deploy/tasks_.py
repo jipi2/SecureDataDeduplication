@@ -3,6 +3,8 @@ from celery import Celery
 from celery.schedules import crontab
 from Database.db import Base, User, File, UserFile, BlobFile
 from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames, PersonalisedInfoDto
+from Dto.FileTransferDto import *
+from Dto.RsaKeyFileKeyDto import *
 from services.ApiCallsService import ApiCall
 from services.AuthenticateService import ProxyClass
 import base64
@@ -26,27 +28,7 @@ def sendFilesToServer():
         if len(blobs) == 0:
             return
         
-        for f in blobs:
-            
-            # base64EncFile = base64.b64encode(f.base64EncFile).decode('utf-8')
-            # base64Tag = f.file[0].tag
-            # key = f.file[0].key
-            # iv = f.file[0].iv           
-            # files = session.query(File).filter(File.blob_file_id == f.id).all()
-            # emailsFilenames = []
-            
-            # for file in files:
-            #     users_and_uploadDates = session.query(user_file).filter(user_file.c.file_id == file.id).all()
-            #     for user_and_uploadDate in users_and_uploadDates:
-            #         user = session.query(User).filter(User.id == user_and_uploadDate.user_id).first()
-            #         emailsFilenames.append(UsersEmailsFileNames(userEmail=user.email, fileName=file.fileName, uploadTime=str(user_and_uploadDate.upload_date)))
-            
-            # #va trebui modificat si dto=ul asta, uita-te la cel din .NET
-            # filesMetaDto = FileFromCacheDto(base64EncFile=base64EncFile, base64Tag=base64Tag, key=key, iv=iv, emailsFilenames=emailsFilenames)
-            # response = gateWay.callBackendPostMethodDtoSYNC("/api/File/saveFileFromCache", pc.token, filesMetaDto)
-            # if response.status_code != 200:
-            #     raise Exception(response.text)
-            
+        for f in blobs:            
             base64EncFile = base64.b64encode(f.base64EncFile).decode('utf-8')
             base64Tag = f.file[0].tag
             user_files = session.query(UserFile).filter(UserFile.file_id == f.file[0].id).all()
@@ -83,6 +65,51 @@ def sendFilesToServer():
         print('finally')
 
 
+@celery.task()
+def transferFileBetweenUsers(senderEmail:str ,senderToken:str,recieverEmail:str,  fileName:str, base64EncKey:str, base64EncIv:str):
+    gateWay = ApiCall(os.environ.get("backendBaseUrl"))
+    pc = ProxyClass()
+    pc.getProxyTokenSYNC()
+    basedb = Base()
+    session = basedb.getSession()
+    print('---------------------------------------')
+    userFile = session.query(UserFile).join(User, User.id == UserFile.user_id).filter(UserFile.fileName == fileName, User.email == senderEmail).first()
+    file = session.query(File).filter(File.id == userFile.file_id).first()
+    blob_file_id = file.blob_file_id
+    blobFile = session.query(BlobFile).filter(BlobFile.id == file.blob_file_id).first()
+    
+    base64EncFile = base64.b64encode(blobFile.base64EncFile).decode('utf-8')
+    base64Tag = file.tag
+    user_files = session.query(UserFile).filter(UserFile.file_id == file.id).all()
+    personalisedInfo = []
+    
+    for uf in user_files:
+        user = session.query(User).filter(User.id == uf.user_id).first()
+        personalisedInfo.append(PersonalisedInfoDto(fileName=uf.fileName, base64key=uf.key, base64iv=uf.iv, email=user.email, UploadDate=str(uf.upload_date)))
+        
+    filesMetaDto = FileFromCacheDto(base64EncFile=base64EncFile, base64Tag=base64Tag, personalisedList=personalisedInfo)
+    response = gateWay.callBackendPostMethodDtoSYNC("/api/File/saveFileFromCache", pc.token, filesMetaDto)
+    if response.status_code != 200:
+        raise Exception(response.text)
+    
+    file = session.query(File).filter(File.blob_file_id == blob_file_id).all()
+    blobFile = session.query(BlobFile).filter(BlobFile.id == file[0].blob_file_id).first()
+    user_files = session.query(UserFile).filter(UserFile.file_id == file[0].id).all()
+    
+    for user_file in user_files:
+        session.delete(user_file)
+
+    for f in file:
+        session.delete(f)
+
+    session.delete(blobFile)
+        
+    session.commit()
+    
+    response = gateWay.callBackendPostMethodDtoSYNC("/api/File/sendFile", pc.token, FileTransferDto(senderToken=senderToken, recieverEmail=recieverEmail, fileName=fileName, base64EncKey=base64EncKey, base64EncIv=base64EncIv))
+    if response.status_code != 200:
+        raise Exception(response.text)
+    
 @celery.task()
 def test_task():
     print("test task")

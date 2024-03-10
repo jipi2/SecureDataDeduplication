@@ -12,6 +12,8 @@ from Dto.EncryptParamsDto import EncryptParamsDto
 from Database.db import Base, User, File, BlobFile, UserFile
 from Dto.FilesNameDate import FilesNameDate
 from Dto.EmailFilenameDto import EmailFilenameDto
+from Dto.FileTransferDto import FileTransferDto
+from Dto.RsaKeyFileKeyDto import *
 import asyncio
 from sqlalchemy.orm.exc import NoResultFound
 import base64
@@ -24,11 +26,14 @@ load_dotenv()
 
 
 class FileService():
-    def __init__(self, userToken:str, fileParams:FileParamsDto=None, filename:str=None):
+    def __init__(self, userToken:str, fileParams:FileParamsDto=None, filename:str=None, recieverEmail:str=None, base64EncKey:str=None, base64EncIv:str=None):
         self.userToken = userToken
         self.userEmail = ""
         self.fileParams = fileParams
         self.filename = filename
+        self.recieverEmail = recieverEmail
+        self.base64EncKey = base64EncKey
+        self.base64EncIv = base64EncIv
         self.authService = ProxyClass()
         self.gateWay = ApiCall(os.environ.get("backendBaseUrl"))
     
@@ -109,7 +114,7 @@ class FileService():
         session.commit()
         
     
-    def __checkIfUserHasFile(self, filename):
+    def __checkIfUserHasFile(self, filename): #verifica numai daca userul are fisierul in cache
         basedb = Base()
         session = basedb.getSession()
         result = session.query(UserFile).join(User, UserFile.user_id == User.id).filter(and_(UserFile.fileName == filename, User.email == self.userEmail)).all() # asta trebuie verificata
@@ -292,7 +297,41 @@ class FileService():
                 session.delete(blob_file)
                 session.commit()
             return True
+     
+    async def getPubKeyAndFileKey(self):
+        await self.authService.getProxyToken()
+        await self.__getUserEmail()
+        if self.__checkIfUserHasFile(filename=self.filename) == True:
+            response = await self.gateWay.callBackendPostMethodWithSimpleParams("/api/User/getUserRsaPubKey", self.authService.token, self.recieverEmail)
+            if(response.status_code != 200):
+                raise Exception(response.text)
+            rsaPubKey = response.text
+            basedb = Base()
+            session = basedb.getSession()
+            uf = session.query(UserFile).join(User, User.id == UserFile.user_id).filter(UserFile.fileName == self.filename, User.email == self.userEmail).first()
+            return RsaKeyFileKeyDto(pubKey=rsaPubKey, fileKey=uf.key, fileIv=uf.iv)
+        else:
+            response = await self.gateWay.callBackendPostMethodDto("/api/File/getPubKeyAndFileKey", self.userToken, EmailFilenameDto(userEmail=self.recieverEmail, fileName=self.filename)) 
+            if response.status_code != 200:
+                raise Exception(response.text)
+            return RsaKeyFileKeyDto(**response.json())
+        
                 
-                
-            
-               
+    async def sendFile(self):
+        await self.authService.getProxyToken()
+        await self.__getUserEmail()
+        if self.__checkIfUserHasFile(filename=self.filename) == True:
+            # aici va trebui ori sa facem la nivel de proxy send=ul, ori sa trimitem care backend
+            # verificam si daca persoana careia ii trimitem are deja fisierul
+            aux = self.userEmail
+            self.userEmail = self.recieverEmail
+            if self.__checkIfUserHasFile(filename=self.filename) == True:
+                raise Exception("User already has this file")
+            self.userEmail = aux
+            return True, self.userEmail
+        else:
+            print('ajungem oare aici')
+            response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=self.base64EncKey, base64EncIv=self.base64EncIv))
+            if response.status_code != 200:
+                raise Exception(response.text)
+            return False, self.userEmail

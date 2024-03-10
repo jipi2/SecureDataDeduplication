@@ -44,6 +44,7 @@ builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<FileRepository>();
 builder.Services.AddScoped<RespRepository>();
 builder.Services.AddScoped<UserFileRepo>();
+builder.Services.AddScoped<FileTransferRepo>();
 
 //Services
 builder.Services.AddScoped<UserService>();

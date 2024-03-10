@@ -15,6 +15,7 @@ namespace FileStorageApp.Server.Database
         public DbSet<Entity.FileMetadata> FilesMetadata { get; set; }
         public DbSet<Entity.Resp> Resps { get; set; }
         public DbSet<Entity.UserFile> UserFiles { get; set; }
+        public DbSet<Entity.FileTransfer> FileTransfers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
