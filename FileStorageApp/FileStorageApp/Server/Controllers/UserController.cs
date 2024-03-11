@@ -130,5 +130,30 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet("getRsaKeyPair")]
+        [Authorize]
+        public async Task<IActionResult> getUserRsaKeys()
+        {
+            try 
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                RsaDto? rsaDto = await _userService.GetRsaKeyPair(id);
+                if(rsaDto == null)
+                {
+                    return BadRequest("User does not have RSA key pair");
+                }
+                return Ok(rsaDto);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
@@ -372,6 +373,75 @@ namespace FileStorageApp.Server.Controllers
                 string id = await _userService.GetUserIdFromJWT(token);
                 await _fileService.SendFile(ftdto, id);
                 return Ok("File send!");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("getRecievedFiles")]
+        [Authorize]
+        public async Task<IActionResult> getRecievedFiles()
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                List<RecievedFilesDto>? rf = await _fileService.GetRecievedFiles(id);
+                if(rf == null)
+                    rf = new List<RecievedFilesDto>();
+
+                return Ok(rf);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("removeRecievedFile")]
+        [Authorize]
+        public async Task<IActionResult> removeRecievedFile([FromBody] RecievedFilesDto rfd)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _fileService.RemoveRecievedFile(rfd, id);
+                return Ok("File removed");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("acceptRecievedFile")]
+        [Authorize]
+        public async Task<IActionResult> acceptRecievedFile([FromBody] AcceptFileTransferDto aft)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _fileService.AcceptRecievedFile(aft, id);
+                return Ok("File recieved");
             }
             catch (Exception e)
             {

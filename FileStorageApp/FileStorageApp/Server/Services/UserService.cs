@@ -180,5 +180,20 @@ namespace FileStorageApp.Server.Services
                 return null;
             return user.Base64RSAPublicKey;
         }
+
+        public async Task<RsaDto?> GetRsaKeyPair(string id)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
+            if (user == null)
+                throw new Exception("User does not exist!");
+            if(user.Base64RSAPublicKey == null || user.Base64RSAEncPrivateKey == null)
+                throw new Exception("User does not have RSA key pair!");
+            RsaDto rsaDto = new RsaDto
+            {
+                base64PubKey = user.Base64RSAPublicKey,
+                base64EncPrivKey = user.Base64RSAEncPrivateKey
+            };
+            return rsaDto;
+        }
     }
 }

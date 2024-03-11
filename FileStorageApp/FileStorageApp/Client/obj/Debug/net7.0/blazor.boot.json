@@ -1,7 +1,7 @@
 {
   "entryAssembly": "FileStorageApp.Client",
   "resources": {
-    "hash": "sha256-k3HaLrZKYsl/oL/LyMGVyiPLDrB1FW/Tw+nodLISJRw=",
+    "hash": "sha256-Cf+2Fnmrcmr0IIvYZCIXyj7PqiLFAmS1cXQq1IdyxYM=",
     "runtime": {
       "dotnet.7.0.14.7par231zb5.js": "sha256-YWGUknGRzP/fgO6YjvCJKPVQNZAPEd6ll+rHfQEIW+I=",
       "dotnet.timezones.blat": "sha256-t5xviiOQTfAsF0UDhmcyalKiaehUmf/sqJl97tmPM0M=",
@@ -213,13 +213,13 @@
       "netstandard.dll": "sha256-TztlSRjADgiEABbiAMdWZpHrUVd8wnRtQRAvlwmRP/4=",
       "System.Private.CoreLib.dll": "sha256-BAhrZ8Zg3cJKQipxdzqQo+9jtPkOkRx1ou3oIhDohtk=",
       "CryptoLib.dll": "sha256-8lLG5o12VPuTb/mOEoKUdXs4Q3mSE4L4gtMs33T3hdM=",
-      "FileStorageApp.Shared.dll": "sha256-C7QwO744gpm2/mf2/P2E9C1OmVY2w3Ip5BINLWt6YT0=",
-      "FileStorageApp.Client.dll": "sha256-MCTCYPU2APHzRtDg2xh1Jtyqc36f4S1VQNBunMhAqD4="
+      "FileStorageApp.Shared.dll": "sha256-nNuZEJ7Fyz9okf7a9dHOd9tPCnOHp/DPt4n9twHthek=",
+      "FileStorageApp.Client.dll": "sha256-rlkhm39RILL6+mKpsMx388SHQcZ9fDot8a+Vio3SiHY="
     },
     "pdb": {
       "CryptoLib.pdb": "sha256-bjptbfJ8MuC94j8HP5ao3VzEau5i/ERePz6gq+R7r8w=",
-      "FileStorageApp.Shared.pdb": "sha256-mB5Vc0J7HiNa+Srgc5an9rh3vJkfvQwIyGOgeDYAvJ8=",
-      "FileStorageApp.Client.pdb": "sha256-gYh+ToNkQhGKPtkkUsRDeAdUoha4Ia7FbYkbIetEza8="
+      "FileStorageApp.Shared.pdb": "sha256-uSvNqqazFSJxGNZpemNoGCwOBJO/oTUkjkWYKbGpIR8=",
+      "FileStorageApp.Client.pdb": "sha256-f1PvwRJaAbsSCvpvZw2Xv9H+z8tuDGSL0NEecyzqGBY="
     },
     "runtimeAssets": {
       "dotnet.wasm": {

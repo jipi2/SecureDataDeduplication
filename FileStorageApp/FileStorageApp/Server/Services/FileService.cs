@@ -13,6 +13,7 @@ using Org.BouncyCastle.Math;
 using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace FileStorageApp.Server.Services
@@ -736,6 +737,73 @@ namespace FileStorageApp.Server.Services
                 fileIv = uf.Iv
             };
             return rsaKeyFileKeyDto;
+        }
+
+        public async Task<List<RecievedFilesDto>?> GetRecievedFiles(string id)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
+            if (user == null)
+                throw new Exception("User does not exist!");
+            List<RecievedFilesDto> lrfd = new List<RecievedFilesDto>();
+            List<FileTransfer>? listFileTransfer = await _fileTransferRepo.GetFileTransferByRecId(user.Id);
+            foreach(FileTransfer ft in listFileTransfer)
+            {
+                User? sender = await _userRepo.GetUserById(Convert.ToInt32(ft.SenderId));
+                lrfd.Add(new RecievedFilesDto
+                {
+                    senderEmail =  sender.Email,
+                    fileName = ft.FileName,
+                    base64EncKey = ft.base64EncKey,
+                    base64EncIv = ft.base64EncIv
+                });
+            }
+
+            return lrfd;
+        }
+
+        public async Task RemoveRecievedFile(RecievedFilesDto rfd, string id)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
+            if (user == null)
+                throw new Exception("User does not exist!");
+
+            User? sender = await _userRepo.GetUserByEmail(rfd.senderEmail);
+            if (sender == null)
+                throw new Exception("Sender does not exist!");
+
+            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, user.Id, rfd.fileName);
+            if (ft == null)
+                throw new Exception("File transfer does not exist!");
+            await _fileTransferRepo.DeleteFileTransfer(ft);
+        }
+
+        public async Task AcceptRecievedFile(AcceptFileTransferDto aft, string id)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
+            if (user == null)
+                throw new Exception("User does not exist!");
+
+            User? sender = await _userRepo.GetUserByEmail(aft.senderEmail);
+            if (sender == null)
+                throw new Exception("Sender does not exist!");
+
+            UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(sender.Id, aft.fileName);
+            if (uf == null)
+                throw new Exception("Erro file");
+            
+            UserFile userFile = new UserFile
+            {
+                FileName = aft.fileName,
+                Key = aft.base64FileKey,
+                Iv = aft.base64FileIv,
+                UploadDate = DateTime.UtcNow,
+                UserId = user.Id,
+                FileId = uf.FileId
+            };
+            await _userFileRepo.SaveUserFile(userFile);
+
+            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, user.Id, aft.fileName);
+            await _fileTransferRepo.DeleteFileTransfer(ft);
         }
     }
 }

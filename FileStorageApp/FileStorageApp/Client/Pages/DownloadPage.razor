@@ -42,7 +42,7 @@
 
 </style>
 
-@if (userFileNames == null)
+@if (userFileNames == null || userRecievedFiles == null)
 {
     <p><em>Loading..</em></p>
 }
@@ -74,6 +74,32 @@ else
         </tbody>
     </table>
 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Sender Email</th>
+                <th>Delete</th>
+                <th>Accept</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fileData in userRecievedFiles)
+            {
+                <tr>
+                    <td @onmouseover="() => ChangeCursorStyle(true)" @onmouseout="() => ChangeCursorStyle(false)" style="@cursorStyle">@fileData.fileName </td>
+                    <td>@fileData.senderEmail</td>
+                    <td>
+                        <button @onclick="() => DeleteFileTransfer(fileData)" class="delete-button">Delete</button>
+                    </td>
+                    <td>
+                        <button @onclick="() => OpenPasswordForm(fileData)" class="send-button">Accept</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
     <div style="display: @popupDisplay;">
         <h2>Send File</h2>
         <label>Email:</label>
@@ -82,6 +108,16 @@ else
         <button @onclick="SendFile">Send</button>
         <button @onclick="CloseSendFileDialog">Cancel</button>
     </div>
+
+    <div style="display: @popupPasswordForm;">
+        <h2>Enter Password</h2>
+        <label>Password:</label>
+        <input type="password" @bind="passwordInput" />
+        <!-- Call SendPassword directly from the button in the pop-up -->
+        <button @onclick="AcceptFileTransfer">Submit</button>
+        <button @onclick="ClosePasswordDialog">Cancel</button>
+    </div>
+
 }
 
 @code 
@@ -89,6 +125,10 @@ else
     private string fileNameToSend = "";
     private string popupDisplay = "none"; // Initially hide the pop-up dialog
     private string emailInput = ""; // Bound variable for email input
+    private string popupPasswordForm = "none";
+    private string passwordInput = "";
+    private RsaDto rsaKeyPair;
+    RecievedFilesDto auxFileData;
 
     private void ShowSendFileDialog(string fileName)
     {
@@ -102,6 +142,11 @@ else
     private void CloseSendFileDialog()
     {
         popupDisplay = "none";
+    }
+
+    private void ClosePasswordDialog()
+    {
+        popupPasswordForm = "none";
     }
 
     public async void SendFile()
@@ -221,6 +266,148 @@ else
                 });
         }
     }
+
+    public async void DeleteFileTransfer(RecievedFilesDto fileData)
+    {
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+        try
+        {
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+            var respoinse = await Http.PostAsJsonAsync("api/File/removeRecievedFile", fileData);
+            if (respoinse.IsSuccessStatusCode)
+            {
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Success",
+                    Text = "File Transfer was canceled!",
+                    Icon = SweetAlertIcon.Success,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+                await GetRecievedFiles();
+            }
+            else
+            {
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = "File trasnfer coud not be canceled!",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+                await GetRecievedFiles();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    public void OpenPasswordForm(RecievedFilesDto fileData)
+    {
+        popupPasswordForm = "";
+        auxFileData = fileData;
+    }
+
+    public async Task AcceptFileTransfer()
+    {
+        try
+        {
+            await GetRsaKeyPair();
+            Tuple<string, string> fileKeyAnfIv = await _cryptoService.GetDecKeyAndIv(rsaKeyPair.base64EncPrivKey, passwordInput, auxFileData.base64EncKey, auxFileData.base64EncIv);
+            AcceptFileTransferDto acceptFileTransferDto = new AcceptFileTransferDto()
+            {
+                senderEmail = auxFileData.senderEmail,
+                fileName = auxFileData.fileName,
+                base64FileKey = fileKeyAnfIv.Item1,
+                base64FileIv = fileKeyAnfIv.Item2
+            };
+
+            jwt = await LocalStorage.GetItemAsync<string>("token");
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+            var response = await Http.PostAsJsonAsync("api/File/acceptRecievedFile", acceptFileTransferDto);
+            if (response.IsSuccessStatusCode)
+            {
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "Success",
+                        Text = "File was recieved!",
+                        Icon = SweetAlertIcon.Success,
+                        ShowCancelButton = false,
+                        ConfirmButtonText = "Ok"
+                    });
+                ClosePasswordDialog();
+
+            }
+            else
+            { 
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = "Error while accepting the transfer",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+                ClosePasswordDialog();
+            }
+        }
+        catch(Exception e)
+        {
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = "Error while accepting the transfer",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+
+            Console.WriteLine(e.Message);
+            ClosePasswordDialog();
+        }
+
+    }
+
+    public async Task GetRsaKeyPair()
+    {
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+        try
+        {
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+            rsaKeyPair = await Http.GetFromJsonAsync<RsaDto>("api/User/getRsaKeyPair");
+            if(rsaKeyPair == null)
+            {
+                var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = "Error while getting RSA keys",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+            }
+
+            
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+            var alertBox = await Swal.FireAsync(new SweetAlertOptions
+                {
+                    Title = "Error",
+                    Text = "File Transfer coud not be accepted",
+                    Icon = SweetAlertIcon.Error,
+                    ShowCancelButton = false,
+                    ConfirmButtonText = "Ok"
+                });
+        }
+    }
 }
 
 @code
@@ -235,6 +422,7 @@ else
 
 @code {
     private List<FilesNameDate>? userFileNames;
+    private List<RecievedFilesDto>? userRecievedFiles;
     private CryptoService _cryptoService = new CryptoService();
     private string? jwt;
 
@@ -246,6 +434,22 @@ else
 
         //userFileNames = await Http.GetFromJsonAsync<List<FilesNameDate>?>("api/File/getUploadedFileNamesAndDates");
         await GetFilesNamesAndDatesThroughProxy();
+        await GetRecievedFiles();
+    }
+
+    public async Task GetRecievedFiles()
+    {
+        jwt = await LocalStorage.GetItemAsync<string>("token");
+        try
+        {
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+            userRecievedFiles = await Http.GetFromJsonAsync<List<RecievedFilesDto>?>("api/File/getRecievedFiles");
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     public async Task GetFilesNamesAndDatesThroughProxy()

@@ -179,5 +179,36 @@ namespace FileStorageApp.Client
             return new Tuple<string, string>(base64EncRsaFileKey, base64EncRsaFileIv);
         }
 
+        public byte[] GetRsaDecKry(string base64EncRsaPrivKey, string password)
+        {
+            try
+            {
+                byte[] key = new byte[16];
+                byte[] iv = new byte[16];
+                byte[] hash = Utils.ComputeHash(Encoding.UTF8.GetBytes(password));
+                Array.Copy(hash, key, 16);
+                Array.Copy(hash, hash.Length - 16, iv, 0, 16);
+
+                string base64rsakey = Utils.DecryptAes(Convert.FromBase64String(base64EncRsaPrivKey), key, iv);
+                return Convert.FromBase64String(base64rsakey);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+        public async Task<Tuple<string, string>> GetDecKeyAndIv(string base64EncRsaPrivKey, string password, string base64EncFileKey, string base64EncFileIv)
+        {
+            byte[] rsaPrivKeyBytes = GetRsaDecKry(base64EncRsaPrivKey, password);
+            if(rsaPrivKeyBytes == null)
+                throw new Exception("Error decrypting RSA private key");
+            byte[] fileKey = Utils.DecryptRSAwithPrivateKey(Convert.FromBase64String(base64EncFileKey), rsaPrivKeyBytes);
+            byte[] fileIv = Utils.DecryptRSAwithPrivateKey(Convert.FromBase64String(base64EncFileIv), rsaPrivKeyBytes);
+
+            Tuple<string, string> fileKeyAndIv = new Tuple<string, string>(Convert.ToBase64String(fileKey), Convert.ToBase64String(fileIv));
+            return fileKeyAndIv;
+        }
+
     }
 }

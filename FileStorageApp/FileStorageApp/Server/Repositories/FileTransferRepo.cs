@@ -39,5 +39,31 @@ namespace FileStorageApp.Server.Repositories
                 throw new Exception("Error getting file transfer");
             }
         }
+
+        public async Task<List<FileTransfer>?> GetFileTransferByRecId(int recId)
+        {
+            try
+            {
+                List<FileTransfer>? ft =  await _context.FileTransfers.Where(x => x.ReceiverId == recId).ToListAsync();
+                return ft;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error getting file transfer");
+            }
+        }
+
+        public async Task DeleteFileTransfer(FileTransfer ft)
+        {
+            try
+            {
+                _context.FileTransfers.Remove(ft);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error deleting file transfer");
+            }
+        }
     }
 }
