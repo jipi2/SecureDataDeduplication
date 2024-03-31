@@ -106,9 +106,9 @@ D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\staticwe
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\staticwebassets\msbuild.buildTransitive.FileStorageApp.Server.props
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\staticwebassets.pack.json
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\scopedcss\bundle\FileStorageApp.Server.styles.css
-D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\FileStorageApp.Server.csproj.CopyComplete
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\FileStorageApp.Server.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\refint\FileStorageApp.Server.dll
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\FileStorageApp.Server.pdb
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\FileStorageApp.Server.genruntimeconfig.cache
 D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\ref\FileStorageApp.Server.dll
+D:\LicentaProiect\FileStorageApp\FileStorageApp\Server\obj\Debug\net7.0\FileStor.8CC6596D.Up2Date

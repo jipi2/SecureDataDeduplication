@@ -8,6 +8,9 @@ namespace DesktopApp.Enums
 {
     public enum Symbol
     {
-        token
+        token,
+        Success,
+        Error
+
     }
 }

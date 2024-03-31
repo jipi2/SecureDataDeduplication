@@ -1,25 +1,50 @@
-﻿namespace DesktopApp
+﻿using DesktopApp.ViewModels;
+using System.Diagnostics;
+
+namespace DesktopApp
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
 
         public MainPage()
         {
             InitializeComponent();
+            ShellContent content = AppShell.Current.FindByName<ShellContent>("SignInShell");
+            content.IsVisible = false;
+            content = AppShell.Current.FindByName<ShellContent>("SignUpShell");
+            content.IsVisible = false;
         }
 
+        protected async override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            // Call your function here
+            if (BindingContext is MainWindowViewModel viewModel)
+            {
+                viewModel.GetFilesAndNames();
+            }
+        }
         private void OnCounterClicked(object sender, EventArgs e)
         {
-            count++;
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
+        }
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
-            Navigation.PushAsync(new SignInPage());
+        private void OnDownloadClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is string fileName)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                viewModel.DownloadFile(fileName);
+            }
+        }
+        private void OnSendClicked(object sender, EventArgs e)
+        {
+
+        }
+        private void OnDeleteClicked(object sender, EventArgs e)
+        {
+
         }
     }
 

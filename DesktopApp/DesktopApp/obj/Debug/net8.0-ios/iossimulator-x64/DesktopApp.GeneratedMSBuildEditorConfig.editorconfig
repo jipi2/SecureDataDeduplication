@@ -63,3 +63,9 @@ build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = DesktopApp.Views.SignUpPage.xaml
 build_metadata.AdditionalFiles.TargetPath = Views\SignUpPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Views\SignUpPage.xaml
+
+[D:/LicentaProiect/DesktopApp/DesktopApp/Views/UploadPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = DesktopApp.Views.UploadPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Views\UploadPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Views\UploadPage.xaml

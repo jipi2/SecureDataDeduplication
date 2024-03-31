@@ -1,0 +1,18 @@
+﻿@page "/uploadPage"
+@using System.Net
+@using System.Diagnostics;
+@attribute [Authorize]
+
+<h3>Upload File here:</h3>
+<InputFile OnChange="@LoadFiles" class="form-control" accept=".png,.jpg,.jpeg, .pdf" />
+
+
+@code {
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        // string name = e.File.Name;
+        // Debug.WriteLine(name);
+        App.Current.MainPage.Navigation.PushModalAsync(new NewPage1());
+    }
+}

@@ -24,6 +24,7 @@ namespace DesktopApp
                 int login = await viewModel.Login();
                 if (login == 1)
                 {
+
                     await Shell.Current.GoToAsync("//MainPage");
                 }
                 else

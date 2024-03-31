@@ -72,6 +72,39 @@
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
+        var file = e.GetMultipleFiles().FirstOrDefault();
+        long maxFileSize = 200000 * 1024 * 10;
+        Stream streamFile = file.OpenReadStream(maxFileSize); 
+        string outputFilePath = "output.txt";
+
+
+        // Create the output file and open it for writing
+        using (FileStream outputFileStream = new FileStream(outputFilePath, FileMode.Create))
+        {
+            // Create a buffer for reading data
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            // Read from the input file and write to the output file
+            while ((bytesRead = await streamFile.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                // Write the read data to the output file
+                try { 
+                    await outputFileStream.WriteAsync(buffer, 0, bytesRead);
+                }
+                catch(Exception)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+        }
+        Console.WriteLine("File was uploaded!");
+        
+
+    }
+
+    private async Task LoadFiles_(InputFileChangeEventArgs e)
+    {
 
         var file = e.GetMultipleFiles().FirstOrDefault();
         long maxFileSize = 200000 * 1024 * 10;
@@ -104,6 +137,7 @@
             }
             streamFile.Close();
 
+
             Stopwatch encStopwatch = new Stopwatch();
             encStopwatch.Start();
             FileParamsDto fileParams = await GetFileParams(bytesFile, file);
@@ -117,6 +151,7 @@
 
             //adaugam adresa proxy-ului
             await UploadFileThroughProxy(fileParams);
+            
             //cand decomentam proxy-ul trebuie sa comentam tot ce e in continuare
 
             // Stopwatch stopwatch = new Stopwatch();

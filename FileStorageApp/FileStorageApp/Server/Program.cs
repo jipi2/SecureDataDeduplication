@@ -54,6 +54,17 @@ builder.Services.AddScoped<FileService>();
 //builder.Services.AddScoped<IConfiguration>();
 builder.Services.AddScoped<AzureBlobService>();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = int.MaxValue;
+});
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = int.MaxValue;
+});
+
+
 //Seeder
 builder.Services.AddScoped<DataSeeder>();
 

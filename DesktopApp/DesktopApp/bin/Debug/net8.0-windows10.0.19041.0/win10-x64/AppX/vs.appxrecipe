@@ -29,13 +29,13 @@
     <AppXManifest Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2024-03-18T22:45:16.209</Modified>
+      <Modified>2024-03-31T15:41:53.911</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2024-03-18T22:45:15.980</Modified>
+      <Modified>2024-03-31T14:49:09.762</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.runtimeconfig.json">
       <PackagePath>DesktopApp.runtimeconfig.json</PackagePath>
@@ -43,11 +43,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.dll">
       <PackagePath>DesktopApp.dll</PackagePath>
-      <Modified>2024-03-18T22:45:14.456</Modified>
+      <Modified>2024-03-31T15:41:52.501</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>DesktopApp.exe</PackagePath>
-      <Modified>2024-03-18T22:45:14.516</Modified>
+      <Modified>2024-03-31T15:41:52.584</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\Resources\Raw\AboutAssets.txt">
       <PackagePath>AboutAssets.txt</PackagePath>
@@ -287,7 +287,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.deps.json">
       <PackagePath>DesktopApp.deps.json</PackagePath>
-      <Modified>2024-03-18T22:45:15.677</Modified>
+      <Modified>2024-03-21T17:11:55.692</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.31\lib\net6.0\Microsoft.Windows.SDK.NET.dll">
       <PackagePath>Microsoft.Windows.SDK.NET.dll</PackagePath>

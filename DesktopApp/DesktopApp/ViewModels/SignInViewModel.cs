@@ -67,6 +67,14 @@ namespace DesktopApp.ViewModels
             var result = await httpClient.PostAsJsonAsync("api/User/login", logUser);
             if (result.IsSuccessStatusCode)
             {
+                Response loginResponse = await result.Content.ReadFromJsonAsync<Response>();
+                if(loginResponse != null)
+                    if (loginResponse.Succes)
+                    {
+                        string token = loginResponse.AccessToken;
+                        if(token != null)
+                            await SecureStorage.SetAsync(Enums.Symbol.token.ToString(), token);
+                    }
                 return 1;
 
             }

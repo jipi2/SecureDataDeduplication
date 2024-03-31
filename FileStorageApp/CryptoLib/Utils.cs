@@ -174,6 +174,96 @@ namespace CryptoLib
 
             return MT;
         }
+
+        static public MerkleTree GetMerkleTreeFromFilePath(string filePath)
+        {
+            MerkleTree MT = new MerkleTree();
+            FileInfo fileInfo = new FileInfo(filePath);
+            long fileSize = fileInfo.Length;
+            int buffer_size = 0;
+
+            if (fileSize < 1000)
+                buffer_size = 300;
+            else if (fileSize < 10000 && fileSize >= 1000)
+                buffer_size = 3000;
+            else if (fileSize < 1000000 && fileSize >= 10000)
+                buffer_size = 10000;
+            else
+                buffer_size = 100000;
+
+            byte[] buffer = new byte[buffer_size];
+
+            int bytesRead = 0;
+            int count = 0;
+
+            using (FileStream fileStream = File.OpenRead(filePath))
+            {
+
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    byte[] h = new byte[32];
+                    var sha3_256 = new Sha3Digest(256);
+                    sha3_256.BlockUpdate(buffer, 0, bytesRead);
+                    sha3_256.DoFinal(h, 0);
+                    MT.HashTree.Add(new MTMember(0, h));
+                    count++;
+                }
+                if (count % 2 != 0)
+                {
+                    MT.HashTree.Add(MT.HashTree[0]);
+                    count++;
+                }
+                MT.IndexOfLevel.Add(0);
+                GetLeaves(ref MT, count);
+            }
+
+            return MT;
+        }
+
+        static public MerkleTree GetMerkleTree(string filePath)
+        {
+            MerkleTree MT = new MerkleTree();
+            FileInfo fileInfo = new FileInfo(filePath);
+            long fileSize = fileInfo.Length;
+            int buffer_size = 0;
+
+            if (fileSize < 1000)
+                buffer_size = 300;
+            else if (fileSize < 10000 && fileSize >= 1000)
+                buffer_size = 3000;
+            else if (fileSize < 1000000 && fileSize >= 10000)
+                buffer_size = 10000;
+            else
+                buffer_size = 100000;
+
+            byte[] buffer = new byte[buffer_size];
+
+            int bytesRead = 0;
+            int count = 0;
+
+            using (FileStream fileStream = File.OpenRead(filePath))
+            {
+
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    byte[] h = new byte[32];
+                    var sha3_256 = new Sha3Digest(256);
+                    sha3_256.BlockUpdate(buffer, 0, bytesRead);
+                    sha3_256.DoFinal(h, 0);
+                    MT.HashTree.Add(new MTMember(0, h));
+                    count++;
+                }
+                if (count % 2 != 0)
+                {
+                    MT.HashTree.Add(MT.HashTree[0]);
+                    count++;
+                }
+                MT.IndexOfLevel.Add(0);
+                GetLeaves(ref MT, count);
+            }
+
+            return MT;
+        }
         static public byte[] GetSeedFromTag(byte[] tag, byte[] secret)
         {
             int len = tag.Length+secret.Length;

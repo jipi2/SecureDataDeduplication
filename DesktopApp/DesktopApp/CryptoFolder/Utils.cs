@@ -17,10 +17,13 @@ using Org.BouncyCastle.X509;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Net.Security;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,14 +88,14 @@ namespace CryptoLib
 
             return h;
         }
-        static public string GetHashOfFile(Stream file)
+        static public byte[] GetHashOfFile(FileStream file)
         {
 
             byte[] h = new byte[64];
             var sha3_512 = new Sha3Digest(512);
 
             long fileSize = file.Length;
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[1048576];
 
             int bytesRead = 0;
             while ((bytesRead = file.Read(buffer, 0, buffer.Length)) > 0)
@@ -102,7 +105,7 @@ namespace CryptoLib
 
             sha3_512.DoFinal(h, 0);
 
-            return Hex.ToHexString(h);
+            return h;
         }
 
         static private void GetLeaves(ref MerkleTree MT, int count)
@@ -595,6 +598,54 @@ namespace CryptoLib
             {
                 Console.WriteLine(e.Message);
                 return null;
+            }
+        }
+
+        static public byte[] EncryptAndSaveFileWithAesGCM_AndGetTag(string encFileName,FileStream filstream, byte[] key, byte[] iv)
+        {
+            byte[] h = new byte[32];
+            var sha3_256 = new Sha3Digest(256);
+
+            var cipher = CipherUtilities.GetCipher("AES/GCM/NoPadding");
+            cipher.Init(true, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+
+            string encryptedFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, encFileName);
+            Debug.WriteLine(encryptedFilePath);
+
+            using (FileStream encryptedFileStream = File.Create(encryptedFilePath))
+            {
+                byte[] buffer = new byte[1048576];
+                int bytesRead;
+
+                while ((bytesRead = filstream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    byte[] encryptedBlock = cipher.ProcessBytes(buffer, 0, bytesRead);
+                    encryptedFileStream.Write(encryptedBlock, 0, encryptedBlock.Length);
+                    sha3_256.BlockUpdate(encryptedBlock, 0, encryptedBlock.Length);
+                }
+                byte[] finalBlock = cipher.DoFinal(); // Generate authentication tag
+                encryptedFileStream.Write(finalBlock, 0, finalBlock.Length); // Append authentication tag to the ciphertext
+                sha3_256.DoFinal(h, 0);
+
+            }
+            return h;
+        }
+
+        static public void DecryptAndSaveFileWithAesGCM(FileStream filstream, string decFilePath, byte[] key, byte[] iv)
+        {
+            var cipher = CipherUtilities.GetCipher("AES/GCM/NoPadding");
+            cipher.Init(false, new ParametersWithIV(ParameterUtilities.CreateKeyParameter("AES", key), iv));
+            using (FileStream decFileStream = File.Create(decFilePath))
+            {
+                byte[] buffer = new byte[1048576];
+                int bytesRead;
+                while ((bytesRead = filstream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    byte[] decryptedBlock = cipher.ProcessBytes(buffer, 0, bytesRead);
+                    decFileStream.Write(decryptedBlock, 0, decryptedBlock.Length);
+                }
+                byte[] finalBlock = cipher.DoFinal();
+                decFileStream.Write(finalBlock, 0, finalBlock.Length);
             }
         }
     }

@@ -1,0 +1,280 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\LicentaProiect\\FileStorageApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\services\\fileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\services\\fileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\controllers\\filecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\controllers\\filecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\shared\\dto\\blobfileparamsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|solutionrelative:filestorageapp\\shared\\dto\\blobfileparamsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\shared\\dto\\filekeyandivdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|solutionrelative:filestorageapp\\shared\\dto\\filekeyandivdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\services\\azureblobservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\services\\azureblobservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\client\\pages\\downloadpage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|solutionrelative:filestorageapp\\client\\pages\\downloadpage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\client\\pages\\uploadpage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|solutionrelative:filestorageapp\\client\\pages\\uploadpage.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\client\\pages\\index.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|solutionrelative:filestorageapp\\client\\pages\\index.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\shared\\dto\\filemetachallenge.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|solutionrelative:filestorageapp\\shared\\dto\\filemetachallenge.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\shared\\dto\\filefromcachedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|solutionrelative:filestorageapp\\shared\\dto\\filefromcachedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\shared\\dto\\filefromcachedto_v2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2060AAFC-F8BA-41D3-9E5C-5874B8017E7C}|FileStorageApp\\Shared\\FileStorageApp.Shared.csproj|solutionrelative:filestorageapp\\shared\\dto\\filefromcachedto_v2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FD5E3C29-C420-4D81-A220-9757B647F031}|CryptoLib\\CryptoLib.csproj|D:\\LicentaProiect\\FileStorageApp\\cryptolib\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FD5E3C29-C420-4D81-A220-9757B647F031}|CryptoLib\\CryptoLib.csproj|solutionrelative:cryptolib\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\client\\cryptoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D296BD27-5828-43EF-A767-8B46E958393D}|FileStorageApp\\Client\\FileStorageApp.Client.csproj|solutionrelative:filestorageapp\\client\\cryptoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 1525,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DownloadPage.razor",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\Pages\\DownloadPage.razor",
+              "RelativeDocumentMoniker": "FileStorageApp\\Client\\Pages\\DownloadPage.razor",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\Pages\\DownloadPage.razor",
+              "RelativeToolTip": "FileStorageApp\\Client\\Pages\\DownloadPage.razor",
+              "ViewState": "AQIAAH8BAAAAAAAAAAAAAH4BAAA0AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-03-31T11:57:20.749Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UploadPage.razor",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\Pages\\UploadPage.razor",
+              "RelativeDocumentMoniker": "FileStorageApp\\Client\\Pages\\UploadPage.razor",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\Pages\\UploadPage.razor",
+              "RelativeToolTip": "FileStorageApp\\Client\\Pages\\UploadPage.razor",
+              "ViewState": "AQIAAAQBAAAAAAAAAAAmwOIAAAA1AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-03-31T11:56:43.107Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Index.razor",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\Pages\\Index.razor",
+              "RelativeDocumentMoniker": "FileStorageApp\\Client\\Pages\\Index.razor",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\Pages\\Index.razor",
+              "RelativeToolTip": "FileStorageApp\\Client\\Pages\\Index.razor",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-03-31T11:56:42.087Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "FileMetaChallenge.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileMetaChallenge.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Shared\\Dto\\FileMetaChallenge.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileMetaChallenge.cs",
+              "RelativeToolTip": "FileStorageApp\\Shared\\Dto\\FileMetaChallenge.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-31T11:44:01.116Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Program.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Program.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Program.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Program.cs",
+              "ViewState": "AQIAACoAAAAAAAAAAAAmwDcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-25T20:43:45.891Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 2147,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FileKeyAndIvDto.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileKeyAndIvDto.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Shared\\Dto\\FileKeyAndIvDto.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileKeyAndIvDto.cs",
+              "RelativeToolTip": "FileStorageApp\\Shared\\Dto\\FileKeyAndIvDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-31T13:51:16.535Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BlobFileParamsDto.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\BlobFileParamsDto.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Shared\\Dto\\BlobFileParamsDto.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\BlobFileParamsDto.cs",
+              "RelativeToolTip": "FileStorageApp\\Shared\\Dto\\BlobFileParamsDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-31T13:37:43.303Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FileController.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "ViewState": "AQIAALwBAAAAAAAAAAAUwNEBAABSAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-25T20:41:41.921Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Utils.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\Utils.cs",
+              "RelativeDocumentMoniker": "CryptoLib\\Utils.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\CryptoLib\\Utils.cs",
+              "RelativeToolTip": "CryptoLib\\Utils.cs",
+              "ViewState": "AQIAAI8AAAAAAAAAAAAnwKYAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-26T16:04:39.195Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FileService.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\FileService.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Services\\FileService.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\FileService.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Services\\FileService.cs",
+              "ViewState": "AQIAAAQDAAAAAAAAAAAcwCYDAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-26T15:12:38.576Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CryptoService.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\CryptoService.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Client\\CryptoService.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Client\\CryptoService.cs",
+              "RelativeToolTip": "FileStorageApp\\Client\\CryptoService.cs",
+              "ViewState": "AQIAAFoAAAAAAAAAAAAAwG4AAAAxAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-26T17:24:16.771Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AzureBlobService.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\AzureBlobService.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Services\\AzureBlobService.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\AzureBlobService.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Services\\AzureBlobService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAABbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-26T15:14:31.552Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\appsettings.json",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\appsettings.json",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\appsettings.json",
+              "RelativeToolTip": "FileStorageApp\\Server\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-03-27T00:49:56.569Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "FileFromCacheDto_v2.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileFromCacheDto_v2.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Shared\\Dto\\FileFromCacheDto_v2.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileFromCacheDto_v2.cs",
+              "RelativeToolTip": "FileStorageApp\\Shared\\Dto\\FileFromCacheDto_v2.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-26T17:09:17.432Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "FileFromCacheDto.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileFromCacheDto.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Shared\\Dto\\FileFromCacheDto.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Shared\\Dto\\FileFromCacheDto.cs",
+              "RelativeToolTip": "FileStorageApp\\Shared\\Dto\\FileFromCacheDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-26T17:09:29.068Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

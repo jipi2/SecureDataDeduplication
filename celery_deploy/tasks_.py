@@ -2,7 +2,7 @@ from time import sleep
 from celery import Celery
 from celery.schedules import crontab
 from Database.db import Base, User, File, UserFile, BlobFile
-from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames, PersonalisedInfoDto
+from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames, PersonalisedInfoDto, FileFromCacheDto_v2
 from Dto.FileTransferDto import *
 from Dto.RsaKeyFileKeyDto import *
 from services.ApiCallsService import ApiCall
@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 celery = Celery("tasks", broker=os.environ.get("REDIS_URL"), backend=os.environ.get("REDIS_URL"),include=["tasks_"])
-
+'''
 @celery.task()
 def sendFilesToServer():
     try:
@@ -36,7 +36,7 @@ def sendFilesToServer():
             for uf in user_files:
                 user = session.query(User).filter(User.id == uf.user_id).first()
                 personalisedInfo.append(PersonalisedInfoDto(fileName=uf.fileName, base64key=uf.key, base64iv=uf.iv, email=user.email, UploadDate=str(uf.upload_date)))
-            filesMetaDto = FileFromCacheDto(base64EncFile=base64EncFile, base64Tag=base64Tag, personalisedList=personalisedInfo)
+            filesMetaDto = FileFromCacheDto_v2(base64EncFile, base64Tag=base64Tag, personalisedList=personalisedInfo)
             response = gateWay.callBackendPostMethodDtoSYNC("/api/File/saveFileFromCache", pc.token, filesMetaDto)
             
             if response.status_code != 200:
@@ -64,6 +64,58 @@ def sendFilesToServer():
         session.close()
         print('finally')
 
+'''
+    
+@celery.task()
+def sendFilesToServer_v2(self):
+    try:
+        gateWay = ApiCall(os.environ.get("backendBaseUrl"))
+        pc = ProxyClass()
+        pc.getProxyTokenSYNC()
+        basedb = Base()
+        session = basedb.getSession()
+        print('---------------------------------------')
+        blobs = session.query(BlobFile).all()
+        if len(blobs) == 0:
+            return
+        personalisedInfo = []
+        for f in blobs:            
+            file_path = f.encFilePath
+            base64Tag = f.file[0].tag
+            user_files = session.query(UserFile).filter(UserFile.file_id == f.file[0].id).all()
+            personalisedInfo = []
+            for uf in user_files:
+                user = session.query(User).filter(User.id == uf.user_id).first()
+                personalisedInfo.append(PersonalisedInfoDto(fileName=uf.fileName, base64key=uf.key, base64iv=uf.iv, email=user.email, UploadDate=str(uf.upload_date)))
+            filesMetaDto = FileFromCacheDto_v2(encFilePath=file_path, base64Tag=base64Tag, personalisedList=personalisedInfo)
+            response = gateWay.sendChunkFromFile("/api/File/writeFileOnDisk", "/api/File/saveFileFromCacheParams",pc.token, f.encFilePath, filesMetaDto)
+            
+            if response.status_code != 200:
+                raise Exception(response.text)
+            
+        
+        files = session.query(File).all()
+        blob_files = session.query(BlobFile).all()
+        user_files = session.query(UserFile).all()
+
+        for user_file in user_files:
+            session.delete(user_file)
+
+        for file in files:
+            session.delete(file)
+
+        for blob_file in blob_files:
+            session.delete(blob_file)
+            
+        session.commit()
+
+    except Exception as e:
+        print(f"Error fetching files and dates: {str(e)}")
+        raise Exception("Not good")
+    finally:
+        session.close()
+        print('finally')
+    
 
 @celery.task()
 def transferFileBetweenUsers(senderEmail:str ,senderToken:str,recieverEmail:str,  fileName:str, base64EncKey:str, base64EncIv:str):

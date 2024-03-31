@@ -110,7 +110,7 @@ namespace FileStorageApp.Client
         {
             byte[] bytesEncFile = Convert.FromBase64String(base64EncFile);
             Stream stream = new MemoryStream(bytesEncFile);
-            MerkleTree mt = Utils.GetMerkleTree(stream);
+            MerkleTree mt = new MerkleTree();/*= Utils.GetMerkleTree(stream);*/
             Console.WriteLine(mt.HashTree.Count);
             return mt;
         }

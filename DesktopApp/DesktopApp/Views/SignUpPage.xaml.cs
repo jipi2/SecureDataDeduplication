@@ -1,3 +1,6 @@
+using DesktopApp.ViewModels;
+using System.Diagnostics;
+
 namespace DesktopApp
 {
 
@@ -7,5 +10,28 @@ namespace DesktopApp
 		{
 			InitializeComponent();
 		}
-	}
+
+        private async void registerButton_Clicked(object sender, EventArgs e)
+        {
+			if (BindingContext is SignUpViewModel viewModel)
+			{
+				try
+				{
+					bool registered = await viewModel.Register();
+					if (registered)
+					{
+						await DisplayAlert(Enums.Symbol.Success.ToString(), "User registered successfully", "OK");
+						await Navigation.PopAsync();
+					}
+				}
+                catch (Exception ex)
+				{
+                    await DisplayAlert(Enums.Symbol.Error.ToString(), ex.Message, "OK");
+                }
+
+			}
+			else
+				await DisplayAlert(Enums.Symbol.Error.ToString(), "Error registering user", "OK");
+        }
+    }
 }

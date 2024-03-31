@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FileStorageApp.Client;
+using Microsoft.Extensions.Logging;
 
 namespace DesktopApp
 {
@@ -14,6 +15,8 @@ namespace DesktopApp
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.Services.AddScoped<CryptoService>();
 
 #if DEBUG
     		builder.Logging.AddDebug();

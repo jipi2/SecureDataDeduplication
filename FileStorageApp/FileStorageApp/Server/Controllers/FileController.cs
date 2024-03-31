@@ -3,12 +3,15 @@ using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
+using System.Net;
 using System.Net.Http.Headers;
 
 namespace FileStorageApp.Server.Controllers
@@ -448,5 +451,76 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("proxyGetUrlFileFromStorage")]
+        [Authorize(Roles = "proxy")]
+        public async Task<BlobFileParamsDto> GetUrlFileFromStorage([FromBody] EmailFilenameDto paramsDto)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            string id = await _userService.GetUserIdByEmail(paramsDto.userEmail);
+            BlobFileParamsDto severFile = await _fileService.GetUrlFileFromStorage(id, paramsDto.fileName);
+            return severFile;
+        }
+
+        [HttpPost("getKeyAndIvForFile")]
+        [Authorize]
+        public async Task<FileKeyAndIvDto> GetKeyAndIvForFile([FromBody] EmailFilenameDto paramsDto)
+        {
+            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            string id = await _userService.GetUserIdByEmail(paramsDto.userEmail);
+            FileKeyAndIvDto dto = await _fileService.GetKeyAndIvForFile(id, paramsDto.fileName);
+            return dto;
+        }
+
+
+        [HttpPost("writeFileOnDisk")]
+        [Authorize]
+        public async Task<IActionResult> SaveFileFromCache_v2(IFormFile file)
+        {
+            try
+            {
+                string? tag = Request.Headers["base64Tag"].ToString();
+                if (tag == null)
+                    throw new Exception("The tag was not sent in header");
+                await _fileService.WriteFileOnDiskAndOnCloud(file, tag);
+                return Ok("Chunk Uploaded");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("saveFileFromCacheParams")]
+        [Authorize]
+        public async Task<IActionResult> SaveFileParams([FromBody] FileFromCacheDto_v2 fileParams)
+        {
+            try
+            {
+                await _fileService.SaveFileFromCache(fileParams);
+                return Ok("Data ok");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if(ex.Message.Equals("Url for Azure Blob Stroage is null"))
+                    return Ok("Data ok");
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
+
 }

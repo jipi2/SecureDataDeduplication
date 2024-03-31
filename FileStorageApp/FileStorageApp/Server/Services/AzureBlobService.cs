@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using CryptoLib;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.Extensions.Azure;
@@ -45,6 +46,59 @@ namespace FileStorageApp.Server.Services
                 return null;
             }
         }
+
+        public async Task<string?> UploadFileToCloud_v2(IFormFile encFile, string tag)
+        {
+            try
+            {
+                AppendBlobClient apb_client = _blobContainerClient.GetAppendBlobClient(tag);
+                if (!await apb_client.ExistsAsync())
+                {
+                    await apb_client.CreateAsync();
+                }
+
+                using (Stream fileStream = encFile.OpenReadStream())
+                {
+                    await apb_client.AppendBlockAsync(fileStream);
+                }
+                return apb_client.Uri.AbsoluteUri;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        public async Task<string?> GetUri(string tag)
+        {
+            try
+            {
+                AppendBlobClient apb_client = _blobContainerClient.GetAppendBlobClient(tag);
+                if (!await apb_client.ExistsAsync())
+                    return null;
+                return apb_client.Uri.AbsoluteUri;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+/*
+        public async Task<string?> UpdateBlob(Stream encFile, string tag)
+        {
+            try
+            {
+                AppendBlobClient apb_client = _blobContainerClient.GetAppendBlobClient(tag);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }*/
 
         public async Task<string>? GetContentFileFromBlob(string tag)
         {

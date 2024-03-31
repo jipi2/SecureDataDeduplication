@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 namespace DesktopApp.Dto
 {
     public class FileParamsDto
-    {
-        public string base64EncFile { get; set; }
-        public string base64KeyEnc { get; set; }
-        public string base64IvEnc { get; set; }
-        public string base64TagEnc { get; set; }
-        public string encFileName { get; set; }
+    { 
+        public string base64Key { get; set; }
+        public string base64Iv { get; set; }
+        public string base64Tag { get; set; }
+        public string fileName { get; set; }
     }
 }
