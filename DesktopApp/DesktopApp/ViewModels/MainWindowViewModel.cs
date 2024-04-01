@@ -103,11 +103,12 @@ namespace DesktopApp.ViewModels
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
             var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName);
+            //var response = await httpClient.GetStreamAsync("testBACK");
             string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + "_enc");
             Debug.WriteLine(saveFilePath);
             if (response != null && response.CanRead)
             {
-                using (FileStream fs = new FileStream(saveFilePath, FileMode.CreateNew))
+                using (FileStream fs = new FileStream(saveFilePath, FileMode.OpenOrCreate))
                 {
                     await response.CopyToAsync(fs);
                 }
@@ -129,6 +130,7 @@ namespace DesktopApp.ViewModels
             var encFileStream = System.IO.File.OpenRead(saveFilePath);
 
             Utils.DecryptAndSaveFileWithAesGCM(encFileStream, filePath, Convert.FromBase64String(keyAndIvDto.base64key), Convert.FromBase64String(keyAndIvDto.base64iv));
+            encFileStream.Close();
             System.IO.File.Delete(saveFilePath);
         }
 

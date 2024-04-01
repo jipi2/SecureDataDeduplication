@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class BlobFileParamsDto(BaseModel):
     fileName:str
     fileKey:str

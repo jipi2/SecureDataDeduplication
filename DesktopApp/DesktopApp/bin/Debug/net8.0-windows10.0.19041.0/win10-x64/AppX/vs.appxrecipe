@@ -29,13 +29,13 @@
     <AppXManifest Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2024-03-31T15:41:53.911</Modified>
+      <Modified>2024-04-01T08:34:50.553</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2024-03-31T14:49:09.762</Modified>
+      <Modified>2024-04-01T08:27:00.476</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.runtimeconfig.json">
       <PackagePath>DesktopApp.runtimeconfig.json</PackagePath>
@@ -43,11 +43,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.dll">
       <PackagePath>DesktopApp.dll</PackagePath>
-      <Modified>2024-03-31T15:41:52.501</Modified>
+      <Modified>2024-04-01T08:34:50.198</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>DesktopApp.exe</PackagePath>
-      <Modified>2024-03-31T15:41:52.584</Modified>
+      <Modified>2024-04-01T08:34:50.204</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\Resources\Raw\AboutAssets.txt">
       <PackagePath>AboutAssets.txt</PackagePath>

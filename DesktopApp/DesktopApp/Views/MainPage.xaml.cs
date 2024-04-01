@@ -30,12 +30,13 @@ namespace DesktopApp
 
         }
 
-        private void OnDownloadClicked(object sender, EventArgs e)
+        private async void OnDownloadClicked(object sender, EventArgs e)
         {
             if (sender is Button button && button.CommandParameter is string fileName)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
-                viewModel.DownloadFile(fileName);
+                await viewModel.DownloadFile(fileName);
+                DisplayAlert("Info","Your file has downloaded","OK");
             }
         }
         private void OnSendClicked(object sender, EventArgs e)

@@ -316,11 +316,11 @@ class FileService():
                 if response.status_code != 200:
                     raise Exception(response.text)
                 dto = BlobFileParamsDto(**response.json())
-                download_path = os.path.join(os.getcwd(), "tmp", self.filename)
-                download_blob(dto.base64tag, download_path)
-                return download_path
+                # download_path = os.path.join(os.getcwd(), "tmp", self.filename)
+                # download_blob(dto.base64tag, download_path)
+                return dto.base64tag, False
             else:      
-                return fileFromCache.encFilePath
+                return fileFromCache.encFilePath, True
         except Exception as e:
             raise e
     

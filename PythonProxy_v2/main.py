@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, Body, Depends, HTTPException, UploadFile, Form, File
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 import httpx
 from auth.auth_bearer import JWTBearer
 from starlette.requests import Request
@@ -30,12 +30,14 @@ from Dto.EmailFilenameDto import *
 
 #Services
 from services.FileService import FileService
+
 from services.AzureBlobService import download_blob
 
 #asta este doar pt test:
 from CryptoFolder import Utils
 from CryptoFolder import MerkleTree
 from CryptoFolder import MTMember
+
 
 baseDB = Base()
 baseDB.metadata.create_all(baseDB.engine)
@@ -84,8 +86,11 @@ def root():
     return {"message": "Hello World"}
 
 @app.get("/testBACK")
-def testBack():
-    download_blob('zN4n8TV/Z9dtfPzdryc83Rqn/S5H6MMLKjFy5Hv9fDA=', '50MiB.txt')
+async def testBack():
+    print('we are here')
+    return StreamingResponse(download_blob('z6RHt9csBj0frJpCL5aOzrLtAp2oF4bA+VmisNli1+4='))
+
+    
 
 @app.get("/testMethod")   
 def testMethod():
@@ -167,8 +172,13 @@ async def getFileFromStorage(request:Request, filename:str):
     print(filename)
     _fileService = FileService(userToken=token, filename=filename)
     try:
-        result = await _fileService.getFileFromStorage()
-        return FileResponse(result)
+        result, isInCache = await _fileService.getFileFromStorage()
+        if isInCache == True:
+            print('bagam din cache')
+            return FileResponse(result)
+        else:
+            print('Facem streaming')
+            return StreamingResponse(download_blob(result))
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))
