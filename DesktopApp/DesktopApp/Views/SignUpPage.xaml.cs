@@ -1,4 +1,5 @@
 using DesktopApp.ViewModels;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 
 namespace DesktopApp
@@ -9,7 +10,7 @@ namespace DesktopApp
 		public SignUpPage()
 		{
 			InitializeComponent();
-		}
+        }
 
         private async void registerButton_Clicked(object sender, EventArgs e)
         {

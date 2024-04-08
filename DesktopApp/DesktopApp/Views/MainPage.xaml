@@ -47,7 +47,7 @@
                                 <Label Text="{Binding fileName}" Grid.Column="0" VerticalOptions="Center" Margin="0,0,0,0" HorizontalOptions="Center"/>
                                 <Label Text="{Binding uploadDate}" Grid.Column="1" VerticalOptions="Center" Margin="0,0,0,0" HorizontalOptions="Center"/>
                                 <Button Text="Download" CommandParameter="{Binding fileName}" BackgroundColor="#3498db" Clicked="OnDownloadClicked" Grid.Column="2" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                                <Button Text="Send" BackgroundColor="#27ae60" Clicked="OnSendClicked" Grid.Column="3" Margin="0,0,20,0" HorizontalOptions="Center"/>
+                                <Button Text="Send" CommandParameter="{Binding fileName}" BackgroundColor="#27ae60" Clicked="OnSendClicked" Grid.Column="3" Margin="0,0,20,0" HorizontalOptions="Center"/>
                                 <Button Text="Delete" BackgroundColor="#e74c3c" Clicked="OnDeleteClicked" Grid.Column="4" Margin="0,0,20,0" HorizontalOptions="Center"/>
                             </Grid>
                         </ViewCell>

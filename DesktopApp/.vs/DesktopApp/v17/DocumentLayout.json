@@ -1,0 +1,220 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\LicentaProiect\\DesktopApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\viewmodels\\mainwindowviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\viewmodels\\mainwindowviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\LicentaProiect\\DesktopApp\\DesktopApp\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\Platforms\\Windows\\App.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:DesktopApp\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\Platforms\\Windows\\App.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\viewmodels\\uploadpageviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\viewmodels\\uploadpageviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\views\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\views\\mainpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\httpfolder\\httpservicecustom.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\httpfolder\\httpservicecustom.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\dto\\capsuledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\dto\\capsuledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\views\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\views\\mainpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\views\\signinpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\views\\signinpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\dto\\kfragdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\dto\\kfragdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\enums\\enum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\enums\\enum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\viewmodels\\signinviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\viewmodels\\signinviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|d:\\licentaproiect\\desktopapp\\desktopapp\\views\\signinpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C8CBCF50-4BFB-4B7B-BB8F-C53A8C1DCEAE}|DesktopApp\\DesktopApp.csproj|solutionrelative:desktopapp\\views\\signinpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 2151,
+          "SelectedChildIndex": 10,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UploadPageViewModel.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\ViewModels\\UploadPageViewModel.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\ViewModels\\UploadPageViewModel.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\ViewModels\\UploadPageViewModel.cs",
+              "RelativeToolTip": "DesktopApp\\ViewModels\\UploadPageViewModel.cs",
+              "ViewState": "AQIAAEEAAAAAAAAAAAAIwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-08T13:03:56.64Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "App.g.i.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\Platforms\\Windows\\App.g.i.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\Platforms\\Windows\\App.g.i.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\Platforms\\Windows\\App.g.i.cs",
+              "RelativeToolTip": "DesktopApp\\obj\\Debug\\net8.0-windows10.0.19041.0\\win10-x64\\Platforms\\Windows\\App.g.i.cs",
+              "ViewState": "AQIAACkAAAAAAAAAAAAawEIAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-08T12:55:51.5Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "HttpServiceCustom.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\HttpFolder\\HttpServiceCustom.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\HttpFolder\\HttpServiceCustom.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\HttpFolder\\HttpServiceCustom.cs",
+              "RelativeToolTip": "DesktopApp\\HttpFolder\\HttpServiceCustom.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-08T05:46:29.424Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CapsuleDto.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Dto\\CapsuleDto.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\Dto\\CapsuleDto.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Dto\\CapsuleDto.cs",
+              "RelativeToolTip": "DesktopApp\\Dto\\CapsuleDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-08T05:19:53.546Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "KFragDto.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Dto\\KFragDto.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\Dto\\KFragDto.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Dto\\KFragDto.cs",
+              "RelativeToolTip": "DesktopApp\\Dto\\KFragDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-07T20:53:42.785Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "SignInPage.xaml",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\SignInPage.xaml",
+              "RelativeDocumentMoniker": "DesktopApp\\Views\\SignInPage.xaml",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\SignInPage.xaml",
+              "RelativeToolTip": "DesktopApp\\Views\\SignInPage.xaml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-04-06T15:24:01.802Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Enum.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Enums\\Enum.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\Enums\\Enum.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Enums\\Enum.cs",
+              "RelativeToolTip": "DesktopApp\\Enums\\Enum.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T15:23:49.47Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainPage.xaml",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\MainPage.xaml",
+              "RelativeDocumentMoniker": "DesktopApp\\Views\\MainPage.xaml",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\MainPage.xaml",
+              "RelativeToolTip": "DesktopApp\\Views\\MainPage.xaml",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAACoAAABFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-04-06T13:52:36.849Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainPage.xaml.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\MainPage.xaml.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\Views\\MainPage.xaml.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\MainPage.xaml.cs",
+              "RelativeToolTip": "DesktopApp\\Views\\MainPage.xaml.cs",
+              "ViewState": "AQIAABMAAAAAAAAAAAAgwDAAAAA5AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T13:51:48.536Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindowViewModel.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\ViewModels\\MainWindowViewModel.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\ViewModels\\MainWindowViewModel.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\ViewModels\\MainWindowViewModel.cs",
+              "RelativeToolTip": "DesktopApp\\ViewModels\\MainWindowViewModel.cs",
+              "ViewState": "AQIAAOUAAAAAAAAAAAAEwBEBAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T13:51:19.294Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SignInPage.xaml.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\SignInPage.xaml.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\Views\\SignInPage.xaml.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\Views\\SignInPage.xaml.cs",
+              "RelativeToolTip": "DesktopApp\\Views\\SignInPage.xaml.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T15:24:03.576Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "SignInViewModel.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\ViewModels\\SignInViewModel.cs",
+              "RelativeDocumentMoniker": "DesktopApp\\ViewModels\\SignInViewModel.cs",
+              "ToolTip": "D:\\LicentaProiect\\DesktopApp\\DesktopApp\\ViewModels\\SignInViewModel.cs",
+              "RelativeToolTip": "DesktopApp\\ViewModels\\SignInViewModel.cs",
+              "ViewState": "AQIAACcAAAAAAAAAAAAowEwAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T15:24:06.961Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

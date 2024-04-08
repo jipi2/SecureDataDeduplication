@@ -130,5 +130,26 @@ namespace FileStorageApp.Server.Repositories
         {
             return null;
         }
+
+        public async Task<string> GetKFrag(User sender, User receiver)
+        {
+            var fsrc = await _context.FSRCs.Where(f => f.SenderId == sender.Id && f.ReceiverId == receiver.Id).FirstOrDefaultAsync();
+            if (fsrc == null)
+                return "";
+            else
+                return fsrc.Base64KFrag;
+        }
+
+        public async Task SaveKFrag(User sender, User reciever, string base64kfrag)
+        {
+            FSRC fSRC = new FSRC
+            {
+                SenderId = sender.Id,
+                ReceiverId = reciever.Id,
+                Base64KFrag = base64kfrag
+            };
+            await _context.FSRCs.AddAsync(fSRC);
+            await _context.SaveChangesAsync();
+        }
     }
 }

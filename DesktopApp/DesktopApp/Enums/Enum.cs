@@ -10,7 +10,8 @@ namespace DesktopApp.Enums
     {
         token,
         Success,
-        Error
+        Error,
+        Email
 
     }
 }

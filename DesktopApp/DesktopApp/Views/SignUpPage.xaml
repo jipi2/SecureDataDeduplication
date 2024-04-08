@@ -7,7 +7,7 @@
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels">
 
     <ContentPage.BindingContext>
-        <viewModels:SignUpViewModel />
+        <viewModels:SignUpViewModel/>
     </ContentPage.BindingContext>
     
     <StackLayout Padding="20" VerticalOptions="CenterAndExpand" MaximumWidthRequest="500">

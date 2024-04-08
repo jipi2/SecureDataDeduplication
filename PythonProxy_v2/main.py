@@ -27,6 +27,7 @@ from Dto.FIleParamsDto import FileParamsDto
 from Dto.TagDto import TagDto
 from Dto.FileTransferDto import FileTransferDto
 from Dto.EmailFilenameDto import *
+from Dto.CapsuleDto import CapsuleDto
 
 #Services
 from services.FileService import FileService
@@ -174,10 +175,8 @@ async def getFileFromStorage(request:Request, filename:str):
     try:
         result, isInCache = await _fileService.getFileFromStorage()
         if isInCache == True:
-            print('bagam din cache')
             return FileResponse(result)
         else:
-            print('Facem streaming')
             return StreamingResponse(download_blob(result))
     except Exception as e:
         print(str(e))
@@ -236,18 +235,21 @@ async def getPubKeyAndFileKey(request:Request, emailFileNameDto:EmailFilenameDto
         raise HTTPException(status_code=400, detail=str(e))
     
 
-# @app.post("/sendFile", tags = ['file'])
-# async def sendFile(request:Request, fileTransferDto:FileTransferDto):
-#     token = fileTransferDto.senderToken
-#     _fileService = FileService(userToken=token, recieverEmail=fileTransferDto.recieverEmail, base64EncKey=fileTransferDto.base64EncKey, base64EncIv=fileTransferDto.base64EncIv,filename=fileTransferDto.fileName)
-#     try:
-#         result, userEmail = await _fileService.sendFile()
-#         if result == True:
-#             result = celery.send_task("tasks_.transferFileBetweenUsers", args=(userEmail, fileTransferDto.senderToken, fileTransferDto.recieverEmail, fileTransferDto.fileName, fileTransferDto.base64EncKey, fileTransferDto.base64EncIv))
-#         return "Ok"
-#     except Exception as e:
-#         print(str(e))
-#         raise HTTPException(status_code=400, detail=str(e))
+@app.post("/sendFile", tags = ['file'])
+async def sendFile(request:Request, fileTransferDto:CapsuleDto):
+    authorization_header = request.headers.get("Authorization")
+    token=""
+    if authorization_header is not None:
+        token = authorization_header.split(" ")[1]
+    _fileService = FileService(userToken=token, filename=fileTransferDto.fileName, recieverEmail=fileTransferDto.destEmail)
+    try:
+        result, userEmail = await _fileService.sendFile(fileTransferDto)
+        # if result == True:
+        #     result = celery.send_task("tasks_.transferFileBetweenUsers", args=(userEmail, fileTransferDto.senderToken, fileTransferDto.recieverEmail, fileTransferDto.fileName, fileTransferDto.base64EncKey, fileTransferDto.base64EncIv))
+        # return "Ok"
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__== "__main__":
     uvicorn.run("main:app",

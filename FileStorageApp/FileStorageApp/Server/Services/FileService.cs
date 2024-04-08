@@ -801,9 +801,9 @@ namespace FileStorageApp.Server.Services
 
             BlobFileParamsDto serverFile = new BlobFileParamsDto
             {
-                FileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(user.SymKey)),
-                FileKey = Utils.EncryptAes(Convert.FromBase64String(userFile.Key), Convert.FromBase64String(user.SymKey)),
-                FileIv = Utils.EncryptAes(Convert.FromBase64String(userFile.Iv), Convert.FromBase64String(user.SymKey)),
+                FileName = fileName,
+                FileKey = userFile.Key,
+                FileIv = userFile.Iv,
                 base64tag = file.Tag
             };
 

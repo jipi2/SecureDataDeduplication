@@ -63,5 +63,13 @@ namespace FileStorageApp.Server.Repositories
                 return null;
             return list;
         }
+        public async Task<string> GetKFrag(User sender, User receiver)
+        {
+            var fsrc = await _context.FSRCs.Where(f => f.SenderId == sender.Id && f.ReceiverId == receiver.Id).FirstOrDefaultAsync();
+            if (fsrc == null)
+                return "";
+            else
+                return fsrc.Base64KFrag;
+        }
     }
 }

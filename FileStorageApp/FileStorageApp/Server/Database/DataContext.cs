@@ -16,7 +16,7 @@ namespace FileStorageApp.Server.Database
         public DbSet<Entity.Resp> Resps { get; set; }
         public DbSet<Entity.UserFile> UserFiles { get; set; }
         public DbSet<Entity.FileTransfer> FileTransfers { get; set; }
-
+        public DbSet<Entity.FSRC> FSRCs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

@@ -1,6 +1,8 @@
 ﻿using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
 using FileStorageApp.Client;
+using Microsoft.Extensions.Configuration;
+using Python.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -17,9 +19,17 @@ namespace DesktopApp.ViewModels
     public class SignUpViewModel :INotifyCollectionChanged
     {
         private CryptoService _cryptoService;
+        private readonly IConfiguration _configuration;
+
+        public SignUpViewModel(IConfiguration configuration)
+        {
+            _cryptoService = new CryptoService();
+            _configuration = configuration;
+            Runtime.PythonDLL = "C:\\Users\\Jipi\\AppData\\Local\\Programs\\Python\\Python311\\python311.dll";
+        }
 
         public SignUpViewModel()
-        {
+        { 
             _cryptoService = new CryptoService();
         }
 
@@ -101,6 +111,52 @@ namespace DesktopApp.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private string getBase64PrivateKeyForSharing()
+        {
+            string key = "";
+            /*            Runtime.PythonDLL = _configuration["PythonPath"];*/
+       
+            PythonEngine.Initialize();
+            using (Py.GIL())
+            {
+                string code = @"
+from umbral import SecretKey
+import base64
+
+def generatePrivKey():
+    user_priv_key = SecretKey.random()
+    return base64.b64encode(user_priv_key.to_secret_bytes()).decode('utf-8')
+";
+                dynamic result = PyModule.FromString("generatePrivKey", code);
+                key = result.generatePrivKey();
+
+            }
+            return key;
+
+        }
+
+        private string getBase64PubKeyForSharing(string base64key)
+        {
+            string key = "";
+            /*            Runtime.PythonDLL = _configuration["PythonPath"];*/
+            PythonEngine.Initialize();
+            using (Py.GIL())
+            {
+                string code = @"
+from umbral import SecretKey
+import base64
+
+def generatePubKey(base64key):
+    user_priv_key = SecretKey.from_bytes(base64.b64decode(base64key))
+    user_pub_key = user_priv_key.public_key()
+    return base64.b64encode (user_pub_key.__bytes__()).decode('utf-8')
+";
+                dynamic result = PyModule.FromString("generatePubKey", code);
+                key = result.generatePubKey(base64key);
+            }
+            return key;
+        }
+
         private async Task<RsaDto?> ComputeRSAKeysForUser()
         {
             RsaDto? rsaDto = await _cryptoService.GetRsaDto(_password);
@@ -117,6 +173,13 @@ namespace DesktopApp.ViewModels
             {
                 return false;
             }
+
+            string base64KeyPriv = getBase64PrivateKeyForSharing();
+            string base64KeyPub = getBase64PubKeyForSharing(base64KeyPriv);
+
+            File.WriteAllText("D:\\LicentaProiect\\DesktopApp" + "\\"+_email+"_privateKey.priv", base64KeyPriv);
+            File.WriteAllText("D:\\LicentaProiect\\DesktopApp" + "\\"+_email+"_publicKey.pub", base64KeyPub);
+
             RegisterUser regUser = new RegisterUser
             {
                 LastName = _lastName,
@@ -124,7 +187,8 @@ namespace DesktopApp.ViewModels
                 Email = _email,
                 Password = _password,
                 ConfirmPassword = _confirmPassword,
-                rsaKeys = rsaDto
+                rsaKeys = rsaDto,
+                base64PubKey = base64KeyPub
 
             };
             var httpClient = HttpServiceCustom.GetApiClient();

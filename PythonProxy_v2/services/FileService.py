@@ -17,6 +17,7 @@ from Dto.RsaKeyFileKeyDto import *
 from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames, PersonalisedInfoDto, FileFromCacheDto_v2
 from Dto.FileKeyAndIvDto import FileKeyAndIvDto
 from Dto.BlobFileParamsDto import BlobFileParamsDto
+from Dto.CapsuleDto import CapsuleDto
 import asyncio
 from sqlalchemy.orm.exc import NoResultFound
 import base64
@@ -27,6 +28,7 @@ from sqlalchemy import and_
 
 from fastapi import UploadFile
 from services.AzureBlobService import download_blob
+from umbral import SecretKey, Signer, encrypt, decrypt_original, generate_kfrags, reencrypt, decrypt_reencrypted, Capsule, VerifiedKeyFrag
 
 load_dotenv()
 
@@ -372,22 +374,53 @@ class FileService():
                 raise Exception(response.text)
             return RsaKeyFileKeyDto(**response.json())
         
-                
-    async def sendFile(self):
+
+    async def __getKfrag(self):
+        response = await self.gateWay.callBackendPostMethodWithSimpleParams("/api/User/getKfragFromReciever", self.userToken, self.recieverEmail)
+        if response.status_code != 200:
+            raise Exception(response.text)
+        base64Kfrag = response.text
+        kFrag = base64.b64decode(base64Kfrag)
+        _kfrag = VerifiedKeyFrag.from_verified_bytes(kFrag)
+        return _kfrag
+    
+    async def __getCapsuleAndCipherTextFromBase64(self, base64cap):
+        split_str = base64cap.split("#")
+        base64Capsule = split_str[0]
+        base64Ciphertext = split_str[1]
+        capsule = Capsule.from_bytes(base64.b64decode(base64Capsule))
+        ciphertext = base64.b64decode(base64Ciphertext)
+        return capsule, ciphertext
+        
+        
+    async def sendFile(self, dto:CapsuleDto):
         await self.authService.getProxyToken()
         await self.__getUserEmail()
+        
+        kFrag = await self.__getKfrag()
+    
+        capsuleKey, encKey = await self.__getCapsuleAndCipherTextFromBase64(dto.base64KeyCapsule)
+        capsuleIv, encIv = await self.__getCapsuleAndCipherTextFromBase64(dto.base64IvCapsule)
+        
+        cfragKey = reencrypt(capsule=capsuleKey, kfrag=kFrag)
+        cfragIv = reencrypt(capsule=capsuleIv, kfrag=kFrag)
+        
+        base64KeyCFrag = base64.b64encode(cfragKey.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleKey.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encKey).decode('utf-8')
+        base64IvCFrag = base64.b64encode(cfragIv.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleIv.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encIv).decode('utf-8')
+        
         if self.__checkIfUserHasFile(filename=self.filename) == True:
             # aici va trebui ori sa facem la nivel de proxy send=ul, ori sa trimitem care backend
             # verificam si daca persoana careia ii trimitem are deja fisierul
-            aux = self.userEmail
-            self.userEmail = self.recieverEmail
-            if self.__checkIfUserHasFile(filename=self.filename) == True:
-                raise Exception("User already has this file")
-            self.userEmail = aux
-            return True, self.userEmail
+            # aux = self.userEmail
+            # self.userEmail = self.recieverEmail
+            # if self.__checkIfUserHasFile(filename=self.filename) == True:
+            #     raise Exception("User already has this file")
+            # self.userEmail = aux
+            # return True, self.userEmail
+            pass
         else:
-            print('ajungem oare aici')
-            response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=self.base64EncKey, base64EncIv=self.base64EncIv))
+            #aici trebuie modificat ce trimit pt cheie si iv
+            response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag))
             if response.status_code != 200:
                 raise Exception(response.text)
             return False, self.userEmail

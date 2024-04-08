@@ -29,25 +29,25 @@
     <AppXManifest Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2024-04-01T08:34:50.553</Modified>
+      <Modified>2024-04-08T13:40:24.260</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2024-04-01T08:27:00.476</Modified>
+      <Modified>2024-04-08T13:27:39.358</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.runtimeconfig.json">
       <PackagePath>DesktopApp.runtimeconfig.json</PackagePath>
-      <Modified>2024-03-18T21:22:46.796</Modified>
+      <Modified>2024-04-05T06:25:02.527</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.dll">
       <PackagePath>DesktopApp.dll</PackagePath>
-      <Modified>2024-04-01T08:34:50.198</Modified>
+      <Modified>2024-04-08T13:40:23.701</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\apphost.exe">
       <PackagePath>DesktopApp.exe</PackagePath>
-      <Modified>2024-04-01T08:34:50.204</Modified>
+      <Modified>2024-04-08T13:40:23.710</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\Resources\Raw\AboutAssets.txt">
       <PackagePath>AboutAssets.txt</PackagePath>
@@ -285,9 +285,13 @@
       <PackagePath>dotnet_bot.scale-400.png</PackagePath>
       <Modified>2024-03-17T21:16:43.481</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\appsettings.json">
+      <PackagePath>appsettings.json</PackagePath>
+      <Modified>2024-04-04T21:33:27.605</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\DesktopApp.deps.json">
       <PackagePath>DesktopApp.deps.json</PackagePath>
-      <Modified>2024-03-21T17:11:55.692</Modified>
+      <Modified>2024-04-05T06:25:02.497</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.windows.sdk.net.ref\10.0.19041.31\lib\net6.0\Microsoft.Windows.SDK.NET.dll">
       <PackagePath>Microsoft.Windows.SDK.NET.dll</PackagePath>
@@ -305,12 +309,36 @@
       <PackagePath>Microsoft.Extensions.Configuration.Abstractions.dll</PackagePath>
       <Modified>2023-10-31T14:59:08.000</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.configuration.binder\8.0.1\lib\net8.0\Microsoft.Extensions.Configuration.Binder.dll">
+      <PackagePath>Microsoft.Extensions.Configuration.Binder.dll</PackagePath>
+      <Modified>2023-11-30T08:25:12.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.configuration.fileextensions\8.0.0\lib\net8.0\Microsoft.Extensions.Configuration.FileExtensions.dll">
+      <PackagePath>Microsoft.Extensions.Configuration.FileExtensions.dll</PackagePath>
+      <Modified>2023-10-31T14:59:28.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.configuration.json\8.0.0\lib\net8.0\Microsoft.Extensions.Configuration.Json.dll">
+      <PackagePath>Microsoft.Extensions.Configuration.Json.dll</PackagePath>
+      <Modified>2023-10-31T14:59:36.000</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.dependencyinjection\8.0.0\lib\net8.0\Microsoft.Extensions.DependencyInjection.dll">
       <PackagePath>Microsoft.Extensions.DependencyInjection.dll</PackagePath>
       <Modified>2023-10-31T14:59:00.000</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.dependencyinjection.abstractions\8.0.0\lib\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll">
       <PackagePath>Microsoft.Extensions.DependencyInjection.Abstractions.dll</PackagePath>
+      <Modified>2023-10-31T14:58:56.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.fileproviders.abstractions\8.0.0\lib\net8.0\Microsoft.Extensions.FileProviders.Abstractions.dll">
+      <PackagePath>Microsoft.Extensions.FileProviders.Abstractions.dll</PackagePath>
+      <Modified>2023-10-31T14:59:04.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.fileproviders.physical\8.0.0\lib\net8.0\Microsoft.Extensions.FileProviders.Physical.dll">
+      <PackagePath>Microsoft.Extensions.FileProviders.Physical.dll</PackagePath>
+      <Modified>2023-10-31T14:59:20.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.filesystemglobbing\8.0.0\lib\net8.0\Microsoft.Extensions.FileSystemGlobbing.dll">
+      <PackagePath>Microsoft.Extensions.FileSystemGlobbing.dll</PackagePath>
       <Modified>2023-10-31T14:58:56.000</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.extensions.logging\8.0.0\lib\net8.0\Microsoft.Extensions.Logging.dll">
@@ -428,6 +456,10 @@
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\portable.bouncycastle\1.9.0\lib\netstandard2.0\BouncyCastle.Crypto.dll">
       <PackagePath>BouncyCastle.Crypto.dll</PackagePath>
       <Modified>2021-10-19T11:53:34.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\pythonnet\3.0.3\lib\netstandard2.0\Python.Runtime.dll">
+      <PackagePath>Python.Runtime.dll</PackagePath>
+      <Modified>2023-10-11T07:15:20.000</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jipi\.nuget\packages\microsoft.maui.controls.core\8.0.7\lib\net8.0-windows10.0.19041\ar\Microsoft.Maui.Controls.resources.dll">
       <PackagePath>ar\Microsoft.Maui.Controls.resources.dll</PackagePath>

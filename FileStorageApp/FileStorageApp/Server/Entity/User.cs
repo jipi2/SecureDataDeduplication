@@ -25,6 +25,7 @@ namespace FileStorageApp.Server.Entity
         public bool isDeleted { get; set; }
         public string? Base64RSAPublicKey { get; set; }
         public string? Base64RSAEncPrivateKey { get; set; }
+        public string? Base64PublicKey { get; set; }
         public List<Role>? Roles { get; set; }
     }
 }

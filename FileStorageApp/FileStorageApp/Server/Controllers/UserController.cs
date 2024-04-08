@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Bcpg.Sig;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
@@ -151,6 +152,70 @@ namespace FileStorageApp.Server.Controllers
                 return Ok(rsaDto);
             }
             catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("getPubKeyForFileTransfer")]
+        [Authorize]
+        public async Task<IActionResult> GetRecieverPubKey([FromBody] string receiverEmail)
+        {
+            try 
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                string base64PubKey = await _userService.GetRecieverPubKey(receiverEmail);
+                return Ok(base64PubKey);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("getKfragFromReciever")]
+        [Authorize]
+        public async Task<IActionResult> GetKeyFragFromReceiver([FromBody] string receiverEmail)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                string base64KFrag = await _userService.GetRecieverKFrag(id,receiverEmail);
+                return Ok(base64KFrag);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
+        }
+
+        [HttpPost("saveKFragForReceiver")]
+        [Authorize]
+        public async Task<IActionResult> SaveKFrag([FromBody] KFragDto dto)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _userService.SaveKFrag(id, dto);
+                return Ok();
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

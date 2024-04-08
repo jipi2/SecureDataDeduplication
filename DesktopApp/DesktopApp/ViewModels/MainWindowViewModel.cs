@@ -1,6 +1,7 @@
 ﻿using CryptoLib;
 using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
+using Python.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -134,10 +135,152 @@ namespace DesktopApp.ViewModels
             System.IO.File.Delete(saveFilePath);
         }
 
+        private string getBase64CapsuleAndCiphertext(string base64privKey, string base64plaintext)
+        {
+            string concatStr = "";
+            PythonEngine.Initialize();
+            using (Py.GIL())
+            {
+                string code = @"
+from umbral import SecretKey, Signer, PublicKey, encrypt
+import base64
+
+def encrypt_umbral(base64PrivKey, base64text):
+    privKey = SecretKey.from_bytes(base64.b64decode(base64PrivKey))
+    pubKey = privKey.public_key()
+    plaintext = base64.b64decode(base64text)
+    capsule, ciphertext = encrypt(pubKey, plaintext)
+    base64Capsule = base64.b64encode(capsule.__bytes__()).decode('utf-8')
+    base64Ciphertext = base64.b64encode(ciphertext).decode('utf-8')
+    return base64Capsule+""#""+base64Ciphertext
+";
+                dynamic result = PyModule.FromString("encrypt_umbral", code);
+                concatStr = result.encrypt_umbral(base64privKey, base64plaintext);
+                return concatStr;
+            }
+        }
+
+        private async Task<string> getKfrag(string destEmail)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            var response = await httpClient.PostAsJsonAsync("/api/User/getKfragFromReciever", destEmail);
+            if (response.IsSuccessStatusCode)
+            {
+                string kfrag = await response.Content.ReadAsStringAsync();
+                return kfrag;
+            }
+            else
+            {
+                throw new Exception("Could not get kfrag");
+            }
+        }
+
+        private async Task GenerateAndSaveKFrag(string destEmail)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            //luam cheia privata a senderului
+            string email = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
+            string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp" + "\\" + email + "_privateKey.priv");
+
+            var response = await httpClient.PostAsJsonAsync("/api/User/getPubKeyForFileTransfer", destEmail);
+            if (response.IsSuccessStatusCode)
+            {
+                string base64PubKey = await response.Content.ReadAsStringAsync();
+                string base64KFrag = "";
+                PythonEngine.Initialize();
+                using (Py.GIL())
+                {
+                    string code = @"
+from umbral import SecretKey, Signer, encrypt, decrypt_original, generate_kfrags, reencrypt, decrypt_reencrypted, VerifiedCapsuleFrag, PublicKey
+import base64
+
+def generateKfrag(base64PrivKey, base64PubKey):
+    user_signing_key = SecretKey.random()
+    user_signer = Signer(user_signing_key)
+    privKey = SecretKey.from_bytes(base64.b64decode(base64PrivKey))
+    pubKey = PublicKey.from_bytes(base64.b64decode(base64PubKey))
+    kfrags = generate_kfrags(delegating_sk=privKey,
+                         receiving_pk=pubKey,
+                         signer=user_signer,
+                         threshold=1,
+                         shares=1)
+    kfrag = kfrags[0]
+    return base64.b64encode(kfrag.__bytes__()).decode('utf-8')
+";                    
+                    dynamic result = PyModule.FromString("generateKfrag", code);
+                    base64KFrag = result.generateKfrag(base64PrivKey, base64PubKey);
+                }
+
+                var resp2 = await httpClient.PostAsJsonAsync("/api/User/saveKFragForReceiver", new KFragDto { base64kfrag = base64KFrag, destEmail = destEmail });
+                if (!resp2.IsSuccessStatusCode)
+                {
+                    throw new Exception("Could not save kfrag");
+                }
+            }
+            else
+            {
+                throw new Exception("Could not get kfrag");
+            }
+        }
+        public async Task SendFile(string fileName, string destEmail)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetProxyClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName);
+/*
+            byte[] fileKey = Convert.FromBase64String(keyAndIvDto.base64key);
+            byte[] fileIv = Convert.FromBase64String(keyAndIvDto.base64iv);*/
+
+            string userEmail = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
+            string base64sendkey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp" + "\\" + userEmail + "_privateKey.priv");
+
+            string base64KeyCapsule = getBase64CapsuleAndCiphertext(base64sendkey, keyAndIvDto.base64key);
+            string base64IvCapsule = getBase64CapsuleAndCiphertext(base64sendkey, keyAndIvDto.base64iv);
+
+            string base64kfrag = await getKfrag(destEmail);
+            if (base64kfrag == "")
+            {
+                await GenerateAndSaveKFrag(destEmail);
+            }
+
+            CapsuleDto dto = new CapsuleDto
+            {
+                base64KeyCapsule = base64KeyCapsule,
+                base64IvCapsule = base64IvCapsule,
+                fileName = fileName,
+                destEmail = destEmail
+            };
+
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+            var response = await httpClient.PostAsJsonAsync("sendFile", dto);
+            if (response.IsSuccessStatusCode)
+            {
+                Debug.WriteLine("File sent successfully");
+            }
+            else
+            {
+                throw new Exception("Could not send file");
+            }
+        }
+
         public async Task test() 
         {
             string download = Environment.GetEnvironmentVariable("USERPROFILE") + @"\" + "Downloads";
             Debug.WriteLine(download);
         }
+
+
     }
 }

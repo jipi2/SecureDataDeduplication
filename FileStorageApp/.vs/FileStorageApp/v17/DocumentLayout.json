@@ -1,0 +1,141 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\LicentaProiect\\FileStorageApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\controllers\\filecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\controllers\\filecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\services\\fileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\services\\fileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\database\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\database\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|d:\\licentaproiect\\filestorageapp\\filestorageapp\\server\\entity\\fsrc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBA009A3-27AB-41EA-BDFB-660035292EBC}|FileStorageApp\\Server\\FileStorageApp.Server.csproj|solutionrelative:filestorageapp\\server\\entity\\fsrc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 2151,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Controllers\\UserController.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Controllers\\UserController.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Controllers\\UserController.cs",
+              "ViewState": "AQIAAK0AAAAAAAAAAADwv9AAAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-08T05:44:03.925Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Repositories\\UserRepository.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Repositories\\UserRepository.cs",
+              "ViewState": "AQIAAHUAAAAAAAAAAAAawJcAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-07T19:47:01.82Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "FileService.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\FileService.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Services\\FileService.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\FileService.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Services\\FileService.cs",
+              "ViewState": "AQIAAPQCAAAAAAAAAAAUwCYDAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-07T19:27:34.516Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DataContext.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Database\\DataContext.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Database\\DataContext.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Database\\DataContext.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Database\\DataContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T15:39:11.229Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "FSRC.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Entity\\FSRC.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Entity\\FSRC.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Entity\\FSRC.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Entity\\FSRC.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T15:37:20.484Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FileController.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Controllers\\FileController.cs",
+              "ViewState": "AQIAAMABAAAAAAAAAADwv8oBAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-06T12:34:17.93Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "FileStorageApp\\Server\\Services\\UserService.cs",
+              "ToolTip": "D:\\LicentaProiect\\FileStorageApp\\FileStorageApp\\Server\\Services\\UserService.cs",
+              "RelativeToolTip": "FileStorageApp\\Server\\Services\\UserService.cs",
+              "ViewState": "AQIAALgAAAAAAAAAAAApwOYAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-05T05:36:38.867Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -43,8 +43,9 @@ namespace FileStorageApp.Server.Services
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
                 Base64RSAEncPrivateKey = regUser.rsaKeys.base64EncPrivKey,
-                Base64RSAPublicKey = regUser.rsaKeys.base64PubKey
+                Base64RSAPublicKey = regUser.rsaKeys.base64PubKey,
                 //Files = new List<Entity.FileMetadata>()
+                Base64PublicKey = regUser.base64PubKey
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
 
@@ -194,6 +195,40 @@ namespace FileStorageApp.Server.Services
                 base64EncPrivKey = user.Base64RSAEncPrivateKey
             };
             return rsaDto;
+        }
+
+        public async Task<string> GetRecieverPubKey(string receiverEmail)
+        {
+            User? reciever = await _userRepo.GetUserByEmail(receiverEmail);
+            if (reciever == null)
+                throw new Exception("Reciever does not exist!");
+
+            return reciever.Base64PublicKey;
+        }
+
+        public  async Task<string> GetRecieverKFrag(string userId, string receiverEmail)
+        {
+            User ? sender = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if(sender == null)
+                throw new Exception("Sender does not exist!");
+            User ? reciever = await _userRepo.GetUserByEmail(receiverEmail);
+            if(reciever == null)
+                throw new Exception("Reciever does not exist!");
+
+            string base64KFrag = await _userRepo.GetKFrag(sender, reciever);
+            return base64KFrag;
+        }
+
+        public async Task SaveKFrag(string userId, KFragDto dto)
+        {
+            User? sender = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (sender == null)
+                throw new Exception("Sender does not exist!");
+            User? reciever = await _userRepo.GetUserByEmail(dto.destEmail);
+            if (reciever == null)
+                throw new Exception("Reciever does not exist!");
+
+            await _userRepo.SaveKFrag(sender, reciever, dto.base64kfrag);
         }
     }
 }

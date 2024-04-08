@@ -68,14 +68,18 @@ namespace DesktopApp.ViewModels
             if (result.IsSuccessStatusCode)
             {
                 Response loginResponse = await result.Content.ReadFromJsonAsync<Response>();
-                if(loginResponse != null)
+                if (loginResponse != null)
                     if (loginResponse.Succes)
                     {
                         string token = loginResponse.AccessToken;
-                        if(token != null)
+                        if (token != null)
+                        {
+                            await SecureStorage.SetAsync(Enums.Symbol.Email.ToString(), _email);
                             await SecureStorage.SetAsync(Enums.Symbol.token.ToString(), token);
+                        }
+
                     }
-                return 1;
+                        return 1;
 
             }
             else

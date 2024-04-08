@@ -13,6 +13,7 @@ namespace FileStorageApp.Shared.Dto
         public string Email { get; set; }
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
+        public string base64PubKey { get; set; }
         public RsaDto rsaKeys { get; set; }
     }
 }

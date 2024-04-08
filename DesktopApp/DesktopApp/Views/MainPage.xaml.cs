@@ -38,10 +38,17 @@ namespace DesktopApp
                 await viewModel.DownloadFile(fileName);
                 DisplayAlert("Info","Your file has downloaded","OK");
             }
-        }
-        private void OnSendClicked(object sender, EventArgs e)
-        {
 
+        }
+        private async void OnSendClicked(object sender, EventArgs e)
+        {
+            string dest = "test@mta";
+            if (sender is Button button && button.CommandParameter is string fileName)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                await viewModel.SendFile(fileName, dest);
+                DisplayAlert("Info", "Your file sent", "OK");
+            }
         }
         private void OnDeleteClicked(object sender, EventArgs e)
         {

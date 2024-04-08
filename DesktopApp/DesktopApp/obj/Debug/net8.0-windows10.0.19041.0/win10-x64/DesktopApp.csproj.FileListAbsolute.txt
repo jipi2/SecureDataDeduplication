@@ -177,3 +177,11 @@ D:\LicentaProiect\DesktopApp\DesktopApp\obj\Debug\net8.0-windows10.0.19041.0\win
 D:\LicentaProiect\DesktopApp\DesktopApp\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
 D:\LicentaProiect\DesktopApp\DesktopApp\obj\Debug\net8.0-windows10.0.19041.0\win10-x64\ProjectArchitectures.txt
 D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\BouncyCastle.Crypto.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Python.Runtime.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\appsettings.json
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.Configuration.Binder.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.Configuration.FileExtensions.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.Configuration.Json.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.FileProviders.Abstractions.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.FileProviders.Physical.dll
+D:\LicentaProiect\DesktopApp\DesktopApp\bin\Debug\net8.0-windows10.0.19041.0\win10-x64\Microsoft.Extensions.FileSystemGlobbing.dll
