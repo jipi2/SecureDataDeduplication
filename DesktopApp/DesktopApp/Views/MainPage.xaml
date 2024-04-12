@@ -2,58 +2,97 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DesktopApp.MainPage"
              xmlns:local="clr-namespace:DesktopApp"
-             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels">
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"             
+             >
 
+    <Shell.TitleView>
+        <FlexLayout Direction="Row">
 
+            <SearchBar
+                FlexLayout.Grow="2"
+                 Placeholder="Search your file"
+                 WidthRequest="300"
+                 HorizontalOptions="End"
+                 Margin="0,1,5,0"
+                 
+                 >
+            </SearchBar>
+        </FlexLayout>
+    </Shell.TitleView>
 
     <ContentPage.BindingContext>
         <viewModels:MainWindowViewModel />
     </ContentPage.BindingContext>
 
+   
+
     <ScrollView>
+        <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
+        
+            <FlexLayout>
+                <VerticalStackLayout FlexLayout.Grow="1">
+                    <BoxView HeightRequest="300" WidthRequest="500" Color="Red" />
+                </VerticalStackLayout>
+                <Frame BackgroundColor="Red" CornerRadius="10" Padding="10">
+                    <StackLayout Orientation="Vertical" Margin="20,0,0,0" Spacing="10">
+                    <Frame BackgroundColor="#f1c40f" CornerRadius="10" Padding="10">
+                        <Grid Padding="20">
 
-        <StackLayout>
-            <Label Text="Here are your uploaded files: " FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,0"/>
-            <!-- Titles Grid -->
-            <Grid Margin="0,60,0,0" Padding="20" BackgroundColor="DarkGray">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Text="File Name" Grid.Column="0" HorizontalOptions="Center" FontSize="Large" Margin="0,0,10,0" VerticalOptions="Center" MaximumWidthRequest="400"/>
+                            <Label Text="Upload Date" Grid.Column="1" HorizontalOptions="Center" FontSize="Large" Margin="-730,0,0,0"/>
+                            <Label Text="Actions" Grid.Column="2" HorizontalOptions="Center" FontSize="Large" Margin="-300,0,0,0"/>
+                        </Grid>
+                    </Frame>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Label Text="File Name" Grid.Column="0" HorizontalOptions="Center" FontSize="Large" Margin="-150,0,0,0"/>
-                <Label Text="Upload Date" Grid.Column="1" HorizontalOptions="Center" FontSize="Large" Margin="-430,0,0,0"/>
-                <Label Text="Actions" Grid.Column="2" HorizontalOptions="Center" FontSize="Large" Margin="-300,0,0,0"/>
-            </Grid>
+                    <!-- ListView -->
 
-            <!-- ListView -->
-            <ListView x:Name="FilesListView"
-                      ItemsSource="{Binding Files}" HorizontalOptions="Fill">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <Grid Padding="20">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <!-- Data Bindings -->
-                                <Label Text="{Binding fileName}" Grid.Column="0" VerticalOptions="Center" Margin="0,0,0,0" HorizontalOptions="Center"/>
-                                <Label Text="{Binding uploadDate}" Grid.Column="1" VerticalOptions="Center" Margin="0,0,0,0" HorizontalOptions="Center"/>
-                                <Button Text="Download" CommandParameter="{Binding fileName}" BackgroundColor="#3498db" Clicked="OnDownloadClicked" Grid.Column="2" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                                <Button Text="Send" CommandParameter="{Binding fileName}" BackgroundColor="#27ae60" Clicked="OnSendClicked" Grid.Column="3" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                                <Button Text="Delete" BackgroundColor="#e74c3c" Clicked="OnDeleteClicked" Grid.Column="4" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                            </Grid>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackLayout>
+                        <Frame BackgroundColor="AliceBlue">
+                        <ListView x:Name="FilesListView"
+                        ItemsSource="{Binding Files}" HorizontalOptions="Fill">
+                        
+                            <ListView.ItemTemplate>
+                          
+                            <DataTemplate>
+                                
+                                    <ViewCell>
+                                        <Grid Padding="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Data Bindings -->
+                                            <Label Text="{Binding fileName}" TextColor="Black" Grid.Column="0" VerticalOptions="Center" Margin="0,0,10,0" HorizontalOptions="Center" MaximumWidthRequest="400"/>
+                                            <Label Text="{Binding uploadDate}" TextColor="Black" Grid.Column="1" VerticalOptions="Center" Margin="80,0,0,0" HorizontalOptions="Start"/>
+                                            <Button Text="Download" CommandParameter="{Binding fileName}" BackgroundColor="#3498db" Clicked="OnDownloadClicked" Grid.Column="2" Margin="0,0,20,0" HorizontalOptions="Center"/>
+                                            <Button Text="Send" CommandParameter="{Binding fileName}" BackgroundColor="#27ae60" Clicked="OnSendClicked" Grid.Column="3" Margin="0,0,20,0" HorizontalOptions="Center"/>
+                                            <Button Text="Delete" BackgroundColor="#e74c3c" Clicked="OnDeleteClicked" Grid.Column="4" Margin="0,0,20,0" HorizontalOptions="Center"/>
+                                        </Grid>
+                                    </ViewCell>
+                                
+                            </DataTemplate>
+                           
+                        </ListView.ItemTemplate>
+                      
+                    </ListView>
+
+                        </Frame>
+
+                    </StackLayout>
+                </Frame>
+            </FlexLayout>
+        
+    </VerticalStackLayout>
     </ScrollView>
+  
+
 </ContentPage>
