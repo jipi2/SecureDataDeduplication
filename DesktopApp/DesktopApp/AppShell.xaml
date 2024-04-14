@@ -7,13 +7,15 @@
     Shell.FlyoutBehavior="Flyout"
     Title="DesktopApp">
 
-
-
     <ShellContent
-        Title="UploadPage"
         ContentTemplate="{DataTemplate local:UploadPage}"
         Route="UploadPage" 
         x:Name="UploadPageShell"/>
+
+    <ShellContent
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage"
+        x:Name="MainPageShell"/>
 
     <ShellContent
         Title="SignIn"
@@ -21,12 +23,6 @@
         Route="SignIn" 
         Shell.FlyoutBehavior="Disabled"
         x:Name="SignInShell"/>
-
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage"
-        x:Name="MainPageShell"/>
 
     <ShellContent
         Title="Register"

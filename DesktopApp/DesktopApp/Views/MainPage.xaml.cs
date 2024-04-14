@@ -1,4 +1,5 @@
 ﻿using DesktopApp.ViewModels;
+using Microsoft.Maui.Storage;
 using System.Diagnostics;
 
 namespace DesktopApp
@@ -22,7 +23,8 @@ namespace DesktopApp
             // Call your function here
             if (BindingContext is MainWindowViewModel viewModel)
             {
-                viewModel.GetFilesAndNames();
+                /*viewModel.GetFilesAndNames();*/
+                viewModel.Test();
             }
         }
         private void OnCounterClicked(object sender, EventArgs e)
@@ -50,10 +52,44 @@ namespace DesktopApp
                 DisplayAlert("Info", "Your file sent", "OK");
             }
         }
+       
         private void OnDeleteClicked(object sender, EventArgs e)
         {
 
         }
+
+        private async void OnThreeDotsTapped(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void FilesListView_Scrolled(object sender, ScrolledEventArgs e)
+        {
+
+        }
+
+        private async void OnActionsButtonClicked(object sender, EventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is string fileName)
+            {
+                var result = await DisplayActionSheet("Press one of the following: ", "Cancel", null, "Download", "Send", "Delete");
+
+                switch (result)
+                {
+                    case "Download":
+                        Debug.WriteLine(fileName);
+                        break;
+                    case "Send":
+                        Debug.WriteLine("Optiune 2 clicked");
+                        break;
+                    case "Delete":
+                        Debug.WriteLine("Optiune 3 clicked");
+                        break;
+                }
+            }
+
+        }
+
     }
 
 }

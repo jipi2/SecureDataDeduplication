@@ -3,21 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DesktopApp"
              x:Class="DesktopApp.UploadPage"
-             Title="Upload Files"
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels">
 
     <ContentPage.BindingContext>
         <viewModels:UploadPageViewModel/>
     </ContentPage.BindingContext>
 
-        <StackLayout Padding="20">
+    <!--<StackLayout Padding="20">
         <Label 
             Text="Upload Files"
             FontSize="24"
             HorizontalOptions="Center" 
             Margin="0,20,0,20"/>
 
-        <!-- File Picker Button -->
+        -->
+    <!-- File Picker Button -->
+    <!--
         <Button Text="Select File"
                 Clicked="OnSelectFileClicked"
                 HorizontalOptions="FillAndExpand"
@@ -31,7 +32,9 @@
                Margin="0,0,0,20"
                />
 
-        <!-- List of Selected Files -->
+        -->
+    <!-- List of Selected Files -->
+    <!--
         <CollectionView x:Name="selectedFilesCollection"
                         SelectionMode="None"
 
@@ -54,7 +57,9 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Upload Button -->
+        -->
+    <!-- Upload Button -->
+    <!--
         <Button Text="Upload"
                 Clicked="OnUploadFileClicked"
                 HorizontalOptions="FillAndExpand"
@@ -62,5 +67,71 @@
                 TextColor="White"
                 x:Name="uploadButton"
                 />
-    </StackLayout>
+    </StackLayout>-->
+
+    <Frame 
+        Margin="460,0,460,20"
+        BackgroundColor="#333333"
+        CornerRadius="50"
+        >
+        <VerticalStackLayout>
+
+            <Label 
+            HorizontalOptions="Center"
+            Text="Press here to select your file for uploading:"
+            TextColor="DarkGray"
+            FontSize="40" 
+        />
+
+            <ImageButton  
+            Source="plus_button.png"
+            BorderWidth="10"
+            CornerRadius="70"
+            WidthRequest="200"
+            Margin="0,50,0,0"
+            HorizontalOptions="Center"
+            Clicked="OnSelectFileClicked"
+            />
+
+            <Frame
+                    Margin="0,80,0,0"
+                    WidthRequest="600"
+                    Background="#2C2C2C"
+                    HeightRequest="100"
+                    CornerRadius="40"
+                    IsVisible="False"
+                    x:Name="fileNameFrame"
+                >
+                <ScrollView>
+                    <Label Text="{Binding FileNamePicked}"
+                            FontSize="20"
+                            HorizontalOptions="Center"
+                            Margin="0,0,0,0"
+                
+                        />
+                </ScrollView>
+            </Frame>
+            <ImageButton 
+                WidthRequest="200"
+                HeightRequest="200"
+                Source="cloud_upload.png"
+                CornerRadius="60"
+                Margin="0,70,0,0"
+                x:Name="uploadButton"
+                IsVisible="False"
+                Clicked="OnUploadFileClicked"
+                
+                />
+            
+            <Label 
+                HorizontalOptions="Center"
+                Text="Upload"
+                TextColor="DarkGray"
+                FontSize="40" 
+                Margin="0,20,0,0"
+                x:Name="uploadText"
+                IsVisible="False"
+                />
+        </VerticalStackLayout>
+    </Frame>
 </ContentPage>

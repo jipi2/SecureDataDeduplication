@@ -7,6 +7,13 @@
 
     <Shell.TitleView>
         <FlexLayout Direction="Row">
+            <!--<ImageButton
+                Source="plus_button.png" 
+                Margin="10,2,10,0"
+                WidthRequest="30"
+                HeightRequest="30"
+                BackgroundColor="Transparent"
+                />-->
 
             <SearchBar
                 FlexLayout.Grow="2"
@@ -14,9 +21,18 @@
                  WidthRequest="300"
                  HorizontalOptions="End"
                  Margin="0,1,5,0"
-                 
                  >
             </SearchBar>
+            <Button
+                Text="+"
+                WidthRequest="20"
+                HorizontalOptions="End"
+                FontSize="30"
+                HeightRequest="0"
+                Margin="5,2,5,0"
+                CornerRadius="20"
+                />
+
         </FlexLayout>
     </Shell.TitleView>
 
@@ -24,75 +40,92 @@
         <viewModels:MainWindowViewModel />
     </ContentPage.BindingContext>
 
-   
-
     <ScrollView>
-        <VerticalStackLayout Spacing="10" Margin="0,20,0,0">
-        
-            <FlexLayout>
-                <VerticalStackLayout FlexLayout.Grow="1">
-                    <BoxView HeightRequest="300" WidthRequest="500" Color="Red" />
+
+        <VerticalStackLayout Spacing="10" Margin="0,50,0,0" >
+            <FlexLayout Direction="Row" JustifyContent="Start">
+                
+                <VerticalStackLayout FlexLayout.Grow="0.0" MaximumWidthRequest="500" 
+                                    VerticalOptions="FillAndExpand" Margin="10,0,0,0" >
+
+           
+
+                        <Label Text="Filter by Tag:" FontSize="20" HorizontalTextAlignment="Start" Margin="0,0,0,20"/>
+
+                        <CollectionView ItemsSource="{Binding Tags}" HeightRequest="650" VerticalScrollBarVisibility="Always">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackLayout Orientation="Horizontal" Padding="10">
+                                        <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center"/>
+                                        <Label Text="{Binding tagName}" VerticalOptions="Center"/>
+                                    </StackLayout>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Button Margin="0,55,0,0" Text="Add Tag" WidthRequest="200" HorizontalOptions="Start"/>
+
                 </VerticalStackLayout>
-                <Frame BackgroundColor="Red" CornerRadius="10" Padding="10">
-                    <StackLayout Orientation="Vertical" Margin="20,0,0,0" Spacing="10">
-                    <Frame BackgroundColor="#f1c40f" CornerRadius="10" Padding="10">
-                        <Grid Padding="20">
+                
 
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Label Text="File Name" Grid.Column="0" HorizontalOptions="Center" FontSize="Large" Margin="0,0,10,0" VerticalOptions="Center" MaximumWidthRequest="400"/>
-                            <Label Text="Upload Date" Grid.Column="1" HorizontalOptions="Center" FontSize="Large" Margin="-730,0,0,0"/>
-                            <Label Text="Actions" Grid.Column="2" HorizontalOptions="Center" FontSize="Large" Margin="-300,0,0,0"/>
-                        </Grid>
-                    </Frame>
 
-                    <!-- ListView -->
+                <VerticalStackLayout Spacing="10" Margin="10,0,20,10" Padding="0,0,0,0">
+                    <CollectionView ItemsSource="{Binding Files}"  Margin="0,0,200,0" HeightRequest="800" VerticalScrollBarVisibility="Default">
 
-                        <Frame BackgroundColor="AliceBlue">
-                        <ListView x:Name="FilesListView"
-                        ItemsSource="{Binding Files}" HorizontalOptions="Fill">
-                        
-                            <ListView.ItemTemplate>
-                          
+                        <CollectionView.Header >
+                            <Frame BackgroundColor="Transparent" Margin="10"  VerticalOptions="Start" BorderColor="Transparent">
+                                <Grid ColumnDefinitions="*,*,*">
+                                    <Label TextColor="DarkGray" Text="Uploaded Files" Grid.Column="0" HorizontalTextAlignment="Center" FontSize="40"/>
+                                    <Label TextColor="DarkGray" Text="Upload Date" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="40"/>
+                                    <Label TextColor="DarkGray" Text="Options" Grid.Column="2" HorizontalTextAlignment="Center" FontSize="40"/>
+                                    <BoxView Color="Gray" HeightRequest="5" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="-1500,70,0,0" />
+                                </Grid>
+                            </Frame>
+                        </CollectionView.Header>
+                        <CollectionView.ItemTemplate>
+
                             <DataTemplate>
-                                
-                                    <ViewCell>
-                                        <Grid Padding="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <!-- Data Bindings -->
-                                            <Label Text="{Binding fileName}" TextColor="Black" Grid.Column="0" VerticalOptions="Center" Margin="0,0,10,0" HorizontalOptions="Center" MaximumWidthRequest="400"/>
-                                            <Label Text="{Binding uploadDate}" TextColor="Black" Grid.Column="1" VerticalOptions="Center" Margin="80,0,0,0" HorizontalOptions="Start"/>
-                                            <Button Text="Download" CommandParameter="{Binding fileName}" BackgroundColor="#3498db" Clicked="OnDownloadClicked" Grid.Column="2" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                                            <Button Text="Send" CommandParameter="{Binding fileName}" BackgroundColor="#27ae60" Clicked="OnSendClicked" Grid.Column="3" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                                            <Button Text="Delete" BackgroundColor="#e74c3c" Clicked="OnDeleteClicked" Grid.Column="4" Margin="0,0,20,0" HorizontalOptions="Center"/>
-                                        </Grid>
-                                    </ViewCell>
-                                
+                                <Frame BackgroundColor="Transparent" BorderColor="Transparent">
+
+                                    <Grid ColumnDefinitions="*,*,*" >
+
+                                        <Label TextColor="DarkGray" Text="{Binding fileName}" Grid.Column="0" HorizontalTextAlignment="Center" FontSize="20"/>
+
+                                        <Label TextColor="DarkGray" Text="{Binding uploadDate}" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="20"/>
+
+                                        <Button Text="Actions" Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Start"
+                    Clicked="OnActionsButtonClicked" CommandParameter="{Binding fileName}"/>
+
+                                        <BoxView Color="Gray" HeightRequest="2" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="-100,70,0,0"/>
+
+                                        <FlyoutBase.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem Text="Download"/>
+                                                <MenuFlyoutSeparator/>
+                                                <MenuFlyoutItem Text="Send"/>
+                                                <MenuFlyoutSeparator/>
+                                                <MenuFlyoutItem Text="Delete"/>
+                                            </MenuFlyout>
+                                        </FlyoutBase.ContextFlyout>
+
+                                    </Grid>
+                                </Frame>
+
                             </DataTemplate>
-                           
-                        </ListView.ItemTemplate>
-                      
-                    </ListView>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                        </Frame>
+                </VerticalStackLayout>
 
-                    </StackLayout>
-                </Frame>
             </FlexLayout>
-        
-    </VerticalStackLayout>
+
+
+        </VerticalStackLayout>
     </ScrollView>
-  
+
+
 
 </ContentPage>

@@ -18,7 +18,7 @@ namespace DesktopApp.ViewModels
         private CryptoService _cryptoService = new CryptoService();
 
         private string _fileNamePicked = "No file selected";
-        
+
         public string FileNamePicked
         {
             get { return _fileNamePicked; }
@@ -30,6 +30,11 @@ namespace DesktopApp.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        public UploadPageViewModel()
+        {
+            FileNamePicked = "";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -55,9 +60,11 @@ namespace DesktopApp.ViewModels
             _fileModel.fileName = result.FileName;
             _fileModel.encFileName = result.FileName + "_enc_";
 
-            _fileModel.fileStream = new FileStream(result.FullPath, FileMode.Open);
+            //liniile astea trebuie decomentate dupa ce terminam interfata
 
-            _computeHashTask = Task.Run(async () => await _cryptoService.GetHashOfFile(_fileModel.fileStream));
+            //_fileModel.fileStream = new FileStream(result.FullPath, FileMode.Open);
+
+            //_computeHashTask = Task.Run(async () => await _cryptoService.GetHashOfFile(_fileModel.fileStream));
             //_computeHashTask.Start();
         }
 

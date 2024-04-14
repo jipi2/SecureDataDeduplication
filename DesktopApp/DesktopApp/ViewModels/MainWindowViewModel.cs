@@ -1,6 +1,7 @@
 ﻿using CryptoLib;
 using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
+using DesktopApp.Models;
 using Python.Runtime;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,21 @@ namespace DesktopApp.ViewModels
         public MainWindowViewModel()
         {
             _files = new ObservableCollection<File>();
+            _tags = new ObservableCollection<TagModel>();
+        }
+
+        private ObservableCollection<TagModel> _tags;
+        public ObservableCollection<TagModel> Tags
+        {
+            get { return _tags; }
+            set
+            {
+                if (_tags != value)
+                {
+                    _tags = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         private ObservableCollection<File> _files ;
@@ -62,8 +78,93 @@ namespace DesktopApp.ViewModels
                 fileName = "file2",
                 uploadDate = "2021-10-11"
             };
+            File f3 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f4 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f5 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f6 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f7 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+
+            };
+            File f8 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f9 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f10 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f11 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f12= new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f13 = new File
+            {
+                fileName = "file2",
+                uploadDate = "2021-10-11"
+            };
+            File f14 = new File
+            {
+                fileName = "fileultim",
+                uploadDate = "2021-10-11"
+            };
             _files.Add(f1);
             _files.Add(f2);
+            _files.Add(f3);
+            _files.Add(f4);
+            _files.Add(f5);
+            _files.Add(f6);
+            _files.Add(f7);
+            _files.Add(f8);
+            _files.Add(f9);
+            _files.Add(f10);
+            _files.Add(f11);
+            _files.Add(f12);
+            _files.Add(f13);
+            _files.Add(f14);
+
+
+            for (int i = 0; i < 15; i++)
+            {
+                TagModel tag = new TagModel
+                {
+                    tagName = "Tag" + i,
+                    isChecked = false
+                };
+                _tags.Add(tag);
+            }
+
         }
 
         public async Task GetFilesAndNames()
