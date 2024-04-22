@@ -68,98 +68,108 @@ namespace DesktopApp.ViewModels
 
         public void Test()
         {
-            File f1 = new File
-            {
-                fileName = "fileushabfgjhiabdjhfkbaskjhfbasjbfdkjhasbdjkfbaskjbdfbasjldfbjkahsbdfkjhbasdkjhhfbkajbdf1",
-                uploadDate = "2021-10-10"
-            };
-            File f2 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f3 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f4 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f5 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f6 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f7 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
+            //File f1 = new File
+            //{
+            //    fileName = "file1",
+            //    uploadDate = "2021-10-10"
+            //};
+            //File f2 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f3 = new File
+            //{
+            //    fileName = "file3",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f4 = new File
+            //{
+            //    fileName = "file4",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f5 = new File
+            //{
+            //    fileName = "file5",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f6 = new File
+            //{
+            //    fileName = "file6",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f7 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
 
-            };
-            File f8 = new File
+            //};
+            //File f8 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f9 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f10 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f11 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f12= new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f13 = new File
+            //{
+            //    fileName = "file2",
+            //    uploadDate = "2021-10-11"
+            //};
+            //File f14 = new File
+            //{
+            //    fileName = "fileultim",
+            //    uploadDate = "2021-10-11"
+            //};
+            //_files.Add(f1);
+            //_files.Add(f2);
+            //_files.Add(f3);
+            //_files.Add(f4);
+            //_files.Add(f5);
+            //_files.Add(f6);
+            //_files.Add(f7);
+            //_files.Add(f8);
+            //_files.Add(f9);
+            //_files.Add(f10);
+            //_files.Add(f11);
+            //_files.Add(f12);
+            //_files.Add(f13);
+            //_files.Add(f14);
+
+            for (int i = 0; i < 15; i++)
             {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f9 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f10 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f11 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f12= new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f13 = new File
-            {
-                fileName = "file2",
-                uploadDate = "2021-10-11"
-            };
-            File f14 = new File
-            {
-                fileName = "fileultim",
-                uploadDate = "2021-10-11"
-            };
-            _files.Add(f1);
-            _files.Add(f2);
-            _files.Add(f3);
-            _files.Add(f4);
-            _files.Add(f5);
-            _files.Add(f6);
-            _files.Add(f7);
-            _files.Add(f8);
-            _files.Add(f9);
-            _files.Add(f10);
-            _files.Add(f11);
-            _files.Add(f12);
-            _files.Add(f13);
-            _files.Add(f14);
+                File f = new File
+                {
+                    fileName = "file" + i,
+                    uploadDate = "2021-10-1" + i
+                };
+                _files.Add(f);
+            }
 
 
             for (int i = 0; i < 15; i++)
             {
                 TagModel tag = new TagModel
                 {
-                    tagName = "Tag" + i,
+                    tagName = "Characteristic" + i,
                     isChecked = false
                 };
                 _tags.Add(tag);

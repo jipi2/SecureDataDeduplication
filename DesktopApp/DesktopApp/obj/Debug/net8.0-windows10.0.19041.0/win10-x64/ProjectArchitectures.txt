@@ -1,1 +1,0 @@
-D:\LicentaProiect\DesktopApp\DesktopApp\DesktopApp.csproj;x64

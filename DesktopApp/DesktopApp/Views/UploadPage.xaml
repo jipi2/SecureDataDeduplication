@@ -9,81 +9,50 @@
         <viewModels:UploadPageViewModel/>
     </ContentPage.BindingContext>
 
-    <!--<StackLayout Padding="20">
-        <Label 
-            Text="Upload Files"
-            FontSize="24"
-            HorizontalOptions="Center" 
-            Margin="0,20,0,20"/>
+    <Shell.TitleView>
+        <Grid BackgroundColor="Transparent">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                                  EndPoint="1,1">
+                    <GradientStop Color="#130D18"
+                               Offset="0.1" />
+                    <GradientStop Color="#372746"
+                               Offset="0.6" />
+                    <GradientStop Color="#392849"
+                               Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+        </Grid>
+    </Shell.TitleView>
+    
+    <Grid BackgroundColor="Transparent">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                            EndPoint="1,1">
+                <GradientStop Color="#130D18"
+                         Offset="0.1" />
+                <GradientStop Color="#372746"
+                         Offset="0.6" />
+                <GradientStop Color="#392849"
+                         Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
 
-        -->
-    <!-- File Picker Button -->
-    <!--
-        <Button Text="Select File"
-                Clicked="OnSelectFileClicked"
-                HorizontalOptions="FillAndExpand"
-                BackgroundColor="#007AFF"
-                TextColor="White"
-                Margin="0,0,0,20"/>
-
-        <Label Text="{Binding FileNamePicked}"
-               FontSize="20"
-               HorizontalOptions="Start"
-               Margin="0,0,0,20"
-               />
-
-        -->
-    <!-- List of Selected Files -->
-    <!--
-        <CollectionView x:Name="selectedFilesCollection"
-                        SelectionMode="None"
-
-
-                        Margin="0,0,0,20">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <StackLayout Orientation="Horizontal">
-                        <Label Text="" 
-                               VerticalOptions="Center"/>
-                        <Button Text="Remove" 
-                                
-                                CommandParameter="{Binding .}"
-                                BackgroundColor="#FF3B30"
-                                TextColor="White"
-                                HorizontalOptions="End"
-                                WidthRequest="80"/>
-                    </StackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-        -->
-    <!-- Upload Button -->
-    <!--
-        <Button Text="Upload"
-                Clicked="OnUploadFileClicked"
-                HorizontalOptions="FillAndExpand"
-                BackgroundColor="#4CD964"
-                TextColor="White"
-                x:Name="uploadButton"
-                />
-    </StackLayout>-->
-
-    <Frame 
+        <Frame 
         Margin="460,0,460,20"
         BackgroundColor="#333333"
         CornerRadius="50"
         >
-        <VerticalStackLayout>
+            <VerticalStackLayout>
 
-            <Label 
+                <Label 
             HorizontalOptions="Center"
             Text="Press here to select your file for uploading:"
             TextColor="DarkGray"
             FontSize="40" 
         />
 
-            <ImageButton  
+                <ImageButton  
             Source="plus_button.png"
             BorderWidth="10"
             CornerRadius="70"
@@ -93,7 +62,7 @@
             Clicked="OnSelectFileClicked"
             />
 
-            <Frame
+                <Frame
                     Margin="0,80,0,0"
                     WidthRequest="600"
                     Background="#2C2C2C"
@@ -102,16 +71,16 @@
                     IsVisible="False"
                     x:Name="fileNameFrame"
                 >
-                <ScrollView>
-                    <Label Text="{Binding FileNamePicked}"
+                    <ScrollView>
+                        <Label Text="{Binding FileNamePicked}"
                             FontSize="20"
                             HorizontalOptions="Center"
                             Margin="0,0,0,0"
                 
                         />
-                </ScrollView>
-            </Frame>
-            <ImageButton 
+                    </ScrollView>
+                </Frame>
+                <ImageButton 
                 WidthRequest="200"
                 HeightRequest="200"
                 Source="cloud_upload.png"
@@ -122,8 +91,8 @@
                 Clicked="OnUploadFileClicked"
                 
                 />
-            
-            <Label 
+
+                <Label 
                 HorizontalOptions="Center"
                 Text="Upload"
                 TextColor="DarkGray"
@@ -132,6 +101,7 @@
                 x:Name="uploadText"
                 IsVisible="False"
                 />
-        </VerticalStackLayout>
-    </Frame>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 </ContentPage>

@@ -5,17 +5,72 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:DesktopApp"
     Shell.FlyoutBehavior="Flyout"
-    Title="DesktopApp">
+    Title="DesktopApp"
+  
+    >
 
-    <ShellContent
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="Auto, Auto" RowSpacing="40" Margin="0,20,0,0">
+                <!-- Image Column -->
+                <Image Source="{Binding Icon}" VerticalOptions="CenterAndExpand"  WidthRequest="30" HeightRequest="30" Grid.Column="0"/>
+
+                <!-- Label Column -->
+                <Label Text="{Binding Title}" FontAttributes="Bold"
+                   FontSize="Medium" VerticalTextAlignment="Center"
+                    Grid.Column="1" Margin="20,0,0,0"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+
+
+    <Shell.FlyoutBackground>
+        <LinearGradientBrush StartPoint="0,0"
+                             EndPoint="1,1">
+            <GradientStop Color="#130D18"
+                          Offset="0.1" />
+            <GradientStop Color="#7A559A"
+                          Offset="0.6" />
+            <GradientStop Color="#C485FC"
+                          Offset="1.0" />
+        </LinearGradientBrush>
+    </Shell.FlyoutBackground>
+
+    <FlyoutItem Title="MainPage"
+                Icon="house2.png"
+                
+                >
+        <ShellContent Title="MainPage" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage">
+        </ShellContent>
+    </FlyoutItem>
+
+    <FlyoutItem Title="UploadPage"
+                Icon="cloud_arrow_2.png">
+        <ShellContent Title="UploadPage" ContentTemplate="{DataTemplate local:UploadPage}" Route="UploadPage"/>
+    </FlyoutItem>
+
+   
+    <FlyoutItem Title="Log out"
+                Icon="door_open.png">
+        <Tab>
+            <ShellContent Title="SignIn" ContentTemplate="{DataTemplate local:SignInPage}" Route="SignInPage"/>
+        </Tab>
+    </FlyoutItem>
+
+    
+     
+
+    <!--<ShellContent
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage"
+        x:Name="MainPageShell"/>-->
+
+    <!--<ShellContent
         ContentTemplate="{DataTemplate local:UploadPage}"
         Route="UploadPage" 
         x:Name="UploadPageShell"/>
-
-    <ShellContent
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage"
-        x:Name="MainPageShell"/>
 
     <ShellContent
         Title="SignIn"
@@ -28,7 +83,7 @@
         Title="Register"
         ContentTemplate="{DataTemplate local:SignUpPage}"
         Route="Register" 
-        x:Name="SignUpShell"/>
+        x:Name="SignUpShell"/>-->
 
 
 </Shell>

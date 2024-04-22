@@ -10,10 +10,10 @@ namespace DesktopApp
         public MainPage()
         {
             InitializeComponent();
-            ShellContent content = AppShell.Current.FindByName<ShellContent>("SignInShell");
-            content.IsVisible = false;
-            content = AppShell.Current.FindByName<ShellContent>("SignUpShell");
-            content.IsVisible = false;
+            //ShellContent content = AppShell.Current.FindByName<ShellContent>("SignInShell");
+            //content.IsVisible = false;
+            //content = AppShell.Current.FindByName<ShellContent>("SignUpShell");
+            //content.IsVisible = false;
         }
 
         protected async override void OnAppearing()
@@ -23,7 +23,7 @@ namespace DesktopApp
             // Call your function here
             if (BindingContext is MainWindowViewModel viewModel)
             {
-                /*viewModel.GetFilesAndNames();*/
+                //viewModel.GetFilesAndNames();
                 viewModel.Test();
             }
         }
@@ -89,7 +89,7 @@ namespace DesktopApp
             }
 
         }
-
+ 
     }
 
 }

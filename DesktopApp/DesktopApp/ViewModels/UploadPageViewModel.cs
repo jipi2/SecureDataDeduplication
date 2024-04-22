@@ -60,16 +60,19 @@ namespace DesktopApp.ViewModels
             _fileModel.fileName = result.FileName;
             _fileModel.encFileName = result.FileName + "_enc_";
 
-            //liniile astea trebuie decomentate dupa ce terminam interfata
+/*            liniile astea trebuie decomentate dupa ce terminam interfata*/
 
-            //_fileModel.fileStream = new FileStream(result.FullPath, FileMode.Open);
+            _fileModel.fileStream = new FileStream(result.FullPath, FileMode.Open);
 
-            //_computeHashTask = Task.Run(async () => await _cryptoService.GetHashOfFile(_fileModel.fileStream));
+            _computeHashTask = Task.Run(async () => await _cryptoService.GetHashOfFile(_fileModel.fileStream));
             //_computeHashTask.Start();
         }
 
         public async Task EncryptFile()
         {
+            Stopwatch encryptTime = new Stopwatch();
+            encryptTime.Start();
+
             byte[] hash = await _computeHashTask;
             _fileModel.fileStream.Close();
 
@@ -86,6 +89,9 @@ namespace DesktopApp.ViewModels
         
             _fileModel.base64Tag = Convert.ToBase64String( await _cryptoService.EncryptFileStream(_fileModel.fileStream, _fileModel.key, _fileModel.iv, _fileModel.encFileName));
             _fileModel.fileStream.Close();
+
+            encryptTime.Stop();
+            Debug.WriteLine("Encrypt time: " + encryptTime.Elapsed);
         }
 
 
@@ -118,8 +124,10 @@ namespace DesktopApp.ViewModels
             multipartContent.Add(new StringContent(fileDto.base64Iv), "base64Iv");
             multipartContent.Add(new StringContent(fileDto.base64Tag), "base64Tag");
             multipartContent.Add(new StreamContent(fileStream), "file", fileDto.fileName);
-            
 
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
             var response = await httpClient.PostAsync("uploadFile", multipartContent);
             if (!response.IsSuccessStatusCode)
             {
@@ -128,7 +136,8 @@ namespace DesktopApp.ViewModels
                     throw new Exception("You already have this file in your storage");
                 throw new Exception("An error has occured, while sending the file, please try again");
             }
-
+            stopwatch.Stop();
+            Debug.WriteLine("Challenge time: " + stopwatch.Elapsed);
             fileStream.Close();
             File.Delete(encFilePath);
         }

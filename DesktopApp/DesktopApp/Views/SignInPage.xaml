@@ -5,22 +5,36 @@
              Shell.NavBarIsVisible="False"
              Title="SignInPage"
              xmlns:handless="clr-namespace:DesktopApp.Handlers"
-             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels">
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             Shell.FlyoutBehavior="Disabled">
 
     <ContentPage.BindingContext>
         <viewModels:SignInViewModel />
     </ContentPage.BindingContext>
 
-    <StackLayout Padding="20" VerticalOptions="CenterAndExpand" MaximumWidthRequest="500">
-        <Label Text="Welcome" FontSize="24" HorizontalOptions="Center" Margin="0,0,0,20" />
+    <Grid BackgroundColor="Transparent">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                             EndPoint="1,1">
+                <GradientStop Color="#130D18"
+                          Offset="0.1" />
+                <GradientStop Color="#372746"
+                          Offset="0.6" />
+                <GradientStop Color="#392849"
+                          Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <StackLayout Padding="20" VerticalOptions="CenterAndExpand" MaximumWidthRequest="500">
+            <Label Text="Welcome" FontSize="24" HorizontalOptions="Center" Margin="0,0,0,20" />
 
-        <Entry Placeholder="Email" FontSize="18" Margin="0,0,0,10" Text="{Binding Email}"/>
-        <Entry Placeholder="Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding Password}"/>
+            <Entry Placeholder="Email" FontSize="18" Margin="0,0,0,10" Text="{Binding Email}"/>
+            <Entry Placeholder="Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding Password}"/>
 
-        <Button Text="Login" FontSize="20" BackgroundColor="#0078D4" TextColor="White" CornerRadius="10"  x:Name="loginButton" Clicked="OnLoginClicked" CommandParameter="{Binding .}"/>
+            <Button Text="Login" FontSize="20" BackgroundColor="#0078D4" TextColor="White" CornerRadius="10"  x:Name="loginButton" Clicked="OnLoginClicked" CommandParameter="{Binding .}"/>
 
-        <Label Text="Don't have an account?" FontSize="16" HorizontalOptions="Center" Margin="0,20,0,0" />
-        <Button Text="Register" FontSize="16" BackgroundColor="#009688" TextColor="White" CornerRadius="10"  x:Name="registerButton" Clicked="OnRegisterClicked"/>
-    </StackLayout>
+            <Label Text="Don't have an account?" FontSize="16" HorizontalOptions="Center" Margin="0,20,0,0" />
+            <Button Text="Register" FontSize="16" BackgroundColor="#009688" TextColor="White" CornerRadius="10"  x:Name="registerButton" Clicked="OnRegisterClicked"/>
+        </StackLayout>
+    </Grid>
 
 </ContentPage>

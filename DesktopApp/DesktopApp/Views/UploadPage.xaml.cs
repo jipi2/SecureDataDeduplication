@@ -29,20 +29,20 @@ namespace DesktopApp
 
         private async void OnUploadFileClicked(object sender, EventArgs e)
         {
-			//try
-			//{
-			//	uploadButton.IsEnabled = false;
-			//	DisplayAlert("Info", "Your file is being encrypted", "OK");
-			//	Debug.WriteLine("File encrypted");
-			//	await _viewModel.EncryptFile();
-			//	await _viewModel.UploadFile();
-			//	uploadButton.IsEnabled = true;
-			//}
-			//catch (Exception ex)
-			//{
-			//	uploadButton.IsEnabled = true;
-			//	DisplayAlert("Error", ex.Message, "OK");
-			//}
+			try
+			{
+				uploadButton.IsEnabled = false;
+				DisplayAlert("Info", "Your file is being encrypted", "OK");
+				Debug.WriteLine("File encrypted");
+				await _viewModel.EncryptFile();
+				await _viewModel.UploadFile();
+				uploadButton.IsEnabled = true;
+			}
+			catch (Exception ex)
+			{
+				uploadButton.IsEnabled = true;
+				DisplayAlert("Error", ex.Message, "OK");
+			}
 		}
 
 
