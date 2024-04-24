@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             x:Class="DesktopApp.SendPopup"
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             CanBeDismissedByTappingOutsideOfPopup="True"
+             Color="Transparent"
+             >
+
+    <Frame BackgroundColor="Transparent" CornerRadius="20">
+
+        <Frame.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                           EndPoint="1,1">
+                <GradientStop Color="#422C52"
+                        Offset="0.1" />
+                <GradientStop Color="#5F4076"
+                        Offset="0.6" />
+                <GradientStop Color="#855AA6"
+                        Offset="1.0" />
+            </LinearGradientBrush>
+        </Frame.Background>
+
+        <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150">
+             <Entry Placeholder="Receiver Email" FontSize="18" Margin="0,0,100,0" x:Name="destEmailTxt" 
+                    HeightRequest="40" WidthRequest="250" TextColor="White" PlaceholderColor="White"/>
+
+            <Button Text="Send" FontSize="18" Margin="0,0,0,0" x:Name="sendBtn" WidthRequest="100" HeightRequest="40"
+                    Clicked="OnSendButtonClicked"/>
+        </StackLayout>
+            
+        
+
+    </Frame>
+</mct:Popup>

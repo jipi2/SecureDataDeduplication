@@ -1,19 +1,20 @@
-﻿    
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             x:Class="DesktopApp.MainPage"
             xmlns:local="clr-namespace:DesktopApp"
             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
-             
             >
 
 
-     <ContentPage.Resources>
+
+    <ContentPage.Resources>
         <x:String x:Key="bell">&#xf0f3;</x:String>
     </ContentPage.Resources>
 
-    
-    
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
     <Shell.TitleView>
         <Grid BackgroundColor="Transparent">
             <Grid.Background>
@@ -49,6 +50,7 @@
                 HeightRequest="0"
                 Margin="5,2,5,0"
                 CornerRadius="20"
+                Clicked="OnAddButtonClicked"
                 />
 
                 <Image Margin="0,0,0,0" IsVisible="True" x:Name="emptyBellImage">
@@ -58,8 +60,11 @@
                 </Image>
                 <Image Margin="0,0,0,0" IsVisible="False" x:Name="filledBellImage">
                     <Image.Source>
-                        <FontImageSource FontFamily="FAS" Glyph="{StaticResource bell}" Color="Red"></FontImageSource>
+                        <FontImageSource FontFamily="FAS" Glyph="{StaticResource bell}" Color="Red" ></FontImageSource>
                     </Image.Source>
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnFilledBellTapped" />
+                    </Image.GestureRecognizers>
                 </Image>
                 <Label Text="0" FontSize="20" Margin="0,0,20,0" x:Name="notificationNumberLabel"/>
 
@@ -90,7 +95,7 @@
                 <FlexLayout Direction="Row" JustifyContent="Start">
 
                     <VerticalStackLayout FlexLayout.Grow="0.0" MaximumWidthRequest="500" 
-                                    VerticalOptions="FillAndExpand" Margin="10,0,0,0" >
+                                    VerticalOptions="FillAndExpand" Margin="10,0,0,0">
 
                         <Label Text="Filter by Tag:" FontSize="20" HorizontalTextAlignment="Start" Margin="0,0,0,20"/>
 
@@ -102,7 +107,7 @@
                                 <DataTemplate>
                                     <StackLayout Orientation="Horizontal" Padding="10">
                                         <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center"/>
-                                        <Label Text="{Binding tagName}" VerticalOptions="Center"/>
+                                        <Label Text="{Binding tagName}" VerticalOptions="Center" MaximumWidthRequest="100"/>
                                     </StackLayout>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
@@ -115,7 +120,7 @@
 
 
                     <VerticalStackLayout Spacing="10" Margin="10,0,20,10" Padding="0,0,0,0">
-                        <CollectionView ItemsSource="{Binding Files}"  Margin="0,0,200,0" HeightRequest="800" VerticalScrollBarVisibility="Default">
+                        <CollectionView x:Name="fcView" ItemsSource="{Binding Files}"  Margin="0,0,200,0" HeightRequest="800" VerticalScrollBarVisibility="Default">
 
                             <CollectionView.Header >
                                 <Frame BackgroundColor="Transparent" Margin="10"  VerticalOptions="Start" BorderColor="Transparent">
@@ -124,8 +129,6 @@
                                         <Label TextColor="DarkGray" Text="Upload Date" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="40"/>
                                         <Label TextColor="DarkGray" Text="Options" Grid.Column="2" HorizontalTextAlignment="Center" FontSize="40"/>
                                         <BoxView Color="Gray" HeightRequest="5" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="-1500,70,0,0" />
-
-
 
                                     </Grid>
                                 </Frame>
@@ -148,11 +151,11 @@
 
                                             <FlyoutBase.ContextFlyout>
                                                 <MenuFlyout>
-                                                    <MenuFlyoutItem Text="Download"/>
+                                                    <MenuFlyoutItem Text="Download" Clicked="OnMenuFlyoutItemDownloadClick" CommandParameter="{Binding fileName}"/>
                                                     <MenuFlyoutSeparator/>
-                                                    <MenuFlyoutItem Text="Send"/>
+                                                    <MenuFlyoutItem Text="Send" Clicked="OnMenuFlyoutItemSendClick" CommandParameter="{Binding fileName}"/>
                                                     <MenuFlyoutSeparator/>
-                                                    <MenuFlyoutItem Text="Delete"/>
+                                                    <MenuFlyoutItem Text="Delete" Clicked="OnMenuItemDeleteClicked" CommandParameter="{Binding fileName}"/>
                                                 </MenuFlyout>
                                             </FlyoutBase.ContextFlyout>
 

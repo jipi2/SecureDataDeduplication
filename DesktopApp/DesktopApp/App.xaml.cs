@@ -1,4 +1,7 @@
-﻿   
+﻿
+using DesktopApp.HttpFolder;
+using System.Diagnostics;
+
 namespace DesktopApp
 {
     public partial class App : Application
@@ -9,8 +12,38 @@ namespace DesktopApp
             InitializeComponent();
 
             MainPage = new AppShell();
-           
+            
+          
+        }
+        protected override async void OnStart()
+        {
+            // Navigate to SignUpPage
+            //Shell.Current.GoToAsync("//SignInPage");
+            
+            if (MainPage is AppShell shell)
+            {
 
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetApiClient();
+                httpClient.DefaultRequestHeaders.Remove("Authorization");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+                try
+                {
+                    var response = await httpClient.GetAsync("/api/User/isConnected");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        await shell.SetRootPageMainPage();
+                    }
+                    else
+                    {
+                        await shell.SetRootPageSignIn();
+                    }
+                }
+                catch (Exception e)
+                {
+                   Debug.WriteLine(e.Message);
+                }
+            }
         }
 
         //protected override Window CreateWindow(IActivationState? activationState)

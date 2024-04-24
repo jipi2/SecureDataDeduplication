@@ -5,6 +5,11 @@
              x:Class="DesktopApp.UploadPage"
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels">
 
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+    
     <ContentPage.BindingContext>
         <viewModels:UploadPageViewModel/>
     </ContentPage.BindingContext>

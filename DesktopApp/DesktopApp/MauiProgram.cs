@@ -1,4 +1,5 @@
-﻿using DesktopApp.ViewModels;
+﻿using CommunityToolkit.Maui;
+using DesktopApp.ViewModels;
 using FileStorageApp.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ namespace DesktopApp
 
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

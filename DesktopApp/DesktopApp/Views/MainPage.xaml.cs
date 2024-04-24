@@ -1,5 +1,8 @@
-﻿using DesktopApp.ViewModels;
+﻿using CommunityToolkit.Maui.Views;
+using DesktopApp.Dto;
+using DesktopApp.ViewModels;
 using Microsoft.Maui.Storage;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace DesktopApp
@@ -10,6 +13,7 @@ namespace DesktopApp
         public MainPage()
         {
             InitializeComponent();
+            
             //ShellContent content = AppShell.Current.FindByName<ShellContent>("SignInShell");
             //content.IsVisible = false;
             //content = AppShell.Current.FindByName<ShellContent>("SignUpShell");
@@ -20,17 +24,30 @@ namespace DesktopApp
         {
             base.OnAppearing();
 
-            // Call your function here
+            
             if (BindingContext is MainWindowViewModel viewModel)
             {
-                //viewModel.GetFilesAndNames();
-                viewModel.Test();
+                viewModel.GetFilesAndNames();
+                viewModel.GetTags();
+                int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
+                if (numberOfRecFiles > 0)
+                {
+                    emptyBellImage.IsVisible = false;
+                    filledBellImage.IsVisible = true;
+                    notificationNumberLabel.Text = numberOfRecFiles.ToString();
+                }
+                else 
+                {
+                    emptyBellImage.IsVisible = true;
+                    filledBellImage.IsVisible = false;
+                    notificationNumberLabel.Text = "0";
+                }
+                //viewModel.Test();
             }
+            
         }
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
 
-        }
+
 
         private async void OnDownloadClicked(object sender, EventArgs e)
         {
@@ -42,31 +59,94 @@ namespace DesktopApp
             }
 
         }
-        private async void OnSendClicked(object sender, EventArgs e)
+
+
+        private async void OnMenuFlyoutItemDownloadClick(object sender, EventArgs e)
         {
-            string dest = "test@mta";
-            if (sender is Button button && button.CommandParameter is string fileName)
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
-                await viewModel.SendFile(fileName, dest);
-                DisplayAlert("Info", "Your file sent", "OK");
+                await viewModel.DownloadFile(fileName);
+                DisplayAlert("Info", "Your file has downloaded", "OK");
+            }
+        }
+
+        private async void OnMenuFlyoutItemSendClick(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            {
+                var sendPopup = new SendPopup(fileName);
+
+                // Attach an event handler to the Closed event
+                sendPopup.Closed += async (s, args) =>
+                {
+                    // Show the DisplayAlert after the popup is closed
+                    await DisplayAlert("Info", "Your file has been sent", "OK");
+                };
+
+                this.ShowPopup(sendPopup);
+            }
+        }
+
+        private async void OnSendClicked(object sender, EventArgs e)
+        {
+            //string dest = "test@mta";
+            if (sender is Button button && button.CommandParameter is string fileName)
+            {
+                var sendPopup = new SendPopup(fileName);
+
+                // Attach an event handler to the Closed event
+                sendPopup.Closed += async (s, args) =>
+                {
+                    // Show the DisplayAlert after the popup is closed
+                    await DisplayAlert("Info", "Your file has been sent", "OK");
+                };
+
+                this.ShowPopup(sendPopup);
             }
         }
        
-        private void OnDeleteClicked(object sender, EventArgs e)
+        private async void OnDeleteClicked(object sender, EventArgs e)
         {
+            if (sender is Button button && button.CommandParameter is string fileName)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                try
+                {
+                    await viewModel.DeleteFile(fileName);
+                    fcView.ItemsSource = viewModel.Files;
+                    DisplayAlert("Info", "Your file has been deleted", "OK");
 
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    DisplayAlert("Error", "Your could not be deleted", "OK");
+                }
+
+            }
         }
 
-        private async void OnThreeDotsTapped(object sender, EventArgs e)
+        private async void OnMenuItemDeleteClicked(object sender, EventArgs e)
         {
-            
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                try
+                {
+                    await viewModel.DeleteFile(fileName);
+                    DisplayAlert("Info", "Your file has been deleted", "OK");
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    DisplayAlert("Error", "Your could not be deleted", "OK");
+                }
+
+            }
         }
 
-        private void FilesListView_Scrolled(object sender, ScrolledEventArgs e)
-        {
-
-        }
 
         private async void OnActionsButtonClicked(object sender, EventArgs e)
         {
@@ -77,19 +157,39 @@ namespace DesktopApp
                 switch (result)
                 {
                     case "Download":
-                        Debug.WriteLine(fileName);
+                        OnDownloadClicked(sender, e);
                         break;
                     case "Send":
-                        Debug.WriteLine("Optiune 2 clicked");
+                        OnSendClicked(sender, e);
                         break;
                     case "Delete":
-                        Debug.WriteLine("Optiune 3 clicked");
+                        OnDeleteClicked(sender, e);
                         break;
                 }
             }
 
         }
- 
+        private async void OnAddButtonClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//UploadPage");
+
+        }
+
+        private async void OnFilledBellTapped(object sender, EventArgs e)
+        {
+
+            try
+            {
+                this.ShowPopup(new TransferPagePopout());
+                fcView.ItemsSource = (BindingContext as MainWindowViewModel).RecFiles;
+
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Error", "Could not load the request", "OK");
+            }
+
+        }
     }
 
 }

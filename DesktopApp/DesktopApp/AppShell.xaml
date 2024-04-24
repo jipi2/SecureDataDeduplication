@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:DesktopApp"
     Shell.FlyoutBehavior="Flyout"
     Title="DesktopApp"
-  
+
     >
 
 
@@ -38,20 +38,25 @@
         </LinearGradientBrush>
     </Shell.FlyoutBackground>
 
+
     <FlyoutItem Title="MainPage"
                 Icon="house2.png"
                 
                 >
+        <Tab>
         <ShellContent Title="MainPage" ContentTemplate="{DataTemplate local:MainPage}" Route="MainPage">
+            
         </ShellContent>
+        </Tab>
     </FlyoutItem>
 
     <FlyoutItem Title="UploadPage"
                 Icon="cloud_arrow_2.png">
+        <Tab>
         <ShellContent Title="UploadPage" ContentTemplate="{DataTemplate local:UploadPage}" Route="UploadPage"/>
+        </Tab>
     </FlyoutItem>
 
-   
     <FlyoutItem Title="Log out"
                 Icon="door_open.png">
         <Tab>
@@ -59,8 +64,15 @@
         </Tab>
     </FlyoutItem>
 
-    
-     
+    <!--<ShellContent
+          Title="SignIn"
+          ContentTemplate="{DataTemplate local:SignInPage}"
+          Route="SignInPage" 
+          Shell.FlyoutBehavior="Disabled"
+          x:Name="SignInShell" 
+          IsVisible="True"
+      />-->
+
 
     <!--<ShellContent
         ContentTemplate="{DataTemplate local:MainPage}"
@@ -72,12 +84,13 @@
         Route="UploadPage" 
         x:Name="UploadPageShell"/>
 
-    <ShellContent
-        Title="SignIn"
-        ContentTemplate="{DataTemplate local:SignInPage}"
-        Route="SignIn" 
-        Shell.FlyoutBehavior="Disabled"
-        x:Name="SignInShell"/>
+        <ShellContent
+      Title="SignIn"
+      ContentTemplate="{DataTemplate local:SignInPage}"
+      Route="SignIn" 
+      Shell.FlyoutBehavior="Disabled"
+      x:Name="SignInShell"
+      />
 
     <ShellContent
         Title="Register"

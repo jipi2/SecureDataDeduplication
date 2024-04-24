@@ -1,10 +1,13 @@
 using Microsoft.Maui.Controls;
 using DesktopApp.ViewModels;
 using CryptoLib;
+using Org.BouncyCastle.Security;
+using DesktopApp.HttpFolder;
 
 namespace DesktopApp
 {
-	public partial class SignInPage : ContentPage
+
+    public partial class SignInPage : ContentPage
 	{
 		public SignInPage()
 		{
@@ -12,6 +15,9 @@ namespace DesktopApp
             NavigationPage.SetHasBackButton(this, false);
         }
 
+
+
+     
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new SignUpPage());

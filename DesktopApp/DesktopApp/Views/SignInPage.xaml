@@ -6,7 +6,13 @@
              Title="SignInPage"
              xmlns:handless="clr-namespace:DesktopApp.Handlers"
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
-             Shell.FlyoutBehavior="Disabled">
+             Shell.FlyoutBehavior="Disabled"
+            
+             >
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
 
     <ContentPage.BindingContext>
         <viewModels:SignInViewModel />

@@ -36,7 +36,8 @@ namespace DesktopApp
 				Debug.WriteLine("File encrypted");
 				await _viewModel.EncryptFile();
 				await _viewModel.UploadFile();
-				uploadButton.IsEnabled = true;
+                DisplayAlert("Info", "Your file has been uploaded", "OK");
+                uploadButton.IsEnabled = true;
 			}
 			catch (Exception ex)
 			{

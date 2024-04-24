@@ -350,6 +350,10 @@ class FileService():
                 uf = session.query(UserFile).join(User, User.id == UserFile.user_id).filter(UserFile.fileName == self.filename, User.email == self.userEmail).first()
                 file = session.query(File).filter(File.id == uf.file_id).first()
                 blob_file = session.query(BlobFile).filter(BlobFile.id == file.blob_file_id).first()
+                
+                if os.path.exists(blob_file.encFilePath):
+                    os.remove(blob_file.encFilePath)
+                
                 session.delete(uf)
                 session.delete(file)
                 session.delete(blob_file)
@@ -454,6 +458,11 @@ class FileService():
                   
             files = session.query(File).all()
             blob_files = session.query(BlobFile).all()
+            
+            for blob_f  in blob_files:
+                if os.path.exists(blob_f.encFilePath):
+                    os.remove(blob_f.encFilePath)
+            
             user_files = session.query(UserFile).all()
 
             for user_file in user_files:
