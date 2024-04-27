@@ -7,7 +7,7 @@ namespace DesktopApp
 {
 	public partial class TransferPagePopout 
 	{
-		public TransferPagePopout()
+        public TransferPagePopout()
 		{
 			InitializeComponent();
 		}
@@ -35,6 +35,7 @@ namespace DesktopApp
                     await viewModel.RemoveReceivedFile(item);
                     //sincronizare cu listaaaa
                     filesCollectionView.ItemsSource = viewModel.RecFiles;
+                    
                 }
                 catch (Exception ex)
                 {
@@ -42,5 +43,6 @@ namespace DesktopApp
                 }
             }
         }
+
     }
 }

@@ -19,6 +19,7 @@ namespace DesktopApp.ViewModels
 {
     public class MainWindowViewModel :INotifyPropertyChanged
     {
+        private int dateSort = 0;
 
         public class File
         {
@@ -28,9 +29,28 @@ namespace DesktopApp.ViewModels
 
         public MainWindowViewModel()
         {
+            dateSort = 0;
             _files = new ObservableCollection<File>();
             _tags = new ObservableCollection<TagModel>();
+            _filteredFiles = new ObservableCollection<File>();
             _recFiles = new ObservableCollection<RecievedFilesDto>();
+            _searchText = "";
+
+        }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    OnPropertyChanged(nameof(SearchText));
+                    FilterFiles(); // Filter files whenever search text changes
+                }
+            }
         }
 
         private ObservableCollection<RecievedFilesDto> _recFiles;
@@ -75,12 +95,26 @@ namespace DesktopApp.ViewModels
             }
         }
 
+
+        private ObservableCollection<File> _filteredFiles;
+        public ObservableCollection<File> FilteredFiles
+        {
+            get => _filteredFiles;
+            set
+            {
+                _filteredFiles = value;
+                OnPropertyChanged(nameof(FilteredFiles));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
 
         public void Test()
         {
@@ -409,12 +443,16 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
                 AcceptFileTransferDto dto = new AcceptFileTransferDto
                 {
                     senderEmail = fileInf.senderEmail,
+                    receiverEmail = email,
                     fileName = fileInf.fileName,
                     base64FileKey = base64key,
                     base64FileIv = base64iv
                 };
 
-                var response2 = await httpClient.PostAsJsonAsync("/api/File/acceptRecievedFile", dto);
+                var httpClient2 = HttpServiceCustom.GetProxyClient();
+                httpClient2.DefaultRequestHeaders.Remove("Authorization");
+                httpClient2.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+                var response2 = await httpClient2.PostAsJsonAsync("acceptReceivedFile", dto);
                 if (response2.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("File accepted successfully");
@@ -491,6 +529,34 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             }
 
             await GetFilesAndNames();
+        }
+
+        public async Task SortByUploadDate()
+        {
+            if(dateSort == 0)
+            {
+                _files = new ObservableCollection<File>(_files.OrderBy(f => f.uploadDate));
+                dateSort = 1;
+            }
+            else
+            {
+                _files = new ObservableCollection<File>(_files.OrderByDescending(f => f.uploadDate));
+                dateSort = 0;
+            }
+        }
+
+        public void FilterFiles()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                _filteredFiles = _files; // If search text is empty, show all files
+            }
+            else
+            {
+                // Filter files based on search text
+                _filteredFiles = new ObservableCollection<File>(
+                    _files.Where(file => file.fileName.Contains(_searchText)));
+            }
         }
     }
 }

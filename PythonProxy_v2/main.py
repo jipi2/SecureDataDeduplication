@@ -28,6 +28,7 @@ from Dto.TagDto import TagDto
 from Dto.FileTransferDto import FileTransferDto
 from Dto.EmailFilenameDto import *
 from Dto.CapsuleDto import CapsuleDto
+from Dto.AcceptFileTransferDto import AcceptFileTransferDto
 
 #Services
 from services.FileService import FileService
@@ -243,10 +244,25 @@ async def sendFile(request:Request, fileTransferDto:CapsuleDto):
         token = authorization_header.split(" ")[1]
     _fileService = FileService(userToken=token, filename=fileTransferDto.fileName, recieverEmail=fileTransferDto.destEmail)
     try:
-        result, userEmail = await _fileService.sendFile(fileTransferDto)
+        #result, userEmail = await _fileService.sendFile(fileTransferDto)
+        await _fileService.sendFile(fileTransferDto)
         # if result == True:
         #     result = celery.send_task("tasks_.transferFileBetweenUsers", args=(userEmail, fileTransferDto.senderToken, fileTransferDto.recieverEmail, fileTransferDto.fileName, fileTransferDto.base64EncKey, fileTransferDto.base64EncIv))
         # return "Ok"
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/acceptReceivedFile", tags = ['file'])
+async def acceptReceivedFile(request:Request, afdto:AcceptFileTransferDto):
+    authorization_header = request.headers.get("Authorization")
+    token=""
+    if authorization_header is not None:
+        token = authorization_header.split(" ")[1]
+    _fileService = FileService(userToken=token, filename=afdto.fileName)
+    try:
+        result = await _fileService.acceptReceivedFile(afdto)
+        return result
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))

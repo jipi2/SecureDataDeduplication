@@ -9,24 +9,24 @@ namespace DesktopApp
 {
     public partial class MainPage : ContentPage
     {
-
         public MainPage()
         {
             InitializeComponent();
-            
+
             //ShellContent content = AppShell.Current.FindByName<ShellContent>("SignInShell");
             //content.IsVisible = false;
             //content = AppShell.Current.FindByName<ShellContent>("SignUpShell");
             //content.IsVisible = false;
         }
 
+
         protected async override void OnAppearing()
         {
             base.OnAppearing();
 
-            
             if (BindingContext is MainWindowViewModel viewModel)
             {
+                viewModel.Files.Clear();
                 viewModel.GetFilesAndNames();
                 viewModel.GetTags();
                 int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
@@ -43,8 +43,9 @@ namespace DesktopApp
                     notificationNumberLabel.Text = "0";
                 }
                 //viewModel.Test();
+
             }
-            
+
         }
 
 
@@ -177,18 +178,55 @@ namespace DesktopApp
 
         private async void OnFilledBellTapped(object sender, EventArgs e)
         {
-
-            try
+            if (BindingContext is MainWindowViewModel viewModel)
             {
-                this.ShowPopup(new TransferPagePopout());
-                fcView.ItemsSource = (BindingContext as MainWindowViewModel).RecFiles;
 
+                try
+                {
+                    await this.ShowPopupAsync(new TransferPagePopout());
+                   
+                    viewModel.Files.Clear();
+                    viewModel.GetFilesAndNames();
+                    int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
+                    if (numberOfRecFiles > 0)
+                    {
+                        emptyBellImage.IsVisible = false;
+                        filledBellImage.IsVisible = true;
+                        notificationNumberLabel.Text = numberOfRecFiles.ToString();
+                    }
+                    else
+                    {
+                        emptyBellImage.IsVisible = true;
+                        filledBellImage.IsVisible = false;
+                        notificationNumberLabel.Text = "0";
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    DisplayAlert("Error", "Could not load the request", "OK");
+                }
             }
-            catch (Exception ex)
+
+        }
+
+        private async void OnUploadDateClick(object sender, EventArgs e)
+        {
+            if (BindingContext is MainWindowViewModel viewModel)
             {
-                DisplayAlert("Error", "Could not load the request", "OK");
+                await viewModel.SortByUploadDate();
+                fcView.ItemsSource = viewModel.Files;
             }
+        }
 
+        private async void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (BindingContext is MainWindowViewModel viewModel)
+            {
+                viewModel.FilterFiles();
+                if(fcView != null)
+                    fcView.ItemsSource = viewModel.FilteredFiles;
+            }
         }
     }
 

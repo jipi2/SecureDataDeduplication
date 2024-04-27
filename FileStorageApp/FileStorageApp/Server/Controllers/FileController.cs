@@ -408,6 +408,26 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpPost("verifyFileTransfer")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> verifyFileTransfer([FromBody] TransferVerificationDto tvd)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                bool isInCache = await _fileService.VerifyFileTransfer(tvd);
+                return Ok(isInCache);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpPost("removeRecievedFile")]
         [Authorize]
         public async Task<IActionResult> removeRecievedFile([FromBody] RecievedFilesDto rfd)
@@ -442,14 +462,34 @@ namespace FileStorageApp.Server.Controllers
                     return BadRequest("Token invalid");
                 }
 
-                string id = await _userService.GetUserIdFromJWT(token);
-                await _fileService.AcceptRecievedFile(aft, id);
+                await _fileService.AcceptRecievedFile(aft);
                 return Ok("File recieved");
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        [HttpPost("deleteFileTransfer")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> deleteFileTransfer([FromBody] TransferVerificationDto tvt)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+
+                await _fileService.DeleteFileTransfer(tvt);
+                return Ok("File deleted");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }   
         }
 
         [HttpPost("proxyGetUrlFileFromStorage")]

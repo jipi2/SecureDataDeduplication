@@ -38,7 +38,8 @@
                  WidthRequest="300"
                  HorizontalOptions="End"
                  Margin="0,1,5,0"
-
+                 Text="{Binding SearchText, Mode=TwoWay}"
+                 TextChanged="SearchBar_TextChanged"
                  >
                 </SearchBar>
 
@@ -117,8 +118,6 @@
 
                     </VerticalStackLayout>
 
-
-
                     <VerticalStackLayout Spacing="10" Margin="10,0,20,10" Padding="0,0,0,0">
                         <CollectionView x:Name="fcView" ItemsSource="{Binding Files}"  Margin="0,0,200,0" HeightRequest="800" VerticalScrollBarVisibility="Default">
 
@@ -126,7 +125,7 @@
                                 <Frame BackgroundColor="Transparent" Margin="10"  VerticalOptions="Start" BorderColor="Transparent">
                                     <Grid ColumnDefinitions="*,*,*">
                                         <Label TextColor="DarkGray" Text="Uploaded Files" Grid.Column="0" HorizontalTextAlignment="Center" FontSize="40"/>
-                                        <Label TextColor="DarkGray" Text="Upload Date" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="40"/>
+                                        <Button TextColor="DarkGray" Padding="0,0,0,20" BackgroundColor="Transparent" Text="Upload Date" Clicked="OnUploadDateClick"  Grid.Column="1" FontSize="40"/>
                                         <Label TextColor="DarkGray" Text="Options" Grid.Column="2" HorizontalTextAlignment="Center" FontSize="40"/>
                                         <BoxView Color="Gray" HeightRequest="5" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="-1500,70,0,0" />
 

@@ -679,14 +679,18 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("Reciever does not exist!");
             if (sender == null)
                 throw new Exception("User does not exist!");
-            if(await CheckIfFileNameExists(sender, ftdto.fileName) == false)
-                throw new Exception("The sender does not have that file!");
             if (sender == reciever)
                 throw new Exception("You cannot send a file to yourself!");
 
-            UserFile? ufrec = await _userFileRepo.GetUserFileByUserIdAndFileName(reciever.Id, ftdto.fileName);
-            if (ufrec != null)
-                throw new Exception("Reciever already has this file!");
+            bool isInCache = ftdto.isInCache;
+
+            if(isInCache == false)
+                if (await CheckIfFileNameExists(sender, ftdto.fileName) == false)
+                    throw new Exception("The sender does not have that file!");
+
+            //UserFile? ufrec = await _userFileRepo.GetUserFileByUserIdAndFileName(reciever.Id, ftdto.fileName);
+            //if (ufrec != null)
+            //    throw new Exception("Reciever already has this file!");
 
             FileTransfer fte = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, reciever.Id, ftdto.fileName);
             if (fte != null)
@@ -699,7 +703,8 @@ namespace FileStorageApp.Server.Services
                 FileName = ftdto.fileName,
                 base64EncKey = ftdto.base64EncKey,
                 base64EncIv = ftdto.base64EncIv,
-                isDeleted = false
+                isDeleted = false,
+                isInCache = isInCache
             };
             await _fileTransferRepo.SaveFileTransfer(ft);
         }
@@ -763,9 +768,9 @@ namespace FileStorageApp.Server.Services
             await _fileTransferRepo.DeleteFileTransfer(ft);
         }
 
-        public async Task AcceptRecievedFile(AcceptFileTransferDto aft, string id)
+        public async Task AcceptRecievedFile(AcceptFileTransferDto aft)
         {
-            User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
+            User? user = await _userRepo.GetUserByEmail(aft.receiverEmail);
             if (user == null)
                 throw new Exception("User does not exist!");
 
@@ -775,8 +780,13 @@ namespace FileStorageApp.Server.Services
 
             UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(sender.Id, aft.fileName);
             if (uf == null)
-                throw new Exception("Erro file");
-            
+                throw new Exception("Error file");
+
+            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, user.Id, aft.fileName);
+            if(ft == null)
+                throw new Exception("Error file transfer");
+            await _fileTransferRepo.DeleteFileTransfer(ft);
+
             UserFile userFile = new UserFile
             {
                 FileName = aft.fileName,
@@ -787,9 +797,6 @@ namespace FileStorageApp.Server.Services
                 FileId = uf.FileId
             };
             await _userFileRepo.SaveUserFile(userFile);
-
-            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, user.Id, aft.fileName);
-            await _fileTransferRepo.DeleteFileTransfer(ft);
         }
 
         public async Task<BlobFileParamsDto> GetUrlFileFromStorage(string userId, string fileName)
@@ -821,6 +828,36 @@ namespace FileStorageApp.Server.Services
                 base64iv = userFile.Iv
             };
             return dto;
+        }
+
+        public async Task<bool> VerifyFileTransfer(TransferVerificationDto tvd)
+        {
+            User? sender = await _userRepo.GetUserByEmail(tvd.senderEmail);
+            if (sender == null)
+                throw new Exception("Sender does not exist!");
+            User? receiver = await _userRepo.GetUserByEmail(tvd.receiverEmail);
+            if (receiver == null)
+                throw new Exception("Receiver does not exist!");
+
+            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, receiver.Id, tvd.fileName);
+            if (ft == null)
+                throw new Exception("File transfer does not exist!");
+            return ft.isInCache;
+        }
+
+        public async Task DeleteFileTransfer(TransferVerificationDto tvt)
+        {
+            User? sender = await _userRepo.GetUserByEmail(tvt.senderEmail);
+            if (sender == null)
+                throw new Exception("Sender does not exist!");
+            User? receiver = await _userRepo.GetUserByEmail(tvt.receiverEmail);
+            if (receiver == null)
+                throw new Exception("Receiver does not exist!");
+            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, receiver.Id, tvt.fileName);
+            if (ft == null)
+                throw new Exception("File transfer does not exist!");
+
+            await _fileTransferRepo.DeleteFileTransfer(ft);
         }
     }
 }

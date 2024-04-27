@@ -18,6 +18,8 @@ from Dto.FileFromCacheDto import FileFromCacheDto, UsersEmailsFileNames, Persona
 from Dto.FileKeyAndIvDto import FileKeyAndIvDto
 from Dto.BlobFileParamsDto import BlobFileParamsDto
 from Dto.CapsuleDto import CapsuleDto
+from Dto.AcceptFileTransferDto import AcceptFileTransferDto
+from Dto.TransferVerificationDto import TransferVerificationDto
 import asyncio
 from sqlalchemy.orm.exc import NoResultFound
 import base64
@@ -398,36 +400,83 @@ class FileService():
         
         
     async def sendFile(self, dto:CapsuleDto):
-        await self.authService.getProxyToken()
-        await self.__getUserEmail()
+        try:
+            await self.authService.getProxyToken()
+            await self.__getUserEmail()
+            
+            kFrag = await self.__getKfrag()
         
-        kFrag = await self.__getKfrag()
+            capsuleKey, encKey = await self.__getCapsuleAndCipherTextFromBase64(dto.base64KeyCapsule)
+            capsuleIv, encIv = await self.__getCapsuleAndCipherTextFromBase64(dto.base64IvCapsule)
+            
+            cfragKey = reencrypt(capsule=capsuleKey, kfrag=kFrag)
+            cfragIv = reencrypt(capsule=capsuleIv, kfrag=kFrag)
+            
+            base64KeyCFrag = base64.b64encode(cfragKey.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleKey.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encKey).decode('utf-8')
+            base64IvCFrag = base64.b64encode(cfragIv.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleIv.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encIv).decode('utf-8')
+            
+            if self.__checkIfUserHasFile(filename=self.filename) == True:
+                # aici va trebui ori sa facem la nivel de proxy send=ul, ori sa trimitem care backend
+                # verificam si daca persoana careia ii trimitem are deja fisierul
+                # aux = self.userEmail
+                # self.userEmail = self.recieverEmail
+                # if self.__checkIfUserHasFile(filename=self.filename) == True:
+                #     raise Exception("User already has this file")
+                # self.userEmail = aux
+                # return True, self.userEmail
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag, isInCache=True))
+                if response.status_code != 200:
+                    raise Exception(response.text)
+            else:
+                #aici trebuie modificat ce trimit pt cheie si iv
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag, isInCache=False))
+                if response.status_code != 200:
+                    raise Exception(response.text)
+                #return False, self.userEmail
+        except Exception as e:
+            print(str(e))
+            raise e
     
-        capsuleKey, encKey = await self.__getCapsuleAndCipherTextFromBase64(dto.base64KeyCapsule)
-        capsuleIv, encIv = await self.__getCapsuleAndCipherTextFromBase64(dto.base64IvCapsule)
+    
+    async def acceptReceivedFile(self, afdto:AcceptFileTransferDto):
+        try:
+            
+            await self.authService.getProxyToken()
+            await self.__getUserEmail()
+            
+            response = await self.gateWay.callBackendPostMethodDto("/api/File/verifyFileTransfer", self.authService.token, TransferVerificationDto(senderEmail=afdto.senderEmail, receiverEmail=self.userEmail, fileName=afdto.fileName))
+            if(response.status_code != 200):
+                raise Exception("This file transfer does not exists")
+            
+            if response.text == 'true':
+                isInCache = True
+            else:
+                isInCache = False
+            print(isInCache)
+            if isInCache == False:
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/acceptRecievedFile", self.authService.token, afdto)
+                if response.status_code != 200:
+                    raise Exception(response.text)
+            else:
+                basedb = Base()
+                session = basedb.getSession()
+                userFile = session.query(UserFile).join(User, User.id == UserFile.user_id).filter(User.email == afdto.senderEmail, UserFile.fileName == afdto.fileName).first()
+                if not userFile:
+                    raise Exception("This file transfer does not exists")
+                
+                user = session.query(User).filter(User.email == self.userEmail).first()
+                new_user_file = UserFile(user_id=user.id, file_id=userFile.file_id, key=afdto.base64FileKey, iv=afdto.base64FileIv, fileName=afdto.fileName, date=datetime.datetime.utcnow())
+                session.add(new_user_file)
+                session.commit()
+                
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/deleteFileTransfer", self.authService.token, TransferVerificationDto(senderEmail=afdto.senderEmail, receiverEmail=self.userEmail, fileName=afdto.fileName))
+                if response.status_code != 200:
+                    raise Exception(response.text)
+                
+        except Exception as e:
+            print(str(e))
+            raise e
         
-        cfragKey = reencrypt(capsule=capsuleKey, kfrag=kFrag)
-        cfragIv = reencrypt(capsule=capsuleIv, kfrag=kFrag)
-        
-        base64KeyCFrag = base64.b64encode(cfragKey.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleKey.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encKey).decode('utf-8')
-        base64IvCFrag = base64.b64encode(cfragIv.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleIv.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encIv).decode('utf-8')
-        
-        if self.__checkIfUserHasFile(filename=self.filename) == True:
-            # aici va trebui ori sa facem la nivel de proxy send=ul, ori sa trimitem care backend
-            # verificam si daca persoana careia ii trimitem are deja fisierul
-            # aux = self.userEmail
-            # self.userEmail = self.recieverEmail
-            # if self.__checkIfUserHasFile(filename=self.filename) == True:
-            #     raise Exception("User already has this file")
-            # self.userEmail = aux
-            # return True, self.userEmail
-            pass
-        else:
-            #aici trebuie modificat ce trimit pt cheie si iv
-            response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag))
-            if response.status_code != 200:
-                raise Exception(response.text)
-            return False, self.userEmail
     
     
     async def sendFilesToServer_v2(self):

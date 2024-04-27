@@ -30,7 +30,8 @@ namespace DesktopApp
                 }
                 catch (Exception ex)
 				{
-					throw ex;
+					this.Close();
+                    throw new Exception("Error while sending file");
                 }
             }
         }
