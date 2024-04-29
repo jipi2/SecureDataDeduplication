@@ -7,7 +7,7 @@ namespace FileStorageApp.Server.Entity
         [Key]
         public int Id { get; set; }
         //public string FileName { get; set; }
-        public string BlobLink { get; set; }
+        public string? BlobLink { get; set; }
         public bool isDeleted { get; set; }
         //public string? Key { get; set; }
         //public string? Iv { get; set; }
@@ -16,5 +16,6 @@ namespace FileStorageApp.Server.Entity
         public List<Resp> Resps { get; set; }
         //Navigation Challenge
         //public List<User> Users { get; set; }
+        public bool isInCache { get; set; }
     }
 }

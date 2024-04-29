@@ -4,6 +4,7 @@ using FileStorageApp.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileStorageApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240428114646_LabelFunctionalityPart_1")]
+    partial class LabelFunctionalityPart_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,26 +113,6 @@ namespace FileStorageApp.Server.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("FileTransfers");
-                });
-
-            modelBuilder.Entity("FileStorageApp.Server.Entity.Label", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Labels");
                 });
 
             modelBuilder.Entity("FileStorageApp.Server.Entity.Resp", b =>
@@ -282,21 +265,6 @@ namespace FileStorageApp.Server.Migrations
                     b.ToTable("UserFiles");
                 });
 
-            modelBuilder.Entity("LabelUserFile", b =>
-                {
-                    b.Property<int>("LabelsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserFilesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("LabelsId", "UserFilesId");
-
-                    b.HasIndex("UserFilesId");
-
-                    b.ToTable("LabelUserFile");
-                });
-
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.Property<int>("RolesId")
@@ -360,21 +328,6 @@ namespace FileStorageApp.Server.Migrations
                     b.Navigation("FileMetadata");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LabelUserFile", b =>
-                {
-                    b.HasOne("FileStorageApp.Server.Entity.Label", null)
-                        .WithMany()
-                        .HasForeignKey("LabelsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FileStorageApp.Server.Entity.UserFile", null)
-                        .WithMany()
-                        .HasForeignKey("UserFilesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("RoleUser", b =>

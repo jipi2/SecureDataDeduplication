@@ -55,6 +55,12 @@ namespace FileStorageApp.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateFile(FileMetadata fileMeta)
+        {
+            _context.FilesMetadata.Update(fileMeta);
+            await _context.SaveChangesAsync();
+        }
+
         //public async Task<FileMetadata?> GetFileMetaByTagAndFilename(string base64Tag, string filename)
         //{
         //    FileMetadata? fileMeta = _context.FilesMetadata.Where(f => f.Tag == base64Tag && f.FileName == filename).FirstOrDefault();

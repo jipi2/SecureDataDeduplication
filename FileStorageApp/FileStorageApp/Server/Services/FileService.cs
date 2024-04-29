@@ -20,7 +20,7 @@ namespace FileStorageApp.Server.Services
 {
     public class FileService
     {
-        public UserFileRepo _userFileRepo { get; set; }
+        public UserFileRepository _userFileRepo { get; set; }
         public FileRepository _fileRepo { get; set; }
         public RespRepository _respRepo { get; set; }
         public UserService _userService { get; set; }
@@ -28,7 +28,7 @@ namespace FileStorageApp.Server.Services
         public AzureBlobService _azureBlobService { get; set; } 
         public FileTransferRepo _fileTransferRepo { get; set; }
         IConfiguration _configuration { get; set; }
-        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepo userFileRepo, FileTransferRepo fileTransferRepo)
+        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepository userFileRepo, FileTransferRepo fileTransferRepo)
         {
             _fileRepo = fileRepository;
             _userService = userService;
@@ -408,13 +408,17 @@ namespace FileStorageApp.Server.Services
             {
                 foreach (UserFile uf in list)
                 {
-                    result = list.Select(uf => new FilesNameDate
+                    FileMetadata fileMeta = await _fileRepo.GetFileMetaById(uf.FileId);
+                    if (fileMeta.isInCache == false)
                     {
-                        FileName = uf.FileName,
-                        UploadDate = uf.UploadDate
-
-                    }).ToList();
+                        result.Add(new FilesNameDate
+                        {
+                            FileName = uf.FileName,
+                            UploadDate = uf.UploadDate
+                        });
+                    }
                 }
+
             }
 
             return result;
@@ -579,17 +583,26 @@ namespace FileStorageApp.Server.Services
             {
                 throw new Exception("Url for Azure Blob Stroage is null");
             }
-
-            FileMetadata fileMeta = new FileMetadata
+            //il luam din baza de date daca exista deja, dar e gol pt ca era in cache
+            FileMetadata? fileMeta = await _fileRepo.GetFileMetaByTagIfExists(fileParams.base64Tag);
+            if (fileMeta == null)
             {
-                BlobLink = blobUrl,
-                isDeleted = false,
-                Tag = fileParams.base64Tag
-            };
+                fileMeta = new FileMetadata
+                {
+                    BlobLink = blobUrl,
+                    isDeleted = false,
+                    Tag = fileParams.base64Tag
+                };
+                await _fileRepo.SaveFile(fileMeta);
+            }
+            else
+            {
+                fileMeta.BlobLink = blobUrl;
+                fileMeta.isInCache = false;
+                await _fileRepo.UpdateFile(fileMeta);
+            }
 
-           string filePath = GetFilePathByTag(fileParams.base64Tag);
-
-            await _fileRepo.SaveFile(fileMeta);
+            string filePath = GetFilePathByTag(fileParams.base64Tag);
             MerkleTree mt = await GetMerkleTree_v2(filePath);
             await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
 
@@ -599,20 +612,30 @@ namespace FileStorageApp.Server.Services
                 if (user == null)
                     throw new Exception("User does not exist!");
 
-                UserFile uf = new UserFile
+                //il luam din baza de date daca exista si este gol pt ca era in cache
+                UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, pid.fileName);
+                if (uf == null)
                 {
-                    FileName = pid.fileName,
-                    Key = pid.base64key,
-                    Iv = pid.base64iv,
-                    UploadDate = DateTime.Parse(pid.UploadDate),
-                    UserId = user.Id,
-                    FileId = fileMeta.Id
-                };
-
-                await _userFileRepo.SaveUserFile(uf);
+                    uf = new UserFile
+                    {
+                        FileName = pid.fileName,
+                        Key = pid.base64key,
+                        Iv = pid.base64iv,
+                        UploadDate = DateTime.Parse(pid.UploadDate),
+                        UserId = user.Id,
+                        FileId = fileMeta.Id
+                    };
+                    await _userFileRepo.SaveUserFile(uf);
+                }
+                else
+                {
+                    uf.Key = pid.base64key;
+                    uf.Iv = pid.base64iv;
+                    uf.UploadDate = DateTime.Parse(pid.UploadDate);
+                    await _userFileRepo.UpdateUserFile(uf);
+                }
+                
             }
-            
-            
         }
 
         public async Task WriteFileOnDiskAndOnCloud(IFormFile file, string base64Tag)
@@ -858,6 +881,56 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("File transfer does not exist!");
 
             await _fileTransferRepo.DeleteFileTransfer(ft);
+        }
+
+        public async Task SaveFileInfoFromCache(FileInfoFromCache dto)
+        {
+            User? user = await _userRepo.GetUserByEmail(dto.userEmail);
+            if (user == null)
+                throw new Exception("User does not exist!");
+            FileMetadata? fileMetadata = await _fileRepo.GetFileMetaByTagIfExists(dto.base64Tag);
+            if (fileMetadata == null)
+            {
+                fileMetadata = new FileMetadata
+                {
+                    Tag = dto.base64Tag,
+                    isDeleted = false,
+                    isInCache = true
+                };
+                await _fileRepo.SaveFile(fileMetadata);
+            }
+
+            UserFile uf = new UserFile
+            {
+                FileName = dto.fileName,
+                UploadDate = DateTime.Parse(dto.uploadDate),
+                UserId = user.Id,
+                FileId = fileMetadata.Id
+            };
+
+            await _userFileRepo.SaveUserFile(uf);
+        }
+
+        public async Task DeleteFileInfoFromServer(DeleteFileInfoDto dto)
+        {
+            User? user = await _userRepo.GetUserByEmail(dto.userEmail);
+            UserFile? userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, dto.fileName);
+            if (userFile == null)
+                throw new Exception("File does not exist!");
+            List<UserFile>? luf = await _userFileRepo.GetUserFilesByFileId(userFile.FileId);
+            if (luf == null)
+                throw new Exception("File does not exist!");
+            if (luf.Count > 1)
+            {
+                await _userFileRepo.DeleteUserFile(userFile);
+            }
+            else
+            {
+                //aici trebuie sa stergem de pe peste tot
+                FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(userFile.FileId);
+                await _userFileRepo.DeleteUserFile(userFile);
+                await _fileRepo.DeleteFile(fileMeta);
+            }
         }
     }
 }

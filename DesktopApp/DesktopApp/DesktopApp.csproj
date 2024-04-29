@@ -83,13 +83,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\AddLabelToFilePopup.xaml.cs">
+	    <DependentUpon>AddLabelToFilePopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\CreateLabelPopup.xaml.cs">
+	    <DependentUpon>CreateLabelPopup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\TransferPagePopup.xaml.cs">
 	    <DependentUpon>TransferPagePopup.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\AddLabelToFilePopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\CreateLabelPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\CustomNavBar.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\RemoveLabelFilePopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SendPopup.xaml">

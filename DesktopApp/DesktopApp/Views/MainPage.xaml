@@ -98,23 +98,28 @@
                     <VerticalStackLayout FlexLayout.Grow="0.0" MaximumWidthRequest="500" 
                                     VerticalOptions="FillAndExpand" Margin="10,0,0,0">
 
-                        <Label Text="Filter by Tag:" FontSize="20" HorizontalTextAlignment="Start" Margin="0,0,0,20"/>
+                        <Label Text="Filter by Label:" FontSize="20" HorizontalTextAlignment="Start" Margin="0,0,0,20"/>
 
-                        <CollectionView ItemsSource="{Binding Tags}" HeightRequest="650" VerticalScrollBarVisibility="Always">
+                        <CollectionView x:Name="labelCollectionView" ItemsSource="{Binding Labels}" HeightRequest="650" VerticalScrollBarVisibility="Always">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Vertical" />
                             </CollectionView.ItemsLayout>
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
                                     <StackLayout Orientation="Horizontal" Padding="10">
-                                        <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center"/>
-                                        <Label Text="{Binding tagName}" VerticalOptions="Center" MaximumWidthRequest="100"/>
+                                        <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center" CheckedChanged="CheckBox_CheckedChanged"/>
+                                        <Label Text="{Binding labelName}" VerticalOptions="Center" MaximumWidthRequest="100"/>
+                                        <FlyoutBase.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem Text="Delete" Clicked="OnLabelMenuDeleteClicked" CommandParameter="{Binding labelName}"/>
+                                            </MenuFlyout>
+                                        </FlyoutBase.ContextFlyout>
                                     </StackLayout>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
 
-                        <Button Margin="0,55,0,0" Text="Add Tag" WidthRequest="200" HorizontalOptions="Start"/>
+                        <Button Margin="0,55,0,0" Text="Add Label" WidthRequest="200" HorizontalOptions="Start" Clicked="OnAddLabelClicked"/>
 
                     </VerticalStackLayout>
 
@@ -155,6 +160,11 @@
                                                     <MenuFlyoutItem Text="Send" Clicked="OnMenuFlyoutItemSendClick" CommandParameter="{Binding fileName}"/>
                                                     <MenuFlyoutSeparator/>
                                                     <MenuFlyoutItem Text="Delete" Clicked="OnMenuItemDeleteClicked" CommandParameter="{Binding fileName}"/>
+                                                    <MenuFlyoutSeparator/>
+                                                    <MenuFlyoutItem Text="Add Label" Clicked="OnMenuItemAddLabelClicked" CommandParameter="{Binding fileName}"/>
+                                                    <MenuFlyoutSeparator/>
+                                                    <MenuFlyoutItem Text="Remove Label" Clicked="OnMenuItemRemoveLabelClicked" CommandParameter="{Binding fileName}"/>
+          
                                                 </MenuFlyout>
                                             </FlyoutBase.ContextFlyout>
 

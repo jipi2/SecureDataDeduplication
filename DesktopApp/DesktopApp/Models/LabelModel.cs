@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DesktopApp.Models
 {
-    public class TagModel
+    public class LabelModel
     {
-        public string tagName { get; set; }
+        public string labelName { get; set; }
         public bool isChecked { get; set; }
     }
 }

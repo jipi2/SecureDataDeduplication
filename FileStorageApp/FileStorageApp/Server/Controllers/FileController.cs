@@ -561,6 +561,36 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpPost("saveFileInfoFromCache")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> SaveFileInfoFromCache([FromBody] FileInfoFromCache dto)
+        {
+            try
+            {
+                await _fileService.SaveFileInfoFromCache(dto);
+                return Ok("Data saved");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("deleteFileInfoFromServer")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> DeleteFileInfoFromServer([FromBody] DeleteFileInfoDto dto)
+        {
+            try
+            {
+                await _fileService.DeleteFileInfoFromServer(dto);
+                return Ok("Data deleted");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.Hosting;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FileStorageApp.Server.Entity
@@ -19,5 +20,6 @@ namespace FileStorageApp.Server.Entity
         public string? Key { get; set; }
         public string? Iv { get; set; }
         public DateTime UploadDate { get; set; }
+        public List<Label> Labels { get; set; }
     }
 }

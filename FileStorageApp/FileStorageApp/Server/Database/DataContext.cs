@@ -1,5 +1,6 @@
 ﻿using FileStorageApp.Server.Entity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace FileStorageApp.Server.Database
 {
@@ -17,6 +18,7 @@ namespace FileStorageApp.Server.Database
         public DbSet<Entity.UserFile> UserFiles { get; set; }
         public DbSet<Entity.FileTransfer> FileTransfers { get; set; }
         public DbSet<Entity.FSRC> FSRCs { get; set; }
+        public DbSet<Entity.Label> Labels { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -24,10 +26,9 @@ namespace FileStorageApp.Server.Database
                 .WithMany(y => y.Users)
                 .UsingEntity(j => j.ToTable("UserRoles"));
 
-            //modelBuilder.Entity<User>()
-            //    .HasMany(x => x.Files)
-            //    .WithMany(y => y.Users)
-            //    .UsingEntity(j => j.ToTable("UserFiles"));
+            modelBuilder.Entity<Label>()
+                .HasMany(e => e.UserFiles)
+                .WithMany(e => e.Labels);
         }
     }
 }

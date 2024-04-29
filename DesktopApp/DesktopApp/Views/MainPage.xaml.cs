@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Views;
 using DesktopApp.Dto;
+using DesktopApp.Models;
 using DesktopApp.ViewModels;
 using Microsoft.Maui.Storage;
 using System.Collections.ObjectModel;
@@ -27,8 +28,16 @@ namespace DesktopApp
             if (BindingContext is MainWindowViewModel viewModel)
             {
                 viewModel.Files.Clear();
-                viewModel.GetFilesAndNames();
-                viewModel.GetTags();
+                viewModel.Labels.Clear();
+                viewModel.FilteredFiles.Clear();
+                await viewModel.GetFilesAndNames();
+                int numberOfLables = await viewModel.GetLabelFileNames();
+                //int numberOfLables = viewModel.GetTags();
+                if (numberOfLables <= 0)
+                    labelCollectionView.WidthRequest = 650;
+                else
+                    labelCollectionView.WidthRequest = -1;
+
                 int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
                 if (numberOfRecFiles > 0)
                 {
@@ -36,7 +45,7 @@ namespace DesktopApp
                     filledBellImage.IsVisible = true;
                     notificationNumberLabel.Text = numberOfRecFiles.ToString();
                 }
-                else 
+                else
                 {
                     emptyBellImage.IsVisible = true;
                     filledBellImage.IsVisible = false;
@@ -56,7 +65,7 @@ namespace DesktopApp
             {
                 var viewModel = BindingContext as MainWindowViewModel;
                 await viewModel.DownloadFile(fileName);
-                DisplayAlert("Info","Your file has downloaded","OK");
+                DisplayAlert("Info", "Your file has downloaded", "OK");
             }
 
         }
@@ -106,7 +115,7 @@ namespace DesktopApp
                 this.ShowPopup(sendPopup);
             }
         }
-       
+
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
             if (sender is Button button && button.CommandParameter is string fileName)
@@ -148,7 +157,6 @@ namespace DesktopApp
             }
         }
 
-
         private async void OnActionsButtonClicked(object sender, EventArgs e)
         {
             if (sender is Button button && button.CommandParameter is string fileName)
@@ -184,7 +192,7 @@ namespace DesktopApp
                 try
                 {
                     await this.ShowPopupAsync(new TransferPagePopout());
-                   
+
                     viewModel.Files.Clear();
                     viewModel.GetFilesAndNames();
                     int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
@@ -223,11 +231,125 @@ namespace DesktopApp
         {
             if (BindingContext is MainWindowViewModel viewModel)
             {
-                viewModel.FilterFiles();
-                if(fcView != null)
+                viewModel.FilterFilesBySearch();
+                if (fcView != null)
                     fcView.ItemsSource = viewModel.FilteredFiles;
             }
         }
-    }
+        private async void OnAddLabelClicked(object sender, EventArgs e)
+        {
+            if (BindingContext is MainWindowViewModel viewModel)
+            {
+                try
+                {
+                    await this.ShowPopupAsync(new CreateLabelPage());
+                    await viewModel.GetLabelFileNames();
+                    labelCollectionView.ItemsSource = viewModel.Labels;
+                    if (viewModel.Labels.Count > 0)
+                    {
+                        labelCollectionView.WidthRequest = -1;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DisplayAlert("Error", "Could not load the request", "OK");
+                }
+            }
+        }
 
+
+        private async void OnMenuItemAddLabelClicked(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                if (viewModel != null)
+                {
+                    List<string> candidateLabels = await viewModel.GetCandidateLabels(fileName);
+                    await this.ShowPopupAsync(new AddLabelToFilePopup(fileName, candidateLabels));
+                    int numberOfLables = await viewModel.GetLabelFileNames();
+                    if (numberOfLables <= 0)
+                        labelCollectionView.WidthRequest = 650;
+                    else
+                        labelCollectionView.WidthRequest = -1;
+                }
+            }
+        }
+        private async void OnMenuItemRemoveLabelClicked(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                if (viewModel != null)
+                {
+                    List<string> candidateLabels = await viewModel.GetCandidateLabelsForRemoving(fileName);
+                    await this.ShowPopupAsync(new RemoveLabelFilePopup(fileName, candidateLabels));
+                    int numberOfLables = await viewModel.GetLabelFileNames();
+                    if (numberOfLables <= 0)
+                        labelCollectionView.WidthRequest = 650;
+                    else
+                        labelCollectionView.WidthRequest = -1;
+                }
+            }
+        }
+
+        private async void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (sender is CheckBox checkBox && checkBox.BindingContext is LabelModel label)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                if (viewModel != null)
+                {
+                    if (label.isChecked == true)
+                    {
+                        label.isChecked = false;
+                        await viewModel.RemoveLabelFromFiltering(label.labelName);
+                        if (viewModel.FilteredFiles.Count == 0)
+                        {
+                            fcView.ItemsSource = viewModel.Files;
+                        }
+                        else
+                        {
+                            fcView.ItemsSource = viewModel.FilteredFiles;
+                        }
+                    }
+                    else
+                    {
+                        label.isChecked = true;
+                        await viewModel.FilterFilesByLabel(label.labelName);
+                        fcView.ItemsSource = viewModel.FilteredFiles;
+
+                    }
+                }
+            }
+        }
+
+        private async void OnLabelMenuDeleteClicked(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string labelName)
+            {
+                bool result = await DisplayAlert("Info", "Are you sure do you want to delete the label", "YES", "NO");
+                if (result)
+                {
+                    var viewModel = BindingContext as MainWindowViewModel;
+                    if (viewModel != null)
+                    {
+                        await viewModel.DeleteLabel(labelName);
+                        await viewModel.GetLabelFileNames();
+                        labelCollectionView.ItemsSource = viewModel.Labels;
+                        if (viewModel.Labels.Count > 0)
+                        {
+                            labelCollectionView.WidthRequest = -1;
+                        }
+                        else
+                        {
+                            labelCollectionView.WidthRequest = 650;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
+

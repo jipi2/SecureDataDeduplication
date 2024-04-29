@@ -43,8 +43,9 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<FileRepository>();
 builder.Services.AddScoped<RespRepository>();
-builder.Services.AddScoped<UserFileRepo>();
+builder.Services.AddScoped<UserFileRepository>();
 builder.Services.AddScoped<FileTransferRepo>();
+builder.Services.AddScoped<LabelRepository>();
 
 //Services
 builder.Services.AddScoped<UserService>();
@@ -53,6 +54,7 @@ builder.Services.AddScoped<SecurityManager>();
 builder.Services.AddScoped<FileService>();
 //builder.Services.AddScoped<IConfiguration>();
 builder.Services.AddScoped<AzureBlobService>();
+builder.Services.AddScoped<LabelService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

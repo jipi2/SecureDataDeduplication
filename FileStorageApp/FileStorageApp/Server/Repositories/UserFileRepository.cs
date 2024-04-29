@@ -5,10 +5,10 @@ using Microsoft.Identity.Client;
 
 namespace FileStorageApp.Server.Repositories
 {
-    public class UserFileRepo
+    public class UserFileRepository
     {
         DataContext _context;
-        public UserFileRepo(DataContext context)
+        public UserFileRepository(DataContext context)
         {
             _context = context;
         }

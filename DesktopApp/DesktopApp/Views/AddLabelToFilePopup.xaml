@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             x:Class="DesktopApp.AddLabelToFilePopup"
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             CanBeDismissedByTappingOutsideOfPopup="True"  
+             Color="Transparent"
+             >
+
+    <Frame BackgroundColor="Transparent" CornerRadius="20">
+
+        <Frame.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                              EndPoint="1,1">
+                <GradientStop Color="#422C52"
+                           Offset="0.1" />
+                <GradientStop Color="#5F4076"
+                           Offset="0.6" />
+                <GradientStop Color="#855AA6"
+                           Offset="1.0" />
+            </LinearGradientBrush>
+        </Frame.Background>
+
+        <ScrollView HeightRequest="400" WidthRequest="300">
+            <CollectionView x:Name="labelsCollectionView" Margin="0,0,0,0" VerticalScrollBarVisibility="Default">
+                <CollectionView.Header>
+                    <Frame  BackgroundColor="#130D18" VerticalOptions="Start" BorderColor="Transparent">
+                        <Grid ColumnDefinitions="*">
+                            <Label TextColor="DarkGray" Text="Labels" Grid.Column="0" HorizontalTextAlignment="Center" FontSize="40"/>
+                        </Grid>
+                    </Frame>
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame  BackgroundColor="#32213F">
+
+                            <Grid ColumnDefinitions="*" >
+
+                                <Button Text="{Binding}" Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Start"
+                                 CommandParameter="{Binding .}" BackgroundColor="Transparent" TextColor="White" Margin="0,0,0,0"
+                                 Clicked="Button_Clicked"/>
+
+                            </Grid>
+                        </Frame>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+    </Frame>
+</mct:Popup>

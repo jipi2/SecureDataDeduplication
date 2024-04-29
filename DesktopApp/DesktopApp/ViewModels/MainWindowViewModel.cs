@@ -2,6 +2,7 @@
 using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
 using DesktopApp.Models;
+using FileStorageApp.Shared.Dto;
 using Python.Runtime;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace DesktopApp.ViewModels
     public class MainWindowViewModel :INotifyPropertyChanged
     {
         private int dateSort = 0;
+        private List<LabelFileNames> _labelFileNames;
 
         public class File
         {
@@ -31,10 +33,12 @@ namespace DesktopApp.ViewModels
         {
             dateSort = 0;
             _files = new ObservableCollection<File>();
-            _tags = new ObservableCollection<TagModel>();
+            _labels = new ObservableCollection<LabelModel>();
             _filteredFiles = new ObservableCollection<File>();
             _recFiles = new ObservableCollection<RecievedFilesDto>();
             _searchText = "";
+            _labelFileNames = new List<LabelFileNames>();
+            _labeledFiles = new ObservableCollection<File>();
 
         }
 
@@ -48,7 +52,7 @@ namespace DesktopApp.ViewModels
                 {
                     _searchText = value;
                     OnPropertyChanged(nameof(SearchText));
-                    FilterFiles(); // Filter files whenever search text changes
+                    FilterFilesBySearch(); // Filter files whenever search text changes
                 }
             }
         }
@@ -67,15 +71,17 @@ namespace DesktopApp.ViewModels
             }
         }
 
-        private ObservableCollection<TagModel> _tags;
-        public ObservableCollection<TagModel> Tags
+       
+
+        private ObservableCollection<LabelModel> _labels;
+        public ObservableCollection<LabelModel> Labels
         {
-            get { return _tags; }
+            get { return _labels; }
             set
             {
-                if (_tags != value)
+                if (_labels != value)
                 {
-                    _tags = value;
+                    _labels = value;
                     OnPropertyChanged();
                 }
             }
@@ -95,6 +101,7 @@ namespace DesktopApp.ViewModels
             }
         }
 
+        private ObservableCollection<File> _labeledFiles;
 
         private ObservableCollection<File> _filteredFiles;
         public ObservableCollection<File> FilteredFiles
@@ -131,15 +138,15 @@ namespace DesktopApp.ViewModels
             }
 
 
-            for (int i = 0; i < 15; i++)
-            {
-                TagModel tag = new TagModel
-                {
-                    tagName = "Characteristic" + i,
-                    isChecked = false
-                };
-                _tags.Add(tag);
-            }
+            //for (int i = 0; i < 15; i++)
+            //{
+            //    TagModel tag = new TagModel
+            //    {
+            //        tagName = "Characteristic" + i,
+            //        isChecked = false
+            //    };
+            //    _tags.Add(tag);
+            //}
 
         }
 
@@ -497,17 +504,18 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             Debug.WriteLine(download);
         }
 
-        public  void GetTags()
+        public int GetTags()
         {
             for (int i = 0; i < 15; i++)
             {
-                TagModel tag = new TagModel
+                LabelModel label = new LabelModel
                 {
-                    tagName = "Tag_" + i,
+                    labelName = "Label_" + i,
                     isChecked = false
                 };
-                _tags.Add(tag);
+                _labels.Add(label);
             }
+            return _labels.Count();
         }
 
         public async Task DeleteFile(string fileName)
@@ -544,18 +552,177 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
                 dateSort = 0;
             }
         }
+        public async Task<int> GetLabelFileNames()
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
-        public void FilterFiles()
+            LabelsDto labelsDto = await httpClient.GetFromJsonAsync<LabelsDto>("/api/Label/GetLabelsForUser");
+            if (labelsDto.list != null)
+            {
+                _labelFileNames = labelsDto.list;
+                _labels.Clear();
+                foreach (var label in _labelFileNames)
+                {
+                    LabelModel labelModel = new LabelModel
+                    {
+                        labelName = label.labelName,
+                        isChecked = false
+                    };
+                    _labels.Add(labelModel);
+                }
+                return _labels.Count();
+            }
+            return 0;
+                
+        }
+
+        public async Task CreateLabel(string labelName)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            var response = await httpClient.PostAsJsonAsync("/api/Label/createLabel", labelName);
+            if (response.IsSuccessStatusCode)
+            {
+                LabelModel labelModel = new LabelModel
+                {
+                    labelName = labelName,
+                    isChecked = false
+                };
+                _labels.Add(labelModel);
+            }
+            else
+            {
+                throw new Exception("Could not create label");
+            }
+        }
+
+        public async Task<List<string>> GetCandidateLabels(string fileName)
+        {
+            List<string> candidateLabels = new List<string>();
+            foreach (var label in _labelFileNames)
+            {
+                if(!label.fileNames.Contains(fileName))
+                {
+                    candidateLabels.Add(label.labelName);
+                }
+            }
+            return candidateLabels;
+        }
+
+        public async Task<List<string>> GetCandidateLabelsForRemoving(string fileName)
+        {
+            List<string> candidateLabels = new List<string>();
+            foreach (var label in _labelFileNames)
+            {
+                if (label.fileNames.Contains(fileName))
+                {
+                    candidateLabels.Add(label.labelName);
+                }
+            }
+            return candidateLabels;
+        }
+        public async Task AddLabelToFile(string fileName, string labelName)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            AddLabelToFileDto dto = new AddLabelToFileDto
+            {
+                fileName = fileName,
+                labelName = labelName
+            };
+
+            var response = await httpClient.PostAsJsonAsync("/api/Label/addLabelToFile", dto);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not add label to file");
+            }
+        }
+        public void FilterFilesBySearch()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                _filteredFiles = _files; // If search text is empty, show all files
+                if (_labeledFiles.Count() == 0)
+                    _filteredFiles = _files; // If search text is empty, show all files
+                else
+                    _filteredFiles = _labeledFiles;
             }
             else
             {
                 // Filter files based on search text
-                _filteredFiles = new ObservableCollection<File>(
-                    _files.Where(file => file.fileName.Contains(_searchText)));
+                if(_labeledFiles.Count() > 0)
+                    _filteredFiles = new ObservableCollection<File>(
+                        _labeledFiles.Where(file => file.fileName.Contains(_searchText)));
+                else
+                    _filteredFiles = new ObservableCollection<File>(
+                        _files.Where(file => file.fileName.Contains(_searchText)));
+            }
+        }
+
+        public async Task FilterFilesByLabel(string labelName)
+        {
+            var lf = _labelFileNames.FirstOrDefault(lf => lf.labelName == labelName);
+            foreach (var file in _files)
+            {
+                if (lf.fileNames.Contains(file.fileName))
+                    _labeledFiles.Add(file);
+            }
+            FilteredFiles = _labeledFiles;
+        }
+
+        public async Task RemoveLabelFromFiltering(string labelName)
+        {
+            var lf = _labelFileNames.FirstOrDefault(lf => lf.labelName == labelName);
+            foreach (var file in _files)
+            {
+                if (lf.fileNames.Contains(file.fileName))
+                    _labeledFiles.Remove(file);
+            }
+            if (_labeledFiles.Count() == 0)
+            {
+                FilteredFiles = _files;
+            }
+        }
+
+        public async Task RemoveLabelFile(string fileName, string label)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            RemoveLabelFileDto dto = new RemoveLabelFileDto
+            {
+                fileName = fileName,
+                labelName = label
+            };
+
+            var response = await httpClient.PostAsJsonAsync("/api/Label/removeLabelFile", dto);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not add label to file");
+            }
+        }
+
+        public async Task DeleteLabel(string labelName)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            var response = await httpClient.PostAsJsonAsync("/api/Label/deleteLabel", labelName);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not delete label");
             }
         }
     }

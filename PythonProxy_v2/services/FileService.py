@@ -20,6 +20,8 @@ from Dto.BlobFileParamsDto import BlobFileParamsDto
 from Dto.CapsuleDto import CapsuleDto
 from Dto.AcceptFileTransferDto import AcceptFileTransferDto
 from Dto.TransferVerificationDto import TransferVerificationDto
+from Dto.FileInfoFromCache import FileInfoFromCache
+from Dto.DeleteFileInfoDto import DeleteFileInfoDto
 import asyncio
 from sqlalchemy.orm.exc import NoResultFound
 import base64
@@ -211,6 +213,12 @@ class FileService():
             session.add(new_user_file)
             session.commit()
             session.close()
+            
+            response = await self.gateWay.callBackendPostMethodDto("/api/File/saveFileInfoFromCache", self.authService.token, FileInfoFromCache(base64Tag=base64tag, fileName=self.filename, userEmail=self.userEmail, uploadDate=str(datetime.datetime.utcnow())))
+            
+            if response.status_code != 200:
+                raise Exception(response.text)
+            
             print('finally')
         except Exception as e:
             print(str(e))
@@ -360,6 +368,11 @@ class FileService():
                 session.delete(file)
                 session.delete(blob_file)
                 session.commit()
+                
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/deleteFileInfoFromServer", self.authService.token, DeleteFileInfoDto(base64Tag=tag, fileName=self.filename, userEmail=self.userEmail))
+                if response.status_code != 200:
+                    raise Exception(response.text) 
+                
             return True
      
     async def getPubKeyAndFileKey(self):
