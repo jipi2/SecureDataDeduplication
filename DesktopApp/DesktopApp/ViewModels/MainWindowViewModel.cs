@@ -272,7 +272,7 @@ def encrypt_umbral(base64PrivKey, base64text):
 
             //luam cheia privata a senderului
             string email = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
-            string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp" + "\\" + email + "_privateKey.priv");
+            string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + email + "_privateKey.priv");
 
             var response = await httpClient.PostAsJsonAsync("/api/User/getPubKeyForFileTransfer", destEmail);
             if (response.IsSuccessStatusCode)
@@ -327,7 +327,7 @@ def generateKfrag(base64PrivKey, base64PubKey):
             byte[] fileIv = Convert.FromBase64String(keyAndIvDto.base64iv);*/
 
             string userEmail = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
-            string base64sendkey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp" + "\\" + userEmail + "_privateKey.priv");
+            string base64sendkey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + userEmail + "_privateKey.priv");
 
             string base64KeyCapsule = getBase64CapsuleAndCiphertext(base64sendkey, keyAndIvDto.base64key);
             string base64IvCapsule = getBase64CapsuleAndCiphertext(base64sendkey, keyAndIvDto.base64iv);
@@ -430,7 +430,7 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             if (response.IsSuccessStatusCode)
             {
                 string base64PubKey = await response.Content.ReadAsStringAsync();
-                string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp" + "\\" + email + "_privateKey.priv");
+                string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + email + "_privateKey.priv");
                 string base64key = decryptKFrag(fileInf.base64EncKey, base64PrivKey, base64PubKey);
                 string base64iv = decryptKFrag(fileInf.base64EncIv, base64PrivKey, base64PubKey);
 

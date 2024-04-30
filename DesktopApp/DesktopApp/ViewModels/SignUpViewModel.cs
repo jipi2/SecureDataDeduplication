@@ -176,9 +176,9 @@ def generatePubKey(base64key):
 
             string base64KeyPriv = getBase64PrivateKeyForSharing();
             string base64KeyPub = getBase64PubKeyForSharing(base64KeyPriv);
-
-            File.WriteAllText("D:\\LicentaProiect\\DesktopApp" + "\\"+_email+"_privateKey.priv", base64KeyPriv);
-            File.WriteAllText("D:\\LicentaProiect\\DesktopApp" + "\\"+_email+"_publicKey.pub", base64KeyPub);
+            
+            File.WriteAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\"+_email+"_privateKey.priv", base64KeyPriv);
+            File.WriteAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\"+_email+"_publicKey.pub", base64KeyPub);
 
             RegisterUser regUser = new RegisterUser
             {

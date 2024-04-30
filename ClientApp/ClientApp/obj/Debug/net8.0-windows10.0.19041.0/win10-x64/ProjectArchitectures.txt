@@ -1,1 +1,0 @@
-D:\LicentaProiect\ClientApp\ClientApp\ClientApp.csproj;x64

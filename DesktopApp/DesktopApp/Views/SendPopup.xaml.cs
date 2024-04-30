@@ -1,11 +1,12 @@
 
-
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Views;
 using DesktopApp.ViewModels;
 
+
 namespace DesktopApp
 {
-	public partial class SendPopup
+	public partial class SendPopup 
 	{
 		private string _fileName;
 		public SendPopup(string fileName)
@@ -30,8 +31,9 @@ namespace DesktopApp
                 }
                 catch (Exception ex)
 				{
-					this.Close();
-                    throw new Exception("Error while sending file");
+					await Application.Current.MainPage.DisplayAlert("Error", "The file could not be sent", "OK");
+                    this.Close();
+                    
                 }
             }
         }

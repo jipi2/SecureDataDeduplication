@@ -78,7 +78,7 @@ namespace DesktopApp
             {
                 var viewModel = BindingContext as MainWindowViewModel;
                 await viewModel.DownloadFile(fileName);
-                DisplayAlert("Info", "Your file has downloaded", "OK");
+                await DisplayAlert("Info", "Your file has downloaded", "OK");
             }
         }
 
@@ -101,21 +101,30 @@ namespace DesktopApp
 
         private async void OnSendClicked(object sender, EventArgs e)
         {
-            //string dest = "test@mta";
-            if (sender is Button button && button.CommandParameter is string fileName)
+            try
             {
-                var sendPopup = new SendPopup(fileName);
 
-                // Attach an event handler to the Closed event
-                sendPopup.Closed += async (s, args) =>
+                if (sender is Button button && button.CommandParameter is string fileName)
                 {
-                    // Show the DisplayAlert after the popup is closed
-                    await DisplayAlert("Info", "Your file has been sent", "OK");
-                };
+                    var sendPopup = new SendPopup(fileName);
 
-                this.ShowPopup(sendPopup);
+
+                    sendPopup.Closed += async (s, args) =>
+                    {
+
+                        await DisplayAlert("Info", "Your file has been sent", "OK");
+                    };
+
+                    this.ShowPopup(sendPopup);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                await DisplayAlert("Error", "Your file could not be sent", "OK");
             }
         }
+        
 
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
