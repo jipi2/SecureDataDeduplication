@@ -12,6 +12,15 @@ namespace DesktopApp
 			BindingContext = _viewModel = new UploadPageViewModel();
 		}
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            fileNameFrame.IsVisible = false;
+            uploadButton.IsVisible = false;
+            uploadText.IsVisible = false;
+			plusButton.IsVisible = true;
+        }
+
         private async void OnSelectFileClicked(object sender, EventArgs e)
         {
 			try
@@ -20,7 +29,8 @@ namespace DesktopApp
 				fileNameFrame.IsVisible = true;
 				uploadButton.IsVisible = true;
 				uploadText.IsVisible = true;
-			}
+				plusButton.IsVisible = false;
+            }
 			catch (Exception ex) 
 			{
 				DisplayAlert("Error", ex.Message, "OK");

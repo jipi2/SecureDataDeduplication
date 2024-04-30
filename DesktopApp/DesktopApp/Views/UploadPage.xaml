@@ -9,7 +9,7 @@
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
     </Shell.BackButtonBehavior>
-    
+
     <ContentPage.BindingContext>
         <viewModels:UploadPageViewModel/>
     </ContentPage.BindingContext>
@@ -29,7 +29,7 @@
             </Grid.Background>
         </Grid>
     </Shell.TitleView>
-    
+
     <Grid BackgroundColor="Transparent">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0"
@@ -43,32 +43,51 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <Frame 
-        Margin="460,0,460,20"
-        BackgroundColor="#333333"
-        CornerRadius="50"
-        >
-            <VerticalStackLayout>
+        <Border
+           BackgroundColor="#626064"
+            StrokeDashArray="3"
+            StrokeDashOffset="0"
+            StrokeThickness="5"
+            WidthRequest="1800"
+            HeightRequest="900"
+            >
 
-                <Label 
-            HorizontalOptions="Center"
-            Text="Press here to select your file for uploading:"
-            TextColor="DarkGray"
-            FontSize="40" 
-        />
+            <Frame 
+            Margin="460,0,460,20"
+            BackgroundColor="Transparent"
+            CornerRadius="50"
+            HasShadow="False"
+            Padding="0"
+            BorderColor="Transparent"
+            >
+                <VerticalStackLayout>
 
-                <ImageButton  
-            Source="plus_button.png"
-            BorderWidth="10"
-            CornerRadius="70"
-            WidthRequest="200"
-            Margin="0,50,0,0"
-            HorizontalOptions="Center"
-            Clicked="OnSelectFileClicked"
-            />
 
-                <Frame
-                    Margin="0,80,0,0"
+
+                    <Label 
+                HorizontalOptions="Center"
+                Text="Upload"
+                TextColor="DarkGray"
+                FontSize="40" 
+                Margin="0,200,0,0"
+                x:Name="uploadText"
+                IsVisible="False"
+                />
+
+                    <ImageButton 
+                WidthRequest="200"
+                HeightRequest="200"
+                Source="cloud_upload.png"
+                CornerRadius="60"
+                Margin="0,0,0,0"
+                x:Name="uploadButton"
+                IsVisible="False"
+                Clicked="OnUploadFileClicked"
+                
+                />
+
+                    <Frame
+                    Margin="0,100,0,0"
                     WidthRequest="600"
                     Background="#2C2C2C"
                     HeightRequest="100"
@@ -76,37 +95,37 @@
                     IsVisible="False"
                     x:Name="fileNameFrame"
                 >
-                    <ScrollView>
-                        <Label Text="{Binding FileNamePicked}"
+                        <ScrollView>
+                            <Label Text="{Binding FileNamePicked}"
                             FontSize="20"
                             HorizontalOptions="Center"
                             Margin="0,0,0,0"
-                
+                            x:Name="uploadFileName"
                         />
-                    </ScrollView>
-                </Frame>
-                <ImageButton 
+                        </ScrollView>
+                    </Frame>
+                    
+                    <ImageButton  
+                x:Name="plusButton"
+                Source="plus_button.png"
+                BorderWidth="10"
+                CornerRadius="70"
                 WidthRequest="200"
-                HeightRequest="200"
-                Source="cloud_upload.png"
-                CornerRadius="60"
-                Margin="0,70,0,0"
-                x:Name="uploadButton"
-                IsVisible="False"
-                Clicked="OnUploadFileClicked"
-                
-                />
-
-                <Label 
+                Margin="0,300,0,0"
                 HorizontalOptions="Center"
-                Text="Upload"
+                Clicked="OnSelectFileClicked"
+                     
+            />
+
+                    <!--<Label 
+                 HorizontalOptions="Center"
+                Text="Press here to select your file for uploading:"
                 TextColor="DarkGray"
                 FontSize="40" 
-                Margin="0,20,0,0"
-                x:Name="uploadText"
-                IsVisible="False"
-                />
-            </VerticalStackLayout>
-        </Frame>
+            />-->
+
+                </VerticalStackLayout>
+            </Frame>
+        </Border>
     </Grid>
 </ContentPage>
