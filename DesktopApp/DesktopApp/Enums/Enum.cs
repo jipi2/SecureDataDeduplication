@@ -11,7 +11,9 @@ namespace DesktopApp.Enums
         token,
         Success,
         Error,
-        Email
+        Email,
+        FirstName,
+        LastName
 
     }
 }

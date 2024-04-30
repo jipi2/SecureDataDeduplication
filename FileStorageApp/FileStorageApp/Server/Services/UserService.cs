@@ -230,5 +230,19 @@ namespace FileStorageApp.Server.Services
 
             await _userRepo.SaveKFrag(sender, reciever, dto.base64kfrag);
         }
+
+        public async Task<NameDto> GetFirstAndLastName(string userId)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (user == null)
+                throw new Exception("User does not exist!");
+            NameDto nameDto = new NameDto 
+            {
+                firstName = user.FirstName,
+                lastName = user.LastName
+            };
+            return nameDto;
+        }
+        
     }
 }

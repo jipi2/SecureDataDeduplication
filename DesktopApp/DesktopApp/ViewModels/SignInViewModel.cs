@@ -55,6 +55,8 @@ namespace DesktopApp.ViewModels
 
         public async Task<int> Login()
         {
+            SecureStorage.Default.RemoveAll();
+
             Debug.WriteLine($"Username: {_email}, Password: {_password}");
             Debug.WriteLine(Enums.Symbol.token.ToString());
             LoginUser logUser = new LoginUser

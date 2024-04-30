@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
              CanBeDismissedByTappingOutsideOfPopup="True"  
              Color="Transparent"
-           
+             
              >
     <Frame BackgroundColor="Transparent" CornerRadius="20">
 

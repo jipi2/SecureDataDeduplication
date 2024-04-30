@@ -19,6 +19,9 @@
     <MauiXaml Update="Views\CustomNavBar.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
+    <MauiXaml Update="Views\ProfilePopup.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
     <MauiXaml Update="Views\RemoveLabelFilePopup.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>

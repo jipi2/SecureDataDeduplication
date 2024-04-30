@@ -1,12 +1,10 @@
 ﻿using CommunityToolkit.Maui;
-using DesktopApp.ViewModels;
 using FileStorageApp.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Mopups.Hosting;
 using Python.Runtime;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 
 namespace DesktopApp
 {
@@ -28,6 +26,7 @@ namespace DesktopApp
 
             builder
                 .UseMauiApp<App>()
+                .ConfigureMopups()
                 .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
@@ -41,12 +40,14 @@ namespace DesktopApp
 
                 });
 
+
             builder.Services.AddScoped<CryptoService>();
             builder.Services.AddSingleton<IConfiguration>(config);
 
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
 
             return builder.Build();
         }

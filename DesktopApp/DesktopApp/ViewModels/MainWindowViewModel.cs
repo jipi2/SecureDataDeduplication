@@ -378,19 +378,6 @@ def generateKfrag(base64PrivKey, base64PubKey):
                 _recFiles.Add(rf);
             }
 
-
-            //for(int i=0;i<15;i++) 
-            //{
-            //    _recFiles.Add(
-            //        new RecievedFilesDto
-            //        {
-            //            fileName = "file" + i,
-            //            senderEmail = "sender" + i,
-            //            base64EncIv = "base64EncIv" + i,
-            //            base64EncKey = "base64EncKey" + i
-            //        }
-            //        );
-            //}
             return _recFiles.Count;
 
         }

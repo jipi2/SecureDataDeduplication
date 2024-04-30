@@ -9,6 +9,8 @@
 
     <ContentPage.Resources>
         <x:String x:Key="bell">&#xf0f3;</x:String>
+        <x:String x:Key="user_icon">&#xf2bd;</x:String>
+        <x:String x:Key="plus_icon">&#xf055;</x:String>
     </ContentPage.Resources>
 
     <Shell.BackButtonBehavior>
@@ -31,6 +33,12 @@
 
             <FlexLayout Direction="Row">
 
+                <ImageButton Margin="0,0,0,0" Background="Transparent" x:Name="profileIconButton" Clicked="profileIconButton_Clicked">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="FAS" Glyph="{StaticResource user_icon}" Color="White" Size="35"/>
+                    </ImageButton.Source>
+                </ImageButton>
+
                 <SearchBar
                  FlexLayout.Grow="2"
                  Placeholder="Search your file"
@@ -43,7 +51,8 @@
                  >
                 </SearchBar>
 
-                <Button
+
+                <!--<Button
                 Text="+"
                 WidthRequest="20"
                 HorizontalOptions="End"
@@ -52,7 +61,13 @@
                 Margin="5,2,5,0"
                 CornerRadius="20"
                 Clicked="OnAddButtonClicked"
-                />
+                />-->
+
+                <ImageButton Clicked="OnAddButtonClicked" Margin="5,2,5,0" Background="Transparent">
+                    <ImageButton.Source >
+                        <FontImageSource FontFamily="FAS" Glyph="{StaticResource plus_icon}" Color="White" Size="35" />
+                    </ImageButton.Source>
+                </ImageButton>
 
                 <Image Margin="0,0,0,0" IsVisible="True" x:Name="emptyBellImage">
                     <Image.Source>

@@ -3,6 +3,7 @@ using DesktopApp.Dto;
 using DesktopApp.Models;
 using DesktopApp.ViewModels;
 using Microsoft.Maui.Storage;
+using Mopups.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -348,6 +349,11 @@ namespace DesktopApp
                     }
                 }
             }
+        }
+
+        private void profileIconButton_Clicked(object sender, EventArgs e)
+        {
+            MopupService.Instance.PushAsync(new ProfilePopup());
         }
     }
 }

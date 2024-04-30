@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+             x:Class="DesktopApp.ProfilePopup"
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             BackgroundColor="Transparent"
+             >
+
+    <Grid BackgroundColor="Transparent" WidthRequest="350" HeightRequest="220" Margin="0,0,1480,720" >
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                  EndPoint="1,1">
+                <GradientStop Color="#130D18"
+                               Offset="0.1" />
+                <GradientStop Color="#372746"
+                               Offset="0.6" />
+                <GradientStop Color="#392849"
+                               Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+        <FlexLayout Direction="Row" JustifyContent="SpaceBetween" AlignItems="Start" >
+            <Label Text="{Binding MailDomain}" x:Name="mailDomainLabel" Margin="10,8,0,0"/>
+            
+            <!--<Button Text="Sign Out" BackgroundColor="Transparent" TextColor="Gray" x:Name="SignOutButton"
+                    Clicked="SignOutButton_Clicked"/>-->
+            <Button IsEnabled="True" IsVisible="True" Text="Sign Out" TextColor="Gray" BackgroundColor="Transparent"
+                    x:Name="signOutButton" Clicked="signOutButton_Clicked_1" />
+
+        </FlexLayout>
+        <FlexLayout Direction="Row" JustifyContent="Start" AlignItems="Center" Margin="0,-80,0,0">
+            <Button 
+                 x:Name="initialsButton"
+                 Text="{Binding Initials}"
+                 WidthRequest="60"
+                 HorizontalOptions="End"
+                 FontSize="18"
+                 TextTransform="Uppercase"
+                 HeightRequest="60"
+                 Margin="8,10,0,0"
+                 CornerRadius="35"
+                Clicked="initialsButton_Clicked"
+               
+                />
+
+            <StackLayout Margin="10,10,0,0">
+                <Label Text="{Binding UserEmail}" FontSize="14" TextColor="White" x:Name="mailText" />
+                <Label Text="{Binding Name}" FontSize="14" TextColor="White" x:Name="nameText"/>
+            </StackLayout>
+        </FlexLayout>
+        <BoxView  HeightRequest="1" Color="Gray" Margin="0,30,0,0"/>
+        <Button
+            Margin="0,55,0,0"
+            Text="Change Password"
+             WidthRequest="200"
+            HeightRequest="20"
+            Background="Transparent"
+            TextColor="WhiteSmoke"
+            Clicked="Button_Clicked"
+            />
+        <BoxView  HeightRequest="1" Color="Gray" Margin="0,95,0,0"/>
+        <Button
+         Margin="0,120,0,0"
+         Text="Something"
+         WidthRequest="200"
+         HeightRequest="20"
+         Background="Transparent"
+         TextColor="WhiteSmoke"
+         />
+        <BoxView  HeightRequest="1" Color="Gray" Margin="0,155,0,0"/>
+
+    </Grid>
+</mopups:PopupPage>

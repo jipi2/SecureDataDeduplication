@@ -48,13 +48,19 @@ namespace DesktopApp
 
         //protected override Window CreateWindow(IActivationState? activationState)
         //{
-        //   var window = base.CreateWindow(activationState);
+        //    var window = base.CreateWindow(activationState);
 
         //    const int newWidth = 1920;
         //    const int newHeight = 1080;
 
         //    window.Width = newWidth;
         //    window.Height = newHeight;
+
+        //    window.MaximumHeight = newHeight;
+        //    window.MinimumHeight = newHeight;
+
+        //    window.MinimumWidth = newWidth;
+        //    window.MaximumWidth = newWidth;
 
 
         //    return window;
