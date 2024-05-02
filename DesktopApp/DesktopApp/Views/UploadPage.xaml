@@ -44,12 +44,14 @@
         </Grid.Background>
 
         <Border
+            x:Name="mainBorder"
            BackgroundColor="#626064"
             StrokeDashArray="3"
             StrokeDashOffset="0"
             StrokeThickness="5"
             WidthRequest="1800"
             HeightRequest="900"
+            IsVisible="True"
             >
 
             <Frame 
@@ -104,7 +106,7 @@
                         />
                         </ScrollView>
                     </Frame>
-                    
+
                     <ImageButton  
                 x:Name="plusButton"
                 Source="plus_button.png"
@@ -125,6 +127,48 @@
             />-->
 
                 </VerticalStackLayout>
+            </Frame>
+        </Border>
+        <Border
+            x:Name="progressBarBorder"
+           BackgroundColor="#626064"
+            StrokeDashArray="3"
+            StrokeDashOffset="0"
+            StrokeThickness="5"
+            WidthRequest="1800"
+            HeightRequest="900"
+            IsVisible="False"
+            >
+            <Frame BackgroundColor="#1F1F1F" CornerRadius="10" WidthRequest="800" HeightRequest="300">
+                <Grid BackgroundColor="Transparent" WidthRequest="800" HeightRequest="300" Opacity="0.8">
+
+                    <Label Text="Uploading Progress: " TextColor="DarkGray" FontSize="40" VerticalTextAlignment="Center" HorizontalOptions="Center" Margin="0,0,0,200"/>
+                    <Frame BackgroundColor="#3A3A3A" WidthRequest="700" HeightRequest="70" >
+                        <ProgressBar x:Name="progressBar" ProgressColor="#6705BC" ScaleY="4" ScaleX="1" Progress="{Binding UploadProgress}" WidthRequest="650" BackgroundColor="#5B5B5B"
+                                    />
+                    </Frame>
+                </Grid>
+            </Frame>
+        </Border>
+        <Border
+            x:Name="loadingBorder"
+            BackgroundColor="#626064"
+             StrokeDashArray="3"
+             StrokeDashOffset="0"
+             StrokeThickness="5"
+             WidthRequest="1800"
+             HeightRequest="900"
+             IsVisible="False"
+             >
+            <Frame BackgroundColor="#1F1F1F" CornerRadius="10" WidthRequest="800" HeightRequest="300">
+                <Grid BackgroundColor="Transparent" WidthRequest="800" HeightRequest="300" Opacity="0.8">
+
+                    <Label Text="Encryption Process" TextColor="DarkGray" FontSize="40" VerticalTextAlignment="Center" HorizontalOptions="Center" Margin="0,0,0,200"/>
+                   
+                    <ActivityIndicator Margin="0,0,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"
+/>
+                   
+                </Grid>
             </Frame>
         </Border>
     </Grid>

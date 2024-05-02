@@ -28,7 +28,7 @@ namespace FileStorageApp.Server.Repositories
 
         public async Task<UserFile?> GetUserFileByUserIdAndFileName(int id, string fileName)
         {
-            UserFile? userFile = await _context.UserFiles.Where(f => f.UserId == id && f.FileName == fileName).FirstOrDefaultAsync();
+            UserFile? userFile = await _context.UserFiles.Include(f => f.FileMetadata).Where(f => f.UserId == id && f.FileName == fileName).FirstOrDefaultAsync();
             if (userFile == null)
             {
                 return null;
@@ -44,7 +44,7 @@ namespace FileStorageApp.Server.Repositories
 
         public async Task<List<UserFile>?> GetUserFileByUserId(int id)
         {
-            List<UserFile>? list = await _context.UserFiles.Where(u => u.UserId == id).ToListAsync();
+            List<UserFile>? list = await _context.UserFiles.Include(f => f.FileMetadata).Where(u => u.UserId == id).ToListAsync();
             if (list == null)
                 return null;
             return list;
@@ -58,7 +58,7 @@ namespace FileStorageApp.Server.Repositories
 
         public async Task<List<UserFile>?> GetUserFilesByFileId(int? id)
         {
-            List<UserFile>? list = await _context.UserFiles.Where(f => f.FileId == id).ToListAsync();
+            List<UserFile>? list = await _context.UserFiles.Include(f => f.FileMetadata).Where(f => f.FileId == id).ToListAsync();
             if (list == null)
                 return null;
             return list;

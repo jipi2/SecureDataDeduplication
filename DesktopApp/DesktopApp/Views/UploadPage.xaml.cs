@@ -42,13 +42,27 @@ namespace DesktopApp
 			try
 			{
 				uploadButton.IsEnabled = false;
-				DisplayAlert("Info", "Your file is being encrypted", "OK");
-				Debug.WriteLine("File encrypted");
-				await _viewModel.EncryptFile();
-				await _viewModel.UploadFile();
-                DisplayAlert("Info", "Your file has been uploaded", "OK");
+				//await DisplayAlert("Info", "Your file is being encrypted", "OK");
+
+				mainBorder.IsVisible = false;
+				loadingBorder.IsVisible = true;
+                await _viewModel.EncryptFile();
+
+				loadingBorder.IsVisible = false;
+				progressBarBorder.IsVisible = true;
+                await _viewModel.UploadFile();
+
+                progressBarBorder.IsVisible = false;
+                mainBorder.IsVisible = true;
+
+                await DisplayAlert("Info", "Your file has been uploaded", "OK");
                 uploadButton.IsEnabled = true;
-			}
+                fileNameFrame.IsVisible = false;
+                uploadButton.IsVisible = false;
+                uploadText.IsVisible = false;
+                plusButton.IsVisible = true;
+
+            }
 			catch (Exception ex)
 			{
 				uploadButton.IsEnabled = true;

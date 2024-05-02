@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from typing import List
 from typing import Optional
 from sqlalchemy import ForeignKey
-from sqlalchemy import String
+from sqlalchemy import String, Float
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -74,15 +74,17 @@ class File(Base):
     __tablename__ = 'files'
     id = Column(Integer, Sequence('file_id_seq'), primary_key=True)
     tag = Column(String(100))
+    size = Column(Float)
     
     blob_file_id = Column(Integer, ForeignKey('blob_files.id'))
     blob_file = relationship('BlobFile', back_populates='file')
     
     file_users = relationship("UserFile", back_populates="file") 
 
-    def __init__(self, tag, blob_file=None):
+    def __init__(self, tag, blob_file=None, size=0.0):
         self.tag = tag
         self.blob_file = blob_file 
+        self.size = size
 
 class BlobFile(Base):
     __tablename__ = 'blob_files'

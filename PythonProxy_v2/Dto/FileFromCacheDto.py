@@ -21,6 +21,7 @@ class FileFromCacheDto(BaseModel):
     personalisedList:list[PersonalisedInfoDto]
     
 class FileFromCacheDto_v2(BaseModel):
+    fileSize:float
     base64Tag:str
     encFilePath:str
     personalisedList:list[PersonalisedInfoDto]    

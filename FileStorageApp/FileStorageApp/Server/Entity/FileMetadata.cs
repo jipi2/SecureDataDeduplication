@@ -12,6 +12,9 @@ namespace FileStorageApp.Server.Entity
         //public string? Key { get; set; }
         //public string? Iv { get; set; }
         public string Tag { get; set; }
+
+        public double? Size{ get; set; }
+
         //public DateTime UploadDate { get; set; }
         public List<Resp> Resps { get; set; }
         //Navigation Challenge

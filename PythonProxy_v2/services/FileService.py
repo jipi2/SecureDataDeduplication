@@ -38,7 +38,7 @@ load_dotenv()
 
 
 class FileService():
-    def __init__(self, userToken:str, fileParams:FileParamsDto=None, filename:str=None, recieverEmail:str=None, base64EncKey:str=None, base64EncIv:str=None, base64Key:str=None, base64Iv:str=None):
+    def __init__(self, userToken:str, fileParams:FileParamsDto=None, filename:str=None, recieverEmail:str=None, base64EncKey:str=None, base64EncIv:str=None, base64Key:str=None, base64Iv:str=None, fileSize:float=None):
         self.userToken = userToken
         self.userEmail = ""
         self.fileParams = fileParams
@@ -51,7 +51,7 @@ class FileService():
         
         self.base64Key = base64Key
         self.base64Iv = base64Iv
-    
+        
     async def __getUserEmail(self):
         userEmail = await self.authService.getUserEmail(self.userToken)
         if(userEmail == None):
@@ -204,17 +204,18 @@ class FileService():
                         buffer.write(chunk)
                         
                 blob_file = BlobFile(filePath=file_path)
-                new_file = File(tag=base64tag, blob_file=blob_file)
+                new_file = File(tag=base64tag, blob_file=blob_file, size=fileToSave.size)
                 session.add(new_file)
                 session.commit()
                 file = session.query(File).filter(File.tag == base64tag).first()
                 
+            size = file.size    
             new_user_file = UserFile(user_id=user.id, file_id=file.id, key=self.base64Key, iv=self.base64Iv, fileName=self.filename, date=datetime.datetime.utcnow())
             session.add(new_user_file)
             session.commit()
             session.close()
             
-            response = await self.gateWay.callBackendPostMethodDto("/api/File/saveFileInfoFromCache", self.authService.token, FileInfoFromCache(base64Tag=base64tag, fileName=self.filename, userEmail=self.userEmail, uploadDate=str(datetime.datetime.utcnow())))
+            response = await self.gateWay.callBackendPostMethodDto("/api/File/saveFileInfoFromCache", self.authService.token, FileInfoFromCache(fileSize=size,base64Tag=base64tag, fileName=self.filename, userEmail=self.userEmail, uploadDate=str(datetime.datetime.utcnow())))
             
             if response.status_code != 200:
                 raise Exception(response.text)
@@ -234,7 +235,7 @@ class FileService():
             raise Exception("User already has this file")
         if await self.__verifyTag(tag) == False:
             await self.__writeFileOnDisk(file, tag)
-            
+
         else:
             MakeMerkleTreetask = asyncio.create_task(self.__getMerkleTree(file))
             fileChallenge = await self.__getChallenge(tag)
@@ -259,12 +260,13 @@ class FileService():
             session = basedb.getSession()            
             #cod adauagat dupa modificare baza de date
             query = (
-                session.query(User.email, UserFile.fileName, UserFile.upload_date)
+                session.query(User.email, UserFile.fileName, File.size ,UserFile.upload_date)
                 .join(UserFile, User.id == UserFile.user_id)
+                .join(File, File.id == UserFile.file_id)
                 .filter(User.email == self.userEmail)
             )
             result = query.all()
-            files_and_dates = [(row.fileName, row.upload_date) for row in result]
+            files_and_dates = [(row.fileName, row.size, row.upload_date) for row in result]
             return files_and_dates
             #gata codul adaugat 
             
@@ -300,9 +302,11 @@ class FileService():
         
         if(response.status_code != 200):
             raise Exception(response.text)
+        
         filesList = [FilesNameDate(**item) for item in response.json()]
         filesAndDatesFromCache = await FileNameAndDateFromCacheTask
-        filesList.extend([FilesNameDate(fileName=file_name, uploadDate=upload_date) for file_name, upload_date in filesAndDatesFromCache])
+        print(filesAndDatesFromCache)
+        filesList.extend([FilesNameDate(fileName=file_name, fileSize=file_size, uploadDate=upload_date) for file_name, file_size, upload_date in filesAndDatesFromCache])
         return filesList
     
     async def getFilePathFromCache(self, filename:str):
@@ -507,12 +511,13 @@ class FileService():
             for f in blobs:            
                 file_path = f.encFilePath
                 base64Tag = f.file[0].tag
+                fileSize = f.file[0].size
                 user_files = session.query(UserFile).filter(UserFile.file_id == f.file[0].id).all()
                 personalisedInfo = []
                 for uf in user_files:
                     user = session.query(User).filter(User.id == uf.user_id).first()
                     personalisedInfo.append(PersonalisedInfoDto(fileName=uf.fileName, base64key=uf.key, base64iv=uf.iv, email=user.email, UploadDate=str(uf.upload_date)))
-                filesMetaDto = FileFromCacheDto_v2(encFilePath=file_path, base64Tag=base64Tag, personalisedList=personalisedInfo)
+                filesMetaDto = FileFromCacheDto_v2(fileSize=fileSize,encFilePath=file_path, base64Tag=base64Tag, personalisedList=personalisedInfo)
                 response = gateWay.sendChunkFromFile("/api/File/writeFileOnDisk", "/api/File/saveFileFromCacheParams",pc.token, f.encFilePath, filesMetaDto)
                 
                 if response.status_code != 200:

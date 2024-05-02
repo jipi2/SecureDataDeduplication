@@ -9,6 +9,7 @@ namespace FileStorageApp.Shared.Dto
     public class FilesNameDate
     {
         public string FileName { get; set; }
+        public float FileSize { get; set; }
         public DateTime UploadDate { get; set; }
     }
 }

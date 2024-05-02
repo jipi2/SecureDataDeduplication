@@ -152,18 +152,22 @@ namespace DesktopApp
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
-                    try
+                    bool result = await DisplayAlert("Info", "Are you sure do you want to delete this file", "YES", "NO");
+                    if (result)
                     {
-                        await viewModel.DeleteFile(fileName);
-                        fcView.ItemsSource = viewModel.Files;
-                        await DisplayAlert("Info", "Your file has been deleted", "OK");
+                        try
+                        {
+                            await viewModel.DeleteFile(fileName);
+                            fcView.ItemsSource = viewModel.Files;
+                            await DisplayAlert("Info", "Your file has been deleted", "OK");
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                        await DisplayAlert("Error", "Your could not be deleted", "OK");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.Message);
+                            await DisplayAlert("Error", "Your could not be deleted", "OK");
 
+                        }
                     }
                 }
 
@@ -177,16 +181,20 @@ namespace DesktopApp
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
-                    try
+                    bool result = await DisplayAlert("Info", "Are you sure do you want to delete this file", "YES", "NO");
+                    if (result)
                     {
-                        await viewModel.DeleteFile(fileName);
-                        await DisplayAlert("Info", "Your file has been deleted", "OK");
+                        try
+                        {
+                            await viewModel.DeleteFile(fileName);
+                            await DisplayAlert("Info", "Your file has been deleted", "OK");
 
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine(ex.Message);
-                        await DisplayAlert("Error", "Your could not be deleted", "OK");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.Message);
+                            await DisplayAlert("Error", "Your could not be deleted", "OK");
+                        }
                     }
                 }
 
@@ -389,6 +397,15 @@ namespace DesktopApp
         private void profileIconButton_Clicked(object sender, EventArgs e)
         {
             MopupService.Instance.PushAsync(new ProfilePopup());
+        }
+
+        private async void OnSizeButtonClicked(object sender, EventArgs e)
+        {
+            if (BindingContext is MainWindowViewModel viewModel)
+            {
+                await viewModel.SortBySize();
+                fcView.ItemsSource = viewModel.Files;
+            }
         }
     }
 }

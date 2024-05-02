@@ -8,6 +8,7 @@ namespace FileStorageApp.Shared.Dto
 {
     public  class FileFromCacheDto_v2
     {
+        public float fileSize { get; set; }
         public string base64Tag { get; set; }
         public string encFilePath { get; set; }
         public List<PersonalisedInfoDto> personalisedList { get; set; }

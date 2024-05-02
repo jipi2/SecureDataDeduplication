@@ -21,11 +21,14 @@ namespace DesktopApp.ViewModels
     public class MainWindowViewModel :INotifyPropertyChanged
     {
         private int dateSort = 0;
+        private int sizeSort = 0;
         private List<LabelFileNames> _labelFileNames;
 
         public class File
         {
             public string fileName { get; set; }
+            public float fileSize { get; set; }
+            public string fileSizeStr { get; set; }
             public string uploadDate { get; set; }
         }
 
@@ -150,6 +153,22 @@ namespace DesktopApp.ViewModels
 
         }
 
+        private string getHumanSize(float size)
+        {
+            float value;
+            if (size < 999999)
+            {
+                value = size / 1000;
+                return value.ToString("0.00") + " KB";
+            }
+            if(size < 999999999)
+            {
+                value = size / 1000000;
+                return value.ToString("0.00") + " MB";
+            }
+            value = size / 1000000000;
+            return value.ToString("0.00") + " GB";
+        }
         public async Task GetFilesAndNames()
         {
             string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
@@ -172,6 +191,8 @@ namespace DesktopApp.ViewModels
                     File f = new File
                     {
                         fileName = file.FileName,
+                        fileSize = file.fileSize,
+                        fileSizeStr = getHumanSize(file.fileSize),
                         uploadDate = file.UploadDate.ToString()
                     };
                     _files.Add(f);
@@ -710,6 +731,20 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Could not delete label");
+            }
+        }
+
+        public async Task SortBySize()
+        {
+            if (sizeSort == 0)
+            {
+                _files = new ObservableCollection<File>(_files.OrderBy(f => f.fileSize));
+                sizeSort = 1;
+            }
+            else
+            {
+                _files = new ObservableCollection<File>(_files.OrderByDescending(f => f.fileSize));
+                sizeSort = 0;
             }
         }
     }

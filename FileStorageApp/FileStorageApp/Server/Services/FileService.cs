@@ -408,14 +408,18 @@ namespace FileStorageApp.Server.Services
             {
                 foreach (UserFile uf in list)
                 {
-                    FileMetadata fileMeta = await _fileRepo.GetFileMetaById(uf.FileId);
-                    if (fileMeta.isInCache == false)
+                    FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(uf.FileId);
+                    if (fileMeta != null)
                     {
-                        result.Add(new FilesNameDate
+                        if (fileMeta.isInCache == false)
                         {
-                            FileName = uf.FileName,
-                            UploadDate = uf.UploadDate
-                        });
+                            result.Add(new FilesNameDate
+                            {
+                                FileName = uf.FileName,
+                                FileSize = (float)uf.FileMetadata.Size,
+                                UploadDate = uf.UploadDate
+                            });
+                        }
                     }
                 }
 
@@ -591,7 +595,8 @@ namespace FileStorageApp.Server.Services
                 {
                     BlobLink = blobUrl,
                     isDeleted = false,
-                    Tag = fileParams.base64Tag
+                    Tag = fileParams.base64Tag,
+                    Size = fileParams.fileSize,
                 };
                 await _fileRepo.SaveFile(fileMeta);
             }
@@ -895,7 +900,8 @@ namespace FileStorageApp.Server.Services
                 {
                     Tag = dto.base64Tag,
                     isDeleted = false,
-                    isInCache = true
+                    isInCache = true,
+                    Size = dto.fileSize
                 };
                 await _fileRepo.SaveFile(fileMetadata);
             }

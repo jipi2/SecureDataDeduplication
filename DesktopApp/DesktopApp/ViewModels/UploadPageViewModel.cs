@@ -32,9 +32,24 @@ namespace DesktopApp.ViewModels
             }
         }
 
+        private double _uploadProgress;
+        public double UploadProgress
+        {
+            get { return _uploadProgress; }
+            set
+            {
+                if (_uploadProgress != value)
+                {
+                    _uploadProgress = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public UploadPageViewModel()
         {
             FileNamePicked = "";
+            _uploadProgress = 0;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -115,7 +130,16 @@ namespace DesktopApp.ViewModels
             };
 
             string encFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _fileModel.encFileName);
-            
+
+            var progressableContent = new ProgressableStreamContent(new StreamContent(File.OpenRead(encFilePath)), (uploaded, total) =>
+            {
+                // Progress callback - you can update UI or perform other actions based on the upload progress
+                double progressPercentage = (double)uploaded / total;
+                UploadProgress = progressPercentage;
+                //Debug.WriteLine($"Uploaded: {uploaded} bytes of {total} bytes");
+                Debug.WriteLine($"Progress: {UploadProgress}%");
+            });
+
             var multipartContent = new MultipartFormDataContent();
            
             var fileStream = File.OpenRead(encFilePath);
@@ -123,7 +147,8 @@ namespace DesktopApp.ViewModels
             multipartContent.Add(new StringContent(fileDto.base64Key), "base64Key");
             multipartContent.Add(new StringContent(fileDto.base64Iv), "base64Iv");
             multipartContent.Add(new StringContent(fileDto.base64Tag), "base64Tag");
-            multipartContent.Add(new StreamContent(fileStream), "file", fileDto.fileName);
+            //    multipartContent.Add(new StreamContent(fileStream), "file", fileDto.fileName);
+            multipartContent.Add(progressableContent, "file", fileDto.fileName);
 
             Stopwatch stopwatch = new Stopwatch();
 
@@ -140,6 +165,8 @@ namespace DesktopApp.ViewModels
             Debug.WriteLine("Challenge time: " + stopwatch.Elapsed);
             fileStream.Close();
             File.Delete(encFilePath);
+
+            UploadProgress = 0;
         }
 
     }
