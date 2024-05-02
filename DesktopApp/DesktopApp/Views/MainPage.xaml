@@ -104,9 +104,11 @@
                               Offset="1.0" />
             </LinearGradientBrush>
         </Grid.Background>
-        <ScrollView>
+        <VerticalStackLayout x:Name="loadingStackLayout" IsVisible="True">
+            <ActivityIndicator Margin="0,400,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"/>
+        </VerticalStackLayout>
 
-
+        <ScrollView x:Name="mainScrollView" IsVisible="False">
             <VerticalStackLayout Spacing="10" Margin="0,50,0,0" >
                 <FlexLayout Direction="Row" JustifyContent="Start">
 
@@ -179,7 +181,7 @@
                                                     <MenuFlyoutItem Text="Add Label" Clicked="OnMenuItemAddLabelClicked" CommandParameter="{Binding fileName}"/>
                                                     <MenuFlyoutSeparator/>
                                                     <MenuFlyoutItem Text="Remove Label" Clicked="OnMenuItemRemoveLabelClicked" CommandParameter="{Binding fileName}"/>
-          
+
                                                 </MenuFlyout>
                                             </FlyoutBase.ContextFlyout>
 

@@ -17,7 +17,9 @@ namespace DesktopApp
             {
                 try
                 {
+                    loadingFrame.IsVisible = true;
                     await viewModel.AcceptReceivedFile(item);
+                    loadingFrame.IsVisible = false;
                     filesCollectionView.ItemsSource = viewModel.RecFiles;
                 }
                 catch (Exception ex)
@@ -32,8 +34,11 @@ namespace DesktopApp
             {
                 try
                 {
+
+                    loadingFrame.IsVisible = true;
                     await viewModel.RemoveReceivedFile(item);
                     //sincronizare cu listaaaa
+                    loadingFrame.IsVisible = false;
                     filesCollectionView.ItemsSource = viewModel.RecFiles;
                     
                 }

@@ -25,7 +25,9 @@ namespace DesktopApp
 					if(destEmail == null || destEmail == "")
 						throw new Exception("Destination email is empty");
 
-                    await viewModel.SendFile(_fileName, destEmail);
+					mainFrame.IsVisible = false;
+					loadingFrame.IsVisible = true;
+					await viewModel.SendFile(_fileName, destEmail);
 
 					this.Close();
                 }

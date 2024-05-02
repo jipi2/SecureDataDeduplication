@@ -41,6 +41,25 @@
             <Label Text="Don't have an account?" FontSize="16" HorizontalOptions="Center" Margin="0,20,0,0" />
             <Button Text="Register" FontSize="16" BackgroundColor="#009688" TextColor="White" CornerRadius="10"  x:Name="registerButton" Clicked="OnRegisterClicked"/>
         </StackLayout>
+
+        <Frame BackgroundColor="Transparent" CornerRadius="20" x:Name="loadingFrame" IsVisible="False" Opacity="0.5">
+
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                    EndPoint="1,1">
+                    <GradientStop Color="#422C52"
+                 Offset="0.1" />
+                    <GradientStop Color="#5F4076"
+                 Offset="0.6" />
+                    <GradientStop Color="#855AA6"
+                 Offset="1.0" />
+                </LinearGradientBrush>
+            </Frame.Background>
+
+            <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150">
+                <ActivityIndicator Margin="230,0,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </StackLayout>
+        </Frame>
     </Grid>
 
 </ContentPage>

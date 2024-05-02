@@ -25,35 +25,48 @@ namespace DesktopApp
         protected async override void OnAppearing()
         {
             base.OnAppearing();
-
-            if (BindingContext is MainWindowViewModel viewModel)
+            try
             {
-                viewModel.Files.Clear();
-                viewModel.Labels.Clear();
-                viewModel.FilteredFiles.Clear();
-                await viewModel.GetFilesAndNames();
-                int numberOfLables = await viewModel.GetLabelFileNames();
-                //int numberOfLables = viewModel.GetTags();
-                if (numberOfLables <= 0)
-                    labelCollectionView.WidthRequest = 650;
-                else
-                    labelCollectionView.WidthRequest = -1;
-
-                int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
-                if (numberOfRecFiles > 0)
+                mainScrollView.IsVisible = false;
+                loadingStackLayout.IsVisible = true;
+                if (BindingContext is MainWindowViewModel viewModel)
                 {
-                    emptyBellImage.IsVisible = false;
-                    filledBellImage.IsVisible = true;
-                    notificationNumberLabel.Text = numberOfRecFiles.ToString();
-                }
-                else
-                {
-                    emptyBellImage.IsVisible = true;
-                    filledBellImage.IsVisible = false;
-                    notificationNumberLabel.Text = "0";
-                }
-                //viewModel.Test();
+                    viewModel.Files.Clear();
+                    viewModel.Labels.Clear();
+                    viewModel.FilteredFiles.Clear();
+                    await viewModel.GetFilesAndNames();
+                    int numberOfLables = await viewModel.GetLabelFileNames();
+                    //int numberOfLables = viewModel.GetTags();
+                    if (numberOfLables <= 0)
+                        labelCollectionView.WidthRequest = 650;
+                    else
+                        labelCollectionView.WidthRequest = -1;
 
+                    int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
+                    if (numberOfRecFiles > 0)
+                    {
+                        emptyBellImage.IsVisible = false;
+                        filledBellImage.IsVisible = true;
+                        notificationNumberLabel.Text = numberOfRecFiles.ToString();
+                    }
+                    else
+                    {
+                        emptyBellImage.IsVisible = true;
+                        filledBellImage.IsVisible = false;
+                        notificationNumberLabel.Text = "0";
+                    }
+                    //viewModel.Test();
+                    mainScrollView.IsVisible = true;
+                    loadingStackLayout.IsVisible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "Your session expired!")
+                {
+                    await DisplayAlert("Error", "Your session expired!", "OK");
+                    await Shell.Current.GoToAsync("//SignInPage");
+                }
             }
 
         }
@@ -65,8 +78,11 @@ namespace DesktopApp
             if (sender is Button button && button.CommandParameter is string fileName)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
-                await viewModel.DownloadFile(fileName);
-                DisplayAlert("Info", "Your file has downloaded", "OK");
+                if (viewModel != null)
+                {
+                    await viewModel.DownloadFile(fileName);
+                    await DisplayAlert("Info", "Your file has downloaded", "OK");
+                }
             }
 
         }
@@ -77,8 +93,11 @@ namespace DesktopApp
             if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
-                await viewModel.DownloadFile(fileName);
-                await DisplayAlert("Info", "Your file has downloaded", "OK");
+                if (viewModel != null)
+                {
+                    await viewModel.DownloadFile(fileName);
+                    await DisplayAlert("Info", "Your file has downloaded", "OK");
+                }
             }
         }
 
@@ -131,17 +150,21 @@ namespace DesktopApp
             if (sender is Button button && button.CommandParameter is string fileName)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
-                try
+                if (viewModel != null)
                 {
-                    await viewModel.DeleteFile(fileName);
-                    fcView.ItemsSource = viewModel.Files;
-                    DisplayAlert("Info", "Your file has been deleted", "OK");
+                    try
+                    {
+                        await viewModel.DeleteFile(fileName);
+                        fcView.ItemsSource = viewModel.Files;
+                        await DisplayAlert("Info", "Your file has been deleted", "OK");
 
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                    DisplayAlert("Error", "Your could not be deleted", "OK");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                        await DisplayAlert("Error", "Your could not be deleted", "OK");
+
+                    }
                 }
 
             }
@@ -152,16 +175,19 @@ namespace DesktopApp
             if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
-                try
+                if (viewModel != null)
                 {
-                    await viewModel.DeleteFile(fileName);
-                    DisplayAlert("Info", "Your file has been deleted", "OK");
+                    try
+                    {
+                        await viewModel.DeleteFile(fileName);
+                        await DisplayAlert("Info", "Your file has been deleted", "OK");
 
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                    DisplayAlert("Error", "Your could not be deleted", "OK");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                        await DisplayAlert("Error", "Your could not be deleted", "OK");
+                    }
                 }
 
             }
@@ -204,7 +230,7 @@ namespace DesktopApp
                     await this.ShowPopupAsync(new TransferPagePopout());
 
                     viewModel.Files.Clear();
-                    viewModel.GetFilesAndNames();
+                    await viewModel.GetFilesAndNames();
                     int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
                     if (numberOfRecFiles > 0)
                     {
@@ -222,7 +248,7 @@ namespace DesktopApp
                 }
                 catch (Exception ex)
                 {
-                    DisplayAlert("Error", "Could not load the request", "OK");
+                   await DisplayAlert("Error", "Could not load the request", "OK");
                 }
             }
 
@@ -262,7 +288,7 @@ namespace DesktopApp
                 }
                 catch (Exception ex)
                 {
-                    DisplayAlert("Error", "Could not load the request", "OK");
+                    await DisplayAlert("Error", "Could not load the request", "OK");
                 }
             }
         }

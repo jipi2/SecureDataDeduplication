@@ -13,11 +13,14 @@ namespace DesktopApp
 		{
 			InitializeComponent();
             NavigationPage.SetHasBackButton(this, false);
+            SecureStorage.Default.RemoveAll();
         }
 
-
-
-     
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            SecureStorage.Default.RemoveAll();
+        }
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new SignUpPage());
@@ -27,7 +30,9 @@ namespace DesktopApp
         {
             if (BindingContext is SignInViewModel viewModel)
             {
+                loadingFrame.IsVisible = true;
                 int login = await viewModel.Login();
+                loadingFrame.IsVisible = false;
                 if (login == 1)
                 {
 

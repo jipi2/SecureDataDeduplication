@@ -8,29 +8,48 @@
              Color="Transparent"
              >
 
-    <Frame BackgroundColor="Transparent" CornerRadius="20">
+    <Grid>
+        <Frame BackgroundColor="Transparent" CornerRadius="20" x:Name="mainFrame">
 
-        <Frame.Background>
-            <LinearGradientBrush StartPoint="0,0"
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
                            EndPoint="1,1">
-                <GradientStop Color="#422C52"
+                    <GradientStop Color="#422C52"
                         Offset="0.1" />
-                <GradientStop Color="#5F4076"
+                    <GradientStop Color="#5F4076"
                         Offset="0.6" />
-                <GradientStop Color="#855AA6"
+                    <GradientStop Color="#855AA6"
                         Offset="1.0" />
-            </LinearGradientBrush>
-        </Frame.Background>
+                </LinearGradientBrush>
+            </Frame.Background>
 
-        <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150">
-             <Entry Placeholder="Receiver Email" FontSize="18" Margin="0,0,100,0" x:Name="destEmailTxt" 
+            <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150" x:Name="mainStackLayout">
+                <Entry Placeholder="Receiver Email" FontSize="18" Margin="0,0,100,0" x:Name="destEmailTxt" 
                     HeightRequest="40" WidthRequest="250" TextColor="White" PlaceholderColor="White"/>
 
-            <Button Text="Send" FontSize="18" Margin="0,0,0,0" x:Name="sendBtn" WidthRequest="100" HeightRequest="40"
+                <Button Text="Send" FontSize="18" Margin="0,0,0,0" x:Name="sendBtn" WidthRequest="100" HeightRequest="40"
                     Clicked="OnSendButtonClicked"/>
-        </StackLayout>
-            
-        
+            </StackLayout>
+        </Frame>
+        <Frame BackgroundColor="Transparent" CornerRadius="20" x:Name="loadingFrame" IsVisible="False">
 
-    </Frame>
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                           EndPoint="1,1">
+                    <GradientStop Color="#422C52"
+                        Offset="0.1" />
+                    <GradientStop Color="#5F4076"
+                        Offset="0.6" />
+                    <GradientStop Color="#855AA6"
+                        Offset="1.0" />
+                </LinearGradientBrush>
+            </Frame.Background>
+
+            <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150">
+                <ActivityIndicator Margin="230,0,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </StackLayout>
+        </Frame>
+
+
+    </Grid>
 </mct:Popup>
