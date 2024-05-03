@@ -50,6 +50,26 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword(ChangePasswordDto dto)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _userService.ResetPassword(id, dto);
+                return Ok("The password has been updated!");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpGet("test")]
         [Authorize(Roles = "client")]
         public IActionResult GetTestClient()

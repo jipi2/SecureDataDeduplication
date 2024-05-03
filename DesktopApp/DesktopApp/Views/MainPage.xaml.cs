@@ -58,6 +58,7 @@ namespace DesktopApp
                     //viewModel.Test();
                     mainScrollView.IsVisible = true;
                     loadingStackLayout.IsVisible = false;
+   
                 }
             }
             catch (Exception ex)
@@ -80,8 +81,9 @@ namespace DesktopApp
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
-                    await viewModel.DownloadFile(fileName);
-                    await DisplayAlert("Info", "Your file has downloaded", "OK");
+                    DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
+                    string dnFolder = await viewModel.DownloadFile(fileName);
+                    await DisplayAlert("Info", fileName+" has downloaded in folder: "+dnFolder, "OK");
                 }
             }
 
@@ -95,8 +97,9 @@ namespace DesktopApp
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
-                    await viewModel.DownloadFile(fileName);
-                    await DisplayAlert("Info", "Your file has downloaded", "OK");
+                    DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
+                    string dnFolder = await viewModel.DownloadFile(fileName);
+                    await DisplayAlert("Info", fileName + " has been downloaded in folder: " + dnFolder, "OK");
                 }
             }
         }

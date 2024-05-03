@@ -201,7 +201,7 @@ namespace DesktopApp.ViewModels
 
         }
 
-        public async Task DownloadFile(string fileName) //ceva nu merge cu stersul fisiereulor
+        public async Task<string> DownloadFile(string fileName) //ceva nu merge cu stersul fisiereulor
         {
             string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
             var httpClient = HttpServiceCustom.GetProxyClient();
@@ -238,6 +238,7 @@ namespace DesktopApp.ViewModels
             Utils.DecryptAndSaveFileWithAesGCM(encFileStream, filePath, Convert.FromBase64String(keyAndIvDto.base64key), Convert.FromBase64String(keyAndIvDto.base64iv));
             encFileStream.Close();
             System.IO.File.Delete(saveFilePath);
+            return downloadFolder;
         }
 
         private string getBase64CapsuleAndCiphertext(string base64privKey, string base64plaintext)

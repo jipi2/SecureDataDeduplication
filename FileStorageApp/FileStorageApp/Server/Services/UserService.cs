@@ -5,6 +5,7 @@ using FileStorageApp.Server.SecurityFolder;
 using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
 
@@ -87,6 +88,29 @@ namespace FileStorageApp.Server.Services
                 throw new ExceptionModel("Login faild!", 1);
 
             return (new Response { Succes = true, Message = "Login successfully", AccessToken = _secManager.GetNewJwt(user) });
+        }
+
+        public async Task ResetPassword(string userId, ChangePasswordDto dto)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (user == null)
+                throw new Exception("User does not exist!");
+            if (!user.Password.Equals(Utils.HashTextWithSalt(dto.oldPass, Utils.HexToByte(user.Salt))))
+            {
+                throw new Exception("Old password is not correct!");
+            }
+            if (dto.newPass.Equals("") || dto.newPass.Equals(" "))
+            {
+                throw new Exception("The format of new password is not correct!");
+            }
+            if (!dto.newPass.Equals(dto.confirmNewPass))
+            {
+                throw new Exception("The passwords do not match!");
+            }
+            string newHashedPass = Utils.HashTextWithSalt(dto.newPass, Utils.HexToByte(user.Salt));
+            user.Password = newHashedPass;
+            await _userRepo.UpdateUser(user);
+
         }
 
         public bool isUserAdmin(User user)
@@ -243,6 +267,6 @@ namespace FileStorageApp.Server.Services
             };
             return nameDto;
         }
-        
+
     }
 }

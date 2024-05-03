@@ -91,6 +91,9 @@
 	  <Compile Update="Views\CreateLabelPopup.xaml.cs">
 	    <DependentUpon>CreateLabelPopup.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\ResetPasswordPage.xaml.cs">
+	    <DependentUpon>ResetPasswordPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\TransferPagePopup.xaml.cs">
 	    <DependentUpon>TransferPagePopup.xaml</DependentUpon>
 	  </Compile>
@@ -113,6 +116,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\RemoveLabelFilePopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\ResetPasswordPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SendPopup.xaml">

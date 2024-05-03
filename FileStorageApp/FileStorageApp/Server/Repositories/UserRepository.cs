@@ -151,5 +151,11 @@ namespace FileStorageApp.Server.Repositories
             await _context.FSRCs.AddAsync(fSRC);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateUser(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

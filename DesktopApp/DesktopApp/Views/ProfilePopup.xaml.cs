@@ -40,9 +40,10 @@ namespace DesktopApp
             Debug.WriteLine("Test");
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private async void Button_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Test");
+            this.IsVisible = false;
+            await Navigation.PushAsync(new ResetPasswordPage());
         }
     }
 }
