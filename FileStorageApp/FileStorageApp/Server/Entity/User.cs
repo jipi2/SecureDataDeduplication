@@ -27,5 +27,9 @@ namespace FileStorageApp.Server.Entity
         public string? Base64RSAEncPrivateKey { get; set; }
         public string? Base64PublicKey { get; set; }
         public List<Role>? Roles { get; set; }
+
+        public string? VerificationCode { get; set; }
+        public bool? IsVerified { get; set; }
+        public DateTime? VerifiedAt { get; set; }
     }
 }

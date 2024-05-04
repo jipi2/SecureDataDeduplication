@@ -55,6 +55,7 @@ builder.Services.AddScoped<FileService>();
 //builder.Services.AddScoped<IConfiguration>();
 builder.Services.AddScoped<AzureBlobService>();
 builder.Services.AddScoped<LabelService>();
+builder.Services.AddScoped<EmailService>(); 
 
 builder.WebHost.ConfigureKestrel(options =>
 {

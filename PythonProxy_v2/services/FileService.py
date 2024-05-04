@@ -302,7 +302,6 @@ class FileService():
         
         if(response.status_code != 200):
             raise Exception(response.text)
-        
         filesList = [FilesNameDate(**item) for item in response.json()]
         filesAndDatesFromCache = await FileNameAndDateFromCacheTask
         print(filesAndDatesFromCache)

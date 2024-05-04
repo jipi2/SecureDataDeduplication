@@ -103,6 +103,9 @@
 	  <MauiXaml Update="Views\AddLabelToFilePopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\CodePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\CreateLabelPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

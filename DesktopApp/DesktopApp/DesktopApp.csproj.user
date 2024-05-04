@@ -13,6 +13,9 @@
     <MauiXaml Update="Views\AddLabelToFilePopup.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>
+    <MauiXaml Update="Views\CodePage.xaml">
+      <SubType>Designer</SubType>
+    </MauiXaml>
     <MauiXaml Update="Views\CreateLabelPopup.xaml">
       <SubType>Designer</SubType>
     </MauiXaml>

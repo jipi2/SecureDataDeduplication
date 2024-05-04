@@ -3,6 +3,8 @@ using DesktopApp.ViewModels;
 using CryptoLib;
 using Org.BouncyCastle.Security;
 using DesktopApp.HttpFolder;
+using CommunityToolkit.Maui.Views;
+
 
 namespace DesktopApp
 {
@@ -23,27 +25,45 @@ namespace DesktopApp
         }
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new SignUpPage());
+            await Navigation.PushModalAsync(new SignUpPage());
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
-            if (BindingContext is SignInViewModel viewModel)
+            try
             {
-                loadingFrame.IsVisible = true;
-                int login = await viewModel.Login();
-                loadingFrame.IsVisible = false;
-                if (login == 1)
+                if (BindingContext is SignInViewModel viewModel)
                 {
+                    loadingFrame.IsVisible = true;
+                    int login = await viewModel.Login();
+                    loadingFrame.IsVisible = false;
+                    if (login == 1)
+                    {
 
-                    await Shell.Current.GoToAsync("//MainPage");
+                        await Shell.Current.GoToAsync("//MainPage");
+                    }
+                    else if (login == 2)
+                    {
+                        await DisplayAlert("Info", "You need to verify your email address", "OK");
+                        await viewModel.sendEmail();
+                        var result = await this.ShowPopupAsync(new CodePage(viewModel.Email, viewModel.Password, false));
+                        string? jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                        if (jwt != null)
+                        {
+                            await Shell.Current.GoToAsync("//MainPage");
+                        }
+                        else
+                            await DisplayAlert("Error", "Login Failed!", "OK");
+                    }
+                    else
+                    {
+                        await DisplayAlert("Error", "Invalid email or password", "OK");
+                    }
                 }
-                else
-                {
-                    await DisplayAlert("Error", "Invalid email or password", "OK");
-                }
-                
-                
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", ex.Message, "OK");
             }
         }
     }

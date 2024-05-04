@@ -8,13 +8,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
 namespace DesktopApp.ViewModels
 {
-    public class SignInViewModel: INotifyCollectionChanged
+    public class SignInViewModel : INotifyCollectionChanged
     {
         private string _email;
         public string Email
@@ -64,7 +65,7 @@ namespace DesktopApp.ViewModels
                 Email = _email,
                 password = _password
             };
-            
+
             var httpClient = HttpServiceCustom.GetApiClient();
             var result = await httpClient.PostAsJsonAsync("api/User/login", logUser);
             if (result.IsSuccessStatusCode)
@@ -81,15 +82,30 @@ namespace DesktopApp.ViewModels
                         }
 
                     }
-                        return 1;
-
+                return 1;
             }
             else
             {
+                string message = await result.Content.ReadAsStringAsync();
+                if (message.Equals("Email not verified!"))
+                    return 2;
                 return 0;
             }
 
         }
+
+        public async Task sendEmail()
+        {
+            string email = _email;
+            var httpClient = HttpServiceCustom.GetApiClient();
+            var result = await httpClient.PostAsJsonAsync("/api/User/sendEmail", email);
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = await result.Content.ReadAsStringAsync();
+                throw new Exception(message);
+            }
+        }
     }
+    
 }
 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DesktopApp.CodePage"
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             CanBeDismissedByTappingOutsideOfPopup="False" 
+             Color="Transparent"
+           
+             >
+
+    <Grid BackgroundColor="Transparent">
+        <Frame BackgroundColor="Transparent" CornerRadius="20" x:Name="mainFrame">
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
+                        EndPoint="1,1">
+                    <GradientStop Color="#422C52"
+                     Offset="0.1" />
+                    <GradientStop Color="#5F4076"
+                     Offset="0.6" />
+                    <GradientStop Color="#855AA6"
+                     Offset="1.0" />
+                </LinearGradientBrush>
+            </Frame.Background>
+            <StackLayout Padding="20" VerticalOptions="CenterAndExpand" MaximumWidthRequest="700" MaximumHeightRequest="500">
+            <Label Text="Enter you verification code here:" FontSize="24" HorizontalOptions="Center" Margin="0,0,0,20" />
+            <Entry Placeholder="Code" x:Name="codeTxt" FontSize="18" HorizontalTextAlignment="Center" Margin="0,0,0,30"/>
+            <Button Text="Send" FontSize="20" BackgroundColor="#0078D4" TextColor="White" CornerRadius="10"  x:Name="sendButton" Clicked="sendButton_Clicked"/>
+            <Button Text="Cancel" FontSize="20" Margin="0,20,0,0" BackgroundColor="Red" TextColor="White" CornerRadius="10"  x:Name="cancelButton" Clicked="cancelButton_Clicked"/>
+
+        </StackLayout>
+        </Frame>
+        <Frame BackgroundColor="Transparent" CornerRadius="20" x:Name="loadingFrame" IsVisible="False" WidthRequest="800" HeightRequest="500">
+
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0"
+              EndPoint="1,1">
+                    <GradientStop Color="#422C52"
+           Offset="0.1" />
+                    <GradientStop Color="#5F4076"
+           Offset="0.6" />
+                    <GradientStop Color="#855AA6"
+           Offset="1.0" />
+                </LinearGradientBrush>
+            </Frame.Background>
+
+            <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150">
+                <ActivityIndicator Margin="230,0,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </StackLayout>
+        </Frame>
+    </Grid>
+</mct:Popup>

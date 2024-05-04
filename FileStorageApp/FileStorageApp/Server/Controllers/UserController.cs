@@ -16,9 +16,26 @@ namespace FileStorageApp.Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
-        public UserController(UserService userService)
+        private readonly EmailService _emailService;
+        public UserController(UserService userService, EmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
+        }
+
+        [HttpGet("testMail")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestMail()
+        {
+            try
+            {
+                _emailService.SendEmail("jipianu_mihnea@yahoo.com", "TEST", "asat este doar un body");
+                return Ok("email sent");
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost("register")]
@@ -50,7 +67,39 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpPost("sendEmail")]
+        [AllowAnonymous]
+        public async Task<IActionResult> sendEmail([FromBody] string email)
+        {
+            try
+            {
+                await _userService.SendVerificationEmailToLoggedUser(email);
+                return Ok("Email sent!");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("verifyCode")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyCode(VerifyCodeDto dto)
+        {
+            try
+            {
+                Response resp = await _userService.VerifyCode(dto);
+                return Ok(resp);
+            }
+            catch (ExceptionModel e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
         [HttpPost("resetPassword")]
+        [Authorize]
         public async Task<IActionResult> ResetPassword(ChangePasswordDto dto)
         {
             try

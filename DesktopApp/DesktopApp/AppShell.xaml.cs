@@ -7,11 +7,9 @@
             InitializeComponent();
             Routing.RegisterRoute("SignInPage", typeof(SignInPage));
             Routing.RegisterRoute("MainPage", typeof(MainPage));
-/*            Routing.RegisterRoute("SignUpPage", typeof(SignUpPage));*/
+            //Routing.RegisterRoute("SignUpPage", typeof(SignUpPage));
             Routing.RegisterRoute("UploadPage", typeof(UploadPage));
 
-       
-            
         }
 
         public async Task SetRootPageSignIn()

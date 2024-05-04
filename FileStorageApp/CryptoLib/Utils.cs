@@ -46,6 +46,27 @@ namespace CryptoLib
             return randomBytes;
         }
 
+        static public string GenerateRandomNumberAsString(int numberOfDigits)
+        {
+            Random random = new Random();
+            if (numberOfDigits <= 0)
+                throw new ArgumentException("Number of digits must be greater than zero.");
+
+            // Generate each digit randomly and append to the result string
+            string result = "";
+            int digit;
+            for (int i = 0; i < numberOfDigits; i++)
+            {
+                if (i != 0)
+                    digit = random.Next(0, 10); // Generates a random digit from 0 to 9
+                else
+                    digit = random.Next(1, 10); // Generates a random digit from 1 to 9
+                result += digit;
+            }
+
+            return result;
+        }
+
         static public byte[] HexToByte(string hexString)
         {
             return Hex.Decode(hexString);

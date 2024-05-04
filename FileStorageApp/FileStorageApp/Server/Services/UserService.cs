@@ -6,8 +6,8 @@ using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Crypto;
 
 namespace FileStorageApp.Server.Services
 {
@@ -16,14 +16,25 @@ namespace FileStorageApp.Server.Services
         public UserRepository _userRepo { get; set; }
         public RoleRepository _roleRepo { get; set; }
         public SecurityManager _secManager { get; set; }
-        
-        public UserService(UserRepository userRepository, SecurityManager secManager, RoleRepository roleRepository)
+        public EmailService _emailService { get; set;}
+        public UserService(UserRepository userRepository, SecurityManager secManager, RoleRepository roleRepository, EmailService emailService)
         {
             _userRepo = userRepository;
             _secManager = secManager;
             _roleRepo = roleRepository;
+            _emailService = emailService;
         }
 
+        private void sendVerificatoinCodeViaEmail(User user)
+        {
+            string? verificationCode = user.VerificationCode;
+            if(verificationCode == null)
+                throw new Exception("Verification code does not exist!");
+            string email = user.Email;
+            string subject = "Verification Code";
+            string body = "Your verification code is: " + verificationCode;
+            _emailService.SendEmail(email, subject, body);
+        }
         public async Task<Response> Register(RegisterUser regUser)
         {
             var user = _userRepo.GetUserbyEmail(regUser.Email).Result;
@@ -46,14 +57,19 @@ namespace FileStorageApp.Server.Services
                 Base64RSAEncPrivateKey = regUser.rsaKeys.base64EncPrivKey,
                 Base64RSAPublicKey = regUser.rsaKeys.base64PubKey,
                 //Files = new List<Entity.FileMetadata>()
-                Base64PublicKey = regUser.base64PubKey
+                Base64PublicKey = regUser.base64PubKey,
+                IsVerified = false,
+                VerificationCode = Utils.GenerateRandomNumberAsString(9)
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
 
             _userRepo.SaveUser(newUser);
 
+            sendVerificatoinCodeViaEmail(newUser);
+
             return (new Response { Succes = true, Message = "User registered successfully", AccessToken = _secManager.GetNewJwt(newUser) }); ;
         }
+
 
         public async Task<Response> AddProxy(RegisterProxyDto regProxy)
         {
@@ -86,8 +102,40 @@ namespace FileStorageApp.Server.Services
                 throw new ExceptionModel("Login faild!", 1);
             if (!user.Password.Equals(Utils.HashTextWithSalt(logUser.password, Utils.HexToByte(user.Salt))))
                 throw new ExceptionModel("Login faild!", 1);
+            if (user.IsVerified == false)
+            {
+                throw new ExceptionModel("Email not verified!", 1);
+            }
 
             return (new Response { Succes = true, Message = "Login successfully", AccessToken = _secManager.GetNewJwt(user) });
+        }
+
+        public async Task SendVerificationEmailToLoggedUser(string userEmail)
+        {
+            var user = _userRepo.GetUserByEmail(userEmail).Result;
+            if (user == null)
+                throw new Exception("This user does not exist!");
+            sendVerificatoinCodeViaEmail(user);
+        }
+
+        public async Task<Response> VerifyCode(VerifyCodeDto dto)
+        {
+            var user = _userRepo.GetUserByEmail(dto.email).Result;
+            if (user == null)
+                throw new ExceptionModel("Verifying faild!", 1);
+            if (!user.Password.Equals(Utils.HashTextWithSalt(dto.password, Utils.HexToByte(user.Salt))))
+                throw new ExceptionModel("Verifying faild!", 1);
+            if (!user.VerificationCode.Equals(dto.code))
+            {
+                throw new ExceptionModel("Verifying faild!", 1);
+            }
+            user.IsVerified = true;
+            user.VerifiedAt = DateTime.Now;
+
+            await _userRepo.UpdateUser(user);
+
+
+            return (new Response { Succes = true, Message = "User is verified", AccessToken = _secManager.GetNewJwt(user) });
         }
 
         public async Task ResetPassword(string userId, ChangePasswordDto dto)
@@ -147,6 +195,7 @@ namespace FileStorageApp.Server.Services
             string serverPrivKey = Utils.GetPemAsString(serverKeys.Private);
 
             await _userRepo.SaveServerDFKeysForUser(user, serverPubKey, serverPrivKey, P, G);
+            
         }
 
         public async Task<string> GetPrivateKeyOfServerForUser(string userId)
