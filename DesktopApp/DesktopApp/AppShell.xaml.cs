@@ -15,6 +15,7 @@
         public async Task SetRootPageSignIn()
         {
             await Shell.Current.GoToAsync("//SignInPage");
+           // await Shell.Current.GoToAsync("//UploadPage");
         }
 
         public async Task SetRootPageMainPage()

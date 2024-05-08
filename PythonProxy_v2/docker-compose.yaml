@@ -19,6 +19,8 @@ services:
     depends_on:
       - redis
       - celery_worker
+    volumes:
+      - ./uploadedFiles:/app/uploadedFiles
 
   celery_worker:
     image: celery
@@ -27,6 +29,8 @@ services:
       - proxy-net
     depends_on:
       - redis
+    volumes:
+      - ./uploadedFiles:/app/uploadedFiles
   
 networks:
   proxy-net:

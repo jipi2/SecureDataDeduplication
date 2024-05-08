@@ -13,17 +13,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# celery = Celery("tasks", broker=os.environ.get("REDIS_URL"), backend=os.environ.get("REDIS_URL"),include=["tasks_"])
+celery = Celery("tasks", broker=os.environ.get("REDIS_URL"), backend=os.environ.get("REDIS_URL"),include=["tasks_"])
 
 print('here')
 
-try:
-    celery = Celery("tasks", broker="http://redis:6379/0", backend="http://redis:6379/0",include=["tasks_"])
-    print('here')
-except Exception as e:
-    print('exceptie')
-    print(f"Error: {str(e)}")
-print('here')
+# try:
+#     celery = Celery("tasks", broker="http://redis:6379/0", backend="http://redis:6379/0",include=["tasks_"])
+#     print('here')
+# except Exception as e:
+#     print('exceptie')
+#     print(f"Error: {str(e)}")
+# print('here')
 
 '''
 @celery.task()
@@ -78,13 +78,21 @@ def sendFilesToServer():
 '''
     
 @celery.task()
-def sendFilesToServer_v2(self):
+def sendFilesToServer_v2():
     try:
+        print('begining')
         gateWay = ApiCall(os.environ.get("backendBaseUrl"))
+        print(gateWay.api_url)
+        print('after gateway')
         pc = ProxyClass()
+        print('after proxy class')
         pc.getProxyTokenSYNC()
+        # await pc.getProxyToken()
+        print('afster proxy sync')
         basedb = Base()
+        print('here')
         session = basedb.getSession()
+        print('after here')
         print('---------------------------------------')
         blobs = session.query(BlobFile).all()
         if len(blobs) == 0:
@@ -93,20 +101,25 @@ def sendFilesToServer_v2(self):
         for f in blobs:            
             file_path = f.encFilePath
             base64Tag = f.file[0].tag
+            fileSize = f.file[0].size
             user_files = session.query(UserFile).filter(UserFile.file_id == f.file[0].id).all()
             personalisedInfo = []
             for uf in user_files:
                 user = session.query(User).filter(User.id == uf.user_id).first()
                 personalisedInfo.append(PersonalisedInfoDto(fileName=uf.fileName, base64key=uf.key, base64iv=uf.iv, email=user.email, UploadDate=str(uf.upload_date)))
-            filesMetaDto = FileFromCacheDto_v2(encFilePath=file_path, base64Tag=base64Tag, personalisedList=personalisedInfo)
+            filesMetaDto = FileFromCacheDto_v2(fileSize=fileSize,encFilePath=file_path, base64Tag=base64Tag, personalisedList=personalisedInfo)
             response = gateWay.sendChunkFromFile("/api/File/writeFileOnDisk", "/api/File/saveFileFromCacheParams",pc.token, f.encFilePath, filesMetaDto)
             
             if response.status_code != 200:
                 raise Exception(response.text)
-            
-        
+                
         files = session.query(File).all()
         blob_files = session.query(BlobFile).all()
+        
+        for blob_f  in blob_files:
+            if os.path.exists(blob_f.encFilePath):
+                os.remove(blob_f.encFilePath)
+        
         user_files = session.query(UserFile).all()
 
         for user_file in user_files:
@@ -126,7 +139,6 @@ def sendFilesToServer_v2(self):
     finally:
         session.close()
         print('finally')
-    
 
 # @celery.task()
 # def transferFileBetweenUsers(senderEmail:str ,senderToken:str,recieverEmail:str,  fileName:str, base64EncKey:str, base64EncIv:str):

@@ -5,3 +5,4 @@ class FileTransferDto(BaseModel):
     fileName: str
     base64EncKey: str
     base64EncIv: str
+    isInCache: bool

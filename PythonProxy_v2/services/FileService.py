@@ -497,11 +497,19 @@ class FileService():
     
     async def sendFilesToServer_v2(self):
         try:
+            print('begining')
             gateWay = ApiCall(os.environ.get("backendBaseUrl"))
+            print(gateWay.api_url)
+            print('after gateway')
             pc = ProxyClass()
-            pc.getProxyTokenSYNC()
+            print('after proxy class')
+            # pc.getProxyTokenSYNC()
+            await pc.getProxyToken()
+            print('afster proxy sync')
             basedb = Base()
+            print('here')
             session = basedb.getSession()
+            print('after here')
             print('---------------------------------------')
             blobs = session.query(BlobFile).all()
             if len(blobs) == 0:

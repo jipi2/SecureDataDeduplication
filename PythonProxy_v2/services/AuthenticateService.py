@@ -16,8 +16,9 @@ class ProxyClass():
     
     async def getProxyToken(self):
         # test expiration token and if it is expired, get a new one
-        
+        print('inainte')
         response = await self.gateWay.callBackendGetMethod("/api/User/testProxyController", self.token)
+        print('dupa')
         if(response.status_code != 200):
             logProxy = LoginUserDto(Email=self.proxyMail, password=self.proxyPassword)
             response = await self.gateWay.callBackendPostMethodDto("/api/User/login", "", logProxy)        
@@ -33,7 +34,12 @@ class ProxyClass():
         return response.text
     
     def getProxyTokenSYNC(self):
+        print('in proxy sync')
         logProxy = LoginUserDto(Email=self.proxyMail, password=self.proxyPassword)
-        response = self.gateWay.callBackendPostMethodDtoSYNC("/api/User/login", "", logProxy)        
+        print('after login dto')
+        response = self.gateWay.callBackendPostMethodDtoSYNC("/api/User/login", "", logProxy) 
+        print('afster response')       
         resp = Resp(Success=response.json()["succes"], Message=response.json()["message"], AccessToken=response.json()["accessToken"])
+        print('after resp')
         self.token = resp.AccessToken
+        print('after token')

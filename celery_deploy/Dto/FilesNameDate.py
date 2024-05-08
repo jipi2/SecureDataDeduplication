@@ -4,4 +4,5 @@ from typing import List
 
 class FilesNameDate(BaseModel):
     fileName: str
+    fileSize: float
     uploadDate: datetime

@@ -67,7 +67,12 @@ namespace DesktopApp
 			{
 				uploadButton.IsEnabled = true;
 				DisplayAlert("Error", ex.Message, "OK");
-			}
+                uploadButton.IsEnabled = true;
+                fileNameFrame.IsVisible = false;
+                uploadButton.IsVisible = false;
+                uploadText.IsVisible = false;
+                plusButton.IsVisible = true;
+            }
 		}
 
 
