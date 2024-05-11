@@ -4,6 +4,7 @@ using FileStorageApp.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileStorageApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240511073720_AddPkcs12")]
+    partial class AddPkcs12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,7 +231,7 @@ namespace FileStorageApp.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte[]>("Pkcs12File")
-                        .HasColumnType("VARBINARY(MAX)");
+                        .HasColumnType("VARBINARY");
 
                     b.Property<string>("Salt")
                         .IsRequired()

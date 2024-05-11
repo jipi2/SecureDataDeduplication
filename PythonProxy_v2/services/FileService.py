@@ -468,19 +468,25 @@ class FileService():
                 isInCache = True
             else:
                 isInCache = False
-            print(isInCache)
+       
             if isInCache == False:
                 response = await self.gateWay.callBackendPostMethodDto("/api/File/acceptRecievedFile", self.authService.token, afdto)
                 if response.status_code != 200:
                     raise Exception(response.text)
             else:
+               
                 basedb = Base()
                 session = basedb.getSession()
                 userFile = session.query(UserFile).join(User, User.id == UserFile.user_id).filter(User.email == afdto.senderEmail, UserFile.fileName == afdto.fileName).first()
+              
                 if not userFile:
                     raise Exception("This file transfer does not exists")
-                
+
                 user = session.query(User).filter(User.email == self.userEmail).first()
+                if user == None:
+                    user = User(email=self.userEmail)
+                    session.add(user)
+                    session.commit()
                 new_user_file = UserFile(user_id=user.id, file_id=userFile.file_id, key=afdto.base64FileKey, iv=afdto.base64FileIv, fileName=afdto.fileName, date=datetime.datetime.utcnow())
                 session.add(new_user_file)
                 session.commit()

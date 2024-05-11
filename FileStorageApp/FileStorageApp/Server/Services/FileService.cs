@@ -611,6 +611,8 @@ namespace FileStorageApp.Server.Services
             MerkleTree mt = await GetMerkleTree_v2(filePath);
             await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
 
+            List<FileTransfer> ftList = await _fileTransferRepo.GetAllFileTransfer();
+
             foreach (PersonalisedInfoDto pid in fileParams.personalisedList)
             {
                 User? user = await _userRepo.GetUserByEmail(pid.email);
@@ -639,7 +641,14 @@ namespace FileStorageApp.Server.Services
                     uf.UploadDate = DateTime.Parse(pid.UploadDate);
                     await _userFileRepo.UpdateUserFile(uf);
                 }
-                
+
+                FileTransfer? ft = ftList.Where(f => f.FileName == pid.fileName && f.SenderId == user.Id).FirstOrDefault();
+                if(ft != null)
+                {
+                    ft.isInCache = false;
+                    await _fileTransferRepo.UpdateFileTransfer(ft);
+                }
+
             }
         }
 

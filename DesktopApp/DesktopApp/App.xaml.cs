@@ -19,30 +19,32 @@ namespace DesktopApp
         {
             // Navigate to SignUpPage
             //Shell.Current.GoToAsync("//SignInPage");
-            
+
+
             if (MainPage is AppShell shell)
             {
+                await shell.SetRootPageSignIn();
 
-                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
-                var httpClient = HttpServiceCustom.GetApiClient();
-                httpClient.DefaultRequestHeaders.Remove("Authorization");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
-                try
-                {
-                    var response = await httpClient.GetAsync("/api/User/isConnected");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        await shell.SetRootPageMainPage();
-                    }
-                    else
-                    {
-                        await shell.SetRootPageSignIn();
-                    }
-                }
-                catch (Exception e)
-                {
-                   Debug.WriteLine(e.Message);
-                }
+                //string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                //var httpClient = HttpServiceCustom.GetApiClient();
+                //httpClient.DefaultRequestHeaders.Remove("Authorization");
+                //httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+                //try
+                //{
+                //    var response = await httpClient.GetAsync("/api/User/isConnected");
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        await shell.SetRootPageMainPage();
+                //    }
+                //    else
+                //    {
+                //        await shell.SetRootPageSignIn();
+                //    }
+                //}
+                //catch (Exception e)
+                //{
+                //   Debug.WriteLine(e.Message);
+                //}
             }
         }
 

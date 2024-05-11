@@ -11,5 +11,6 @@ namespace FileStorageApp.Shared.Dto
         public string oldPass { get; set; }
         public string newPass { get; set; }
         public string confirmNewPass { get; set; }
+        public string base64pkcs12 { get; set; }
     }
 }

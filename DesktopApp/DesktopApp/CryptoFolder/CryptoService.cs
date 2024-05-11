@@ -1,13 +1,8 @@
 ﻿using CryptoLib;
 using DesktopApp.Dto;
-using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
-using Org.BouncyCastle.OpenSsl;
-using System.Formats.Asn1;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace FileStorageApp.Client
@@ -138,26 +133,33 @@ namespace FileStorageApp.Client
             return fr;
         }
 
-        public async Task<RsaDto?> GetRsaDto(string password)
+        public async Task<Pkcs12Dto?> GetPkcsDto(string password)
         {
             try
             {
-                byte[] key = new byte[16];
-                byte[] iv = new byte[16];
+                //byte[] key = new byte[16];
+                //byte[] iv = new byte[16];
 
-                AsymmetricCipherKeyPair userKeyPair = Utils.GenerateRSAKeyPair();
-                string base64PubKey = Utils.GetBase64RSAPublicKey(userKeyPair);
-                byte[] privateKeyDerEnc = Utils.GetDerEncodedRSAPrivateKey(userKeyPair);
-                //facem hash 256 peste parola, jumate va fi cheia jumate va fi iv-ul
-                byte[] hash = Utils.ComputeHash(Encoding.UTF8.GetBytes(password));
-                Array.Copy(hash, key, 16);
-                Array.Copy(hash, hash.Length - 16, iv, 0, 16);
+                //AsymmetricCipherKeyPair userKeyPair = Utils.GenerateRSAKeyPair();
+                //string base64PubKey = Utils.GetBase64RSAPublicKey(userKeyPair);
+                //byte[] privateKeyDerEnc = Utils.GetDerEncodedRSAPrivateKey(userKeyPair);
+                ////facem hash 256 peste parola, jumate va fi cheia jumate va fi iv-ul
+                //byte[] hash = Utils.ComputeHash(Encoding.UTF8.GetBytes(password));
+                //Array.Copy(hash, key, 16);
+                //Array.Copy(hash, hash.Length - 16, iv, 0, 16);
 
-                string base64EncPrivKey = Utils.EncryptAes(privateKeyDerEnc, key, iv);
-                RsaDto rsaDto = new RsaDto();
-                rsaDto.base64PubKey = base64PubKey;
-                rsaDto.base64EncPrivKey = base64EncPrivKey;
-                return rsaDto;
+                //string base64EncPrivKey = Utils.EncryptAes(privateKeyDerEnc, key, iv);
+
+                byte[] pvBytes;
+                string base64RSAPubKey;
+
+                byte[] pkcs12bytes = Utils.GenerateRSAandECDSAInTheSameTime(password,out pvBytes, out base64RSAPubKey);
+
+                Pkcs12Dto pkDto = new Pkcs12Dto();
+                pkDto.base64PubKey = base64RSAPubKey;
+                pkDto.base64EncPrivKey = Convert.ToBase64String(pkcs12bytes);
+                pkDto.base64pbkey_d = Convert.ToBase64String(pvBytes);
+                return pkDto;
             }
             catch (Exception ex)
             {

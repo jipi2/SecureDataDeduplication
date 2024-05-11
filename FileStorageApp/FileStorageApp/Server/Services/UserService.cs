@@ -54,7 +54,7 @@ namespace FileStorageApp.Server.Services
                 Salt = Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
-                Base64RSAEncPrivateKey = regUser.rsaKeys.base64EncPrivKey,
+                Pkcs12File = Convert.FromBase64String(regUser.rsaKeys.base64EncPrivKey),
                 Base64RSAPublicKey = regUser.rsaKeys.base64PubKey,
                 //Files = new List<Entity.FileMetadata>()
                 Base64PublicKey = regUser.base64PubKey,
@@ -157,6 +157,9 @@ namespace FileStorageApp.Server.Services
             }
             string newHashedPass = Utils.HashTextWithSalt(dto.newPass, Utils.HexToByte(user.Salt));
             user.Password = newHashedPass;
+
+            user.Pkcs12File = Convert.FromBase64String(dto.base64pkcs12);
+
             await _userRepo.UpdateUser(user);
 
         }
@@ -260,12 +263,12 @@ namespace FileStorageApp.Server.Services
             User? user = await _userRepo.GetUserById(Convert.ToInt32(id));
             if (user == null)
                 throw new Exception("User does not exist!");
-            if(user.Base64RSAPublicKey == null || user.Base64RSAEncPrivateKey == null)
+            if(user.Base64RSAPublicKey == null || user.Pkcs12File == null)
                 throw new Exception("User does not have RSA key pair!");
             RsaDto rsaDto = new RsaDto
             {
                 base64PubKey = user.Base64RSAPublicKey,
-                base64EncPrivKey = user.Base64RSAEncPrivateKey
+                base64EncPrivKey = Convert.ToBase64String(user.Pkcs12File)
             };
             return rsaDto;
         }
@@ -317,5 +320,14 @@ namespace FileStorageApp.Server.Services
             return nameDto;
         }
 
+        public async Task<string> GetPkcs12(string userId)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (user == null)
+                throw new Exception("User does not exist!");
+            if (user.Pkcs12File == null)
+                throw new Exception("User does not have PKCS12 file!");
+            return Convert.ToBase64String(user.Pkcs12File);
+        }
     }
 }

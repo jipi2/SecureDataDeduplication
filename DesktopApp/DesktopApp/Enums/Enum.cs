@@ -13,7 +13,8 @@ namespace DesktopApp.Enums
         Error,
         Email,
         FirstName,
-        LastName
+        LastName,
+        ECPrivateKeyBase64
 
     }
 }

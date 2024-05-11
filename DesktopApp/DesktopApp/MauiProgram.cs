@@ -1,10 +1,13 @@
 ﻿using CommunityToolkit.Maui;
+using DesktopApp.KeysService;
+using DesktopApp.ViewModels;
 using FileStorageApp.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Mopups.Hosting;
 using Python.Runtime;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace DesktopApp
 {
@@ -12,6 +15,9 @@ namespace DesktopApp
     {
         public static MauiApp CreateMauiApp()
         {
+            RSA pvKey;
+            RSA pubKey;
+
             Runtime.PythonDLL = "C:\\Users\\Jipi\\AppData\\Local\\Programs\\Python\\Python311\\python311.dll";
             var builder = MauiApp.CreateBuilder();
 
@@ -42,7 +48,9 @@ namespace DesktopApp
 
 
             builder.Services.AddScoped<CryptoService>();
+            builder.Services.AddScoped<SignUpViewModel>();
             builder.Services.AddSingleton<IConfiguration>(config);
+            builder.Services.AddSingleton<RSAKeyService>();
 
 #if DEBUG
             builder.Logging.AddDebug();

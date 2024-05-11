@@ -67,6 +67,28 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpGet("pkcs12")]
+        [Authorize]
+        public async Task<IActionResult> GetPkcs12()
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                string pkcs12base64 = await _userService.GetPkcs12(id);
+                return Ok(pkcs12base64);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        }
+
         [HttpPost("sendEmail")]
         [AllowAnonymous]
         public async Task<IActionResult> sendEmail([FromBody] string email)

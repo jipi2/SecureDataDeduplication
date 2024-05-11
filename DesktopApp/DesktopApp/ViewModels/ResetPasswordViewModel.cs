@@ -1,4 +1,5 @@
-﻿using DesktopApp.HttpFolder;
+﻿using CryptoLib;
+using DesktopApp.HttpFolder;
 using FileStorageApp.Shared.Dto;
 using System;
 using System.Collections.Generic;
@@ -82,8 +83,24 @@ namespace DesktopApp.ViewModels
             {
                 throw new Exception("Passwords do not match!");
             }
+
             string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
             var httpClient = HttpServiceCustom.GetApiClient();
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+            var result = await httpClient.GetAsync("api/User/pkcs12");
+            if (!result.IsSuccessStatusCode)
+                throw new Exception("Something went wrong, please try again later");
+            string base64pkcs12 = await result.Content.ReadAsStringAsync();
+
+            byte[]? pkcs12;
+            Utils.ChangePkcs12Password(Convert.FromBase64String(base64pkcs12), _oldPass, _newPass, out pkcs12);
+            if (pkcs12 == null)
+            {
+                throw new Exception("Old password is not valid");
+            }
+
             httpClient.DefaultRequestHeaders.Remove("Authorization");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
@@ -91,7 +108,8 @@ namespace DesktopApp.ViewModels
             {
                 oldPass = _oldPass,
                 newPass = _newPass,
-                confirmNewPass = _confirmNewPass
+                confirmNewPass = _confirmNewPass,
+                base64pkcs12 = Convert.ToBase64String(pkcs12)
             }; 
           
             var response = await httpClient.PostAsJsonAsync("api/User/resetPassword", dto);

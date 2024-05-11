@@ -1,11 +1,13 @@
 ﻿using CryptoLib;
 using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
+using DesktopApp.KeysService;
 using DesktopApp.Models;
 using FileStorageApp.Client;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 namespace DesktopApp.ViewModels
 {
@@ -95,6 +97,7 @@ namespace DesktopApp.ViewModels
 
             byte[] fileKey = await _cryptoService.ExtractKey(_fileModel.hash, Defines.CryptoDefines.AES_GCM_KEY_SIZE);
             byte[] fileIv = await _cryptoService.ExtractIv(_fileModel.hash,Defines.CryptoDefines.AES_GCM_KEY_SIZE, Defines.CryptoDefines.AES_GCM_IV_SIZE);
+                        
             _fileModel.key = fileKey;
             _fileModel.iv = fileIv;
 
@@ -123,8 +126,8 @@ namespace DesktopApp.ViewModels
 
             FileParamsDto fileDto = new FileParamsDto
             {
-                base64Key = Convert.ToBase64String(_fileModel.key),
-                base64Iv = Convert.ToBase64String(_fileModel.iv),
+                base64Key = Convert.ToBase64String(RSAKeyService.rsaPublicKey.Encrypt(_fileModel.key, RSAEncryptionPadding.OaepSHA256)),
+                base64Iv = Convert.ToBase64String((RSAKeyService.rsaPublicKey.Encrypt(_fileModel.iv, RSAEncryptionPadding.OaepSHA256))),
                 base64Tag = _fileModel.base64Tag,
                 fileName = _fileModel.fileName
             };

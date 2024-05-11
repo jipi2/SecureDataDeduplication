@@ -1,6 +1,7 @@
 ﻿using FileStorageApp.Server.Database;
 using FileStorageApp.Server.Entity;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 using System.Net.Http.Headers;
 
 namespace FileStorageApp.Server.Repositories
@@ -63,6 +64,32 @@ namespace FileStorageApp.Server.Repositories
             catch (Exception e)
             {
                 throw new Exception("Error deleting file transfer");
+            }
+        }
+
+        public async Task<List<FileTransfer>> GetAllFileTransfer()
+        {
+            try
+            {
+                List<FileTransfer>? ft = await _context.FileTransfers.ToListAsync();
+                return ft;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error getting all file transfer");
+            }
+        }
+
+        public async Task UpdateFileTransfer(FileTransfer ft)
+        {
+            try
+            {
+                _context.FileTransfers.Update(ft);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Error updating file transfer");
             }
         }
     }

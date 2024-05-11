@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FileStorageApp.Server.Entity
 {
@@ -24,7 +25,8 @@ namespace FileStorageApp.Server.Entity
         public string? SymKey { get; set; }
         public bool isDeleted { get; set; }
         public string? Base64RSAPublicKey { get; set; }
-        public string? Base64RSAEncPrivateKey { get; set; }
+        [Column(TypeName ="VARBINARY(MAX)")]
+        public byte[]? Pkcs12File { get; set; }
         public string? Base64PublicKey { get; set; }
         public List<Role>? Roles { get; set; }
 

@@ -29,7 +29,7 @@ namespace DesktopApp.ViewModels
         }
 
         public SignUpViewModel()
-        { 
+        {
             _cryptoService = new CryptoService();
         }
 
@@ -111,7 +111,7 @@ namespace DesktopApp.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private string getBase64PrivateKeyForSharing()
+        private string getBase64PrivateKeyForSharing(string base64pvkey_d)
         {
             string key = "";
             /*            Runtime.PythonDLL = _configuration["PythonPath"];*/
@@ -123,12 +123,13 @@ namespace DesktopApp.ViewModels
 from umbral import SecretKey
 import base64
 
-def generatePrivKey():
-    user_priv_key = SecretKey.random()
+def generatePrivKey(base64pvkey_d):
+    private_value_bytes = base64.b64decode(base64pvkey_d)
+    user_priv_key = SecretKey.from_bytes(private_value_bytes)
     return base64.b64encode(user_priv_key.to_secret_bytes()).decode('utf-8')
 ";
                 dynamic result = PyModule.FromString("generatePrivKey", code);
-                key = result.generatePrivKey();
+                key = result.generatePrivKey(base64pvkey_d);
 
             }
             return key;
@@ -157,10 +158,10 @@ def generatePubKey(base64key):
             return key;
         }
 
-        private async Task<RsaDto?> ComputeRSAKeysForUser()
+        private async Task<Pkcs12Dto?> ComputeRSAKeysForUser()
         {
-            RsaDto? rsaDto = await _cryptoService.GetRsaDto(_password);
-            return rsaDto;
+            Pkcs12Dto? pkDto = await _cryptoService.GetPkcsDto(_password);
+            return pkDto;
         }
         public async Task<bool> Register()
         {
@@ -168,13 +169,19 @@ def generatePubKey(base64key):
             {
                 throw new Exception("Passwords do not match");
             }
-            RsaDto? rsaDto = await ComputeRSAKeysForUser();
-            if (rsaDto == null)
+            Pkcs12Dto? pkDto = await ComputeRSAKeysForUser();
+            if (pkDto == null)
             {
                 return false;
             }
 
-            string base64KeyPriv = getBase64PrivateKeyForSharing();
+            RsaDto rsaDto = new RsaDto
+            {
+                base64EncPrivKey = pkDto.base64EncPrivKey,
+                base64PubKey = pkDto.base64PubKey
+            };
+
+            string base64KeyPriv = getBase64PrivateKeyForSharing(pkDto.base64pbkey_d);
             string base64KeyPub = getBase64PubKeyForSharing(base64KeyPriv);
             
             File.WriteAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\"+_email+"_privateKey.priv", base64KeyPriv);

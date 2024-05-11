@@ -1,17 +1,16 @@
-﻿using DesktopApp.Dto;
+﻿using CryptoLib;
+using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
-using System;
-using System.Collections.Generic;
+using DesktopApp.KeysService;
+
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
+
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
+using System.Security.Cryptography;
+
 
 namespace DesktopApp.ViewModels
 {
@@ -54,6 +53,17 @@ namespace DesktopApp.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private async void saveKeysInRam(string password,string base64pkcs12)
+        {
+            string? ecPrivateKeybase64;
+            RSA? rsaPrivateKey;
+            RSA? rsaPublicKey;
+            Utils.ReadKeysFromPkcs12(Convert.FromBase64String(base64pkcs12), password, out ecPrivateKeybase64,
+                                     out rsaPrivateKey, out rsaPublicKey);
+            RSAKeyService.rsaPrivateKey = rsaPrivateKey;
+            RSAKeyService.rsaPublicKey = rsaPublicKey;
+            await SecureStorage.SetAsync(Enums.Symbol.ECPrivateKeyBase64.ToString(), ecPrivateKeybase64);
+        }
         public async Task<int> Login()
         {
             SecureStorage.Default.RemoveAll();
@@ -77,6 +87,13 @@ namespace DesktopApp.ViewModels
                         string token = loginResponse.AccessToken;
                         if (token != null)
                         {
+                            httpClient.DefaultRequestHeaders.Remove("Authorization");
+                            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                            result = await httpClient.GetAsync("api/User/pkcs12");
+                            if (!result.IsSuccessStatusCode)
+                                throw new Exception("Something went wrong, please try again later");
+                            string base64pkcs12 = await result.Content.ReadAsStringAsync();
+                            saveKeysInRam(_password, base64pkcs12);
                             await SecureStorage.SetAsync(Enums.Symbol.Email.ToString(), _email);
                             await SecureStorage.SetAsync(Enums.Symbol.token.ToString(), token);
                         }

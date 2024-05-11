@@ -1,6 +1,7 @@
 ﻿using CryptoLib;
 using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
+using DesktopApp.KeysService;
 using DesktopApp.Models;
 using FileStorageApp.Shared.Dto;
 using Python.Runtime;
@@ -13,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -203,42 +205,51 @@ namespace DesktopApp.ViewModels
 
         public async Task<string> DownloadFile(string fileName) //ceva nu merge cu stersul fisiereulor
         {
-            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
-            var httpClient = HttpServiceCustom.GetProxyClient();
-            httpClient.DefaultRequestHeaders.Remove("Authorization");
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
-
-            var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName);
-            //var response = await httpClient.GetStreamAsync("testBACK");
-            string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + "_enc");
-            Debug.WriteLine(saveFilePath);
-            if (response != null && response.CanRead)
+            try
             {
-                using (FileStream fs = new FileStream(saveFilePath, FileMode.OpenOrCreate))
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetProxyClient();
+                httpClient.DefaultRequestHeaders.Remove("Authorization");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+
+                var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName);
+                //var response = await httpClient.GetStreamAsync("testBACK");
+                string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + "_enc");
+                Debug.WriteLine(saveFilePath);
+                if (response != null && response.CanRead)
                 {
-                    await response.CopyToAsync(fs);
+                    using (FileStream fs = new FileStream(saveFilePath, FileMode.OpenOrCreate))
+                    {
+                        await response.CopyToAsync(fs);
+                    }
+
+                    Debug.WriteLine("File downloaded successfully");
                 }
 
-                Debug.WriteLine("File downloaded successfully");
+
+                httpClient = HttpServiceCustom.GetProxyClient();
+                httpClient.DefaultRequestHeaders.Remove("Authorization");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+                FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName);
+
+                Debug.WriteLine(keyAndIvDto.base64key);
+                Debug.WriteLine(keyAndIvDto.base64iv);
+
+                string downloadFolder = Environment.GetEnvironmentVariable("USERPROFILE") + @"\" + "Downloads";
+                string filePath = Path.Combine(downloadFolder, fileName);
+                var encFileStream = System.IO.File.OpenRead(saveFilePath);
+
+                Utils.DecryptAndSaveFileWithAesGCM(encFileStream, filePath,
+                                                    RSAKeyService.rsaPrivateKey.Decrypt(Convert.FromBase64String(keyAndIvDto.base64key), RSAEncryptionPadding.OaepSHA256),
+                                                    RSAKeyService.rsaPrivateKey.Decrypt(Convert.FromBase64String(keyAndIvDto.base64iv), RSAEncryptionPadding.OaepSHA256));
+                encFileStream.Close();
+                System.IO.File.Delete(saveFilePath);
+                return downloadFolder;
             }
-
-
-            httpClient = HttpServiceCustom.GetProxyClient();
-            httpClient.DefaultRequestHeaders.Remove("Authorization");
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
-            FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName);
-
-            Debug.WriteLine(keyAndIvDto.base64key);
-            Debug.WriteLine(keyAndIvDto.base64iv);
-
-            string downloadFolder = Environment.GetEnvironmentVariable("USERPROFILE") + @"\" + "Downloads";
-            string filePath = Path.Combine(downloadFolder, fileName);
-            var encFileStream = System.IO.File.OpenRead(saveFilePath);
-
-            Utils.DecryptAndSaveFileWithAesGCM(encFileStream, filePath, Convert.FromBase64String(keyAndIvDto.base64key), Convert.FromBase64String(keyAndIvDto.base64iv));
-            encFileStream.Close();
-            System.IO.File.Delete(saveFilePath);
-            return downloadFolder;
+            catch (Exception ex)
+            {
+                throw new Exception("Could not download file");
+            }
         }
 
         private string getBase64CapsuleAndCiphertext(string base64privKey, string base64plaintext)
@@ -294,7 +305,10 @@ def encrypt_umbral(base64PrivKey, base64text):
 
             //luam cheia privata a senderului
             string email = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
-            string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + email + "_privateKey.priv");
+            //string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + email + "_privateKey.priv");
+
+            string base64PrivKey = await SecureStorage.GetAsync(Enums.Symbol.ECPrivateKeyBase64.ToString());
+
 
             var response = await httpClient.PostAsJsonAsync("/api/User/getPubKeyForFileTransfer", destEmail);
             if (response.IsSuccessStatusCode)
@@ -344,15 +358,30 @@ def generateKfrag(base64PrivKey, base64PubKey):
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
             FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName);
+
+            if(keyAndIvDto == null)
+            {
+                throw new Exception("Could not get File key and File iv");
+            }
 /*
             byte[] fileKey = Convert.FromBase64String(keyAndIvDto.base64key);
             byte[] fileIv = Convert.FromBase64String(keyAndIvDto.base64iv);*/
 
-            string userEmail = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
-            string base64sendkey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + userEmail + "_privateKey.priv");
+            //string userEmail = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
+            //string base64sendkey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + userEmail + "_privateKey.priv");
 
-            string base64KeyCapsule = getBase64CapsuleAndCiphertext(base64sendkey, keyAndIvDto.base64key);
-            string base64IvCapsule = getBase64CapsuleAndCiphertext(base64sendkey, keyAndIvDto.base64iv);
+            string? base64sendkey = await SecureStorage.GetAsync(Enums.Symbol.ECPrivateKeyBase64.ToString());
+
+            if(base64sendkey == null)
+            {
+                throw new Exception("Could not get private key");
+            }
+
+            byte[] fileEncKey = Convert.FromBase64String(keyAndIvDto.base64key);
+            byte[] fileEncIv = Convert.FromBase64String(keyAndIvDto.base64iv);
+
+            string base64KeyCapsule = getBase64CapsuleAndCiphertext(base64sendkey, Convert.ToBase64String(RSAKeyService.rsaPrivateKey.Decrypt(fileEncKey, RSAEncryptionPadding.OaepSHA256)));
+            string base64IvCapsule = getBase64CapsuleAndCiphertext(base64sendkey, Convert.ToBase64String(RSAKeyService.rsaPrivateKey.Decrypt(fileEncIv, RSAEncryptionPadding.OaepSHA256)));
 
             string base64kfrag = await getKfrag(destEmail);
             if (base64kfrag == "")
@@ -452,17 +481,25 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             if (response.IsSuccessStatusCode)
             {
                 string base64PubKey = await response.Content.ReadAsStringAsync();
-                string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + email + "_privateKey.priv");
+                //string base64PrivKey = System.IO.File.ReadAllText("D:\\LicentaProiect\\DesktopApp\\DesktopApp\\.keys" + "\\" + email + "_privateKey.priv");
+                string? base64PrivKey = await SecureStorage.GetAsync(Enums.Symbol.ECPrivateKeyBase64.ToString());
+                if (base64PrivKey == null)
+                {
+                    throw new Exception("Could not accept file");
+                }
                 string base64key = decryptKFrag(fileInf.base64EncKey, base64PrivKey, base64PubKey);
                 string base64iv = decryptKFrag(fileInf.base64EncIv, base64PrivKey, base64PubKey);
+
+                byte[] fileKey = Convert.FromBase64String(base64key);
+                byte[] fileIv = Convert.FromBase64String(base64iv);
 
                 AcceptFileTransferDto dto = new AcceptFileTransferDto
                 {
                     senderEmail = fileInf.senderEmail,
                     receiverEmail = email,
                     fileName = fileInf.fileName,
-                    base64FileKey = base64key,
-                    base64FileIv = base64iv
+                    base64FileKey = Convert.ToBase64String(RSAKeyService.rsaPublicKey.Encrypt(fileKey, RSAEncryptionPadding.OaepSHA256)),
+                    base64FileIv = Convert.ToBase64String(RSAKeyService.rsaPublicKey.Encrypt(fileIv, RSAEncryptionPadding.OaepSHA256))
                 };
 
                 var httpClient2 = HttpServiceCustom.GetProxyClient();
