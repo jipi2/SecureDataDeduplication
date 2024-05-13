@@ -28,7 +28,11 @@ namespace FileStorageApp.Server.Services
         public AzureBlobService _azureBlobService { get; set; } 
         public FileTransferRepo _fileTransferRepo { get; set; }
         IConfiguration _configuration { get; set; }
-        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepository userFileRepo, FileTransferRepo fileTransferRepo)
+
+        public FileFolderService _fileFolderService { get; set; }
+
+        public FileFolderRepo _fileFolderRepo { get; set; }
+        public FileService(FileRepository fileRepository, UserService userService, AzureBlobService azureBlobService, IConfiguration configuration, RespRepository respRepo, UserRepository userRepo, UserFileRepository userFileRepo, FileTransferRepo fileTransferRepo, FileFolderService fileFolderService, FileFolderRepo fileFolderRepo)
         {
             _fileRepo = fileRepository;
             _userService = userService;
@@ -38,6 +42,8 @@ namespace FileStorageApp.Server.Services
             _userRepo = userRepo;
             _userFileRepo = userFileRepo;
             _fileTransferRepo = fileTransferRepo;
+            _fileFolderService = fileFolderService;
+            _fileFolderRepo = fileFolderRepo;
         }
 
         public async Task<DFparametersDto> GetDFParameters(string Userid)
@@ -529,6 +535,7 @@ namespace FileStorageApp.Server.Services
             };
 
             await _userFileRepo.SaveUserFile(uf);
+            await _fileFolderService.SaveFileToFolder(user, uf);
         }
 
         public async Task SaveFileFromCache(FileFromCacheDto cacheFile)
@@ -660,7 +667,7 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("Url for Azure Blob Stroage is null");
             }
             string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-            //va trebui sa modificam tagul sa nu ave "/"
+            //va trebui sa modificam tagul sa nu avem "/"
             string base64tagForFilePath = base64Tag.Replace("/", "_");
             string filePath = Path.Combine(uploadsFolder, base64tagForFilePath);
            
@@ -924,6 +931,7 @@ namespace FileStorageApp.Server.Services
             };
 
             await _userFileRepo.SaveUserFile(uf);
+            await _fileFolderService.SaveFileToFolder(user, uf);
         }
 
         public async Task DeleteFileInfoFromServer(DeleteFileInfoDto dto)
@@ -937,11 +945,13 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("File does not exist!");
             if (luf.Count > 1)
             {
-                await _userFileRepo.DeleteUserFile(userFile);
+                await _fileFolderRepo.DeleteFile(user, dto.fileName);
+                await _userFileRepo.DeleteUserFile(userFile);    
             }
             else
             {
                 //aici trebuie sa stergem de pe peste tot
+                await _fileFolderRepo.DeleteFile(user, dto.fileName);
                 FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(userFile.FileId);
                 await _userFileRepo.DeleteUserFile(userFile);
                 await _fileRepo.DeleteFile(fileMeta);

@@ -16,7 +16,8 @@ class ApiCall():
             headers = {} 
         json = param.model_dump()
         async with httpx.AsyncClient(verify=False) as client:
-            response = await client.post(self.api_url+endPointName, headers=headers, json=json)
+            time_out = 30*60
+            response = await client.post(self.api_url+endPointName, headers=headers, json=json, timeout=time_out)
         return response
     
     async def call_backend(self, endPointName:str, token:str, dtoParam):

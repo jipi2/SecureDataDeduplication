@@ -18,6 +18,8 @@ namespace FileStorageApp.Server.Repositories
             FileMetadata fileMeta = _context.FilesMetadata.Where(f => f.Tag == base64Tag).FirstOrDefault();
             if (fileMeta == null)
                 return false;
+            if(fileMeta.isInCache == true) 
+                return false;
             return true;
         }
 

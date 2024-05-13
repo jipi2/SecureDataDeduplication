@@ -19,6 +19,7 @@ namespace FileStorageApp.Server.Database
         public DbSet<Entity.FileTransfer> FileTransfers { get; set; }
         public DbSet<Entity.FSRC> FSRCs { get; set; }
         public DbSet<Entity.Label> Labels { get; set; }
+        public DbSet<Entity.FileFolder> FileFolders { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -29,6 +30,18 @@ namespace FileStorageApp.Server.Database
             modelBuilder.Entity<Label>()
                 .HasMany(e => e.UserFiles)
                 .WithMany(e => e.Labels);
+
+            modelBuilder.Entity<FileFolder>()
+                .HasOne(ff => ff.User)
+                .WithMany() // Assuming User does not have a navigation property pointing back to FileFolder
+                .HasForeignKey(ff => ff.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Specify ON DELETE RESTRICT
+
+            modelBuilder.Entity<FileFolder>()
+               .HasOne(f => f.ParentFolder)
+               .WithMany(f => f.ChildFileFolders)
+               .HasForeignKey(f => f.ParentId)
+               .OnDelete(DeleteBehavior.NoAction); // Specify ON DELETE NO ACTION
         }
     }
 }

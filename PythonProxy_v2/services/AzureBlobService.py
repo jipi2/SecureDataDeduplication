@@ -22,6 +22,7 @@ import os
 
 async def download_blob(blob_name: str):
     try:
+        print('here')
         conn_str = os.environ.get('azure_connection_string')
         container_name = os.environ.get('azure_container_name')
         

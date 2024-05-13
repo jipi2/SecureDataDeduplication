@@ -19,14 +19,34 @@ namespace DesktopApp
             //content.IsVisible = false;
             //content = AppShell.Current.FindByName<ShellContent>("SignUpShell");
             //content.IsVisible = false;
+
+            fcView.SelectionMode = SelectionMode.Single;
+            fcView.SelectionChanged += OnCollectionViewSelectionChanged;
         }
 
+        private async void OnCollectionViewSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection != null && e.CurrentSelection.Any())
+            {
+                Models.File selectedFile = e.CurrentSelection.FirstOrDefault() as Models.File;
 
+                if (selectedFile.isFolder == true)
+                {
+                    if (BindingContext is MainWindowViewModel viewModel)
+                    {
+                        await viewModel.GetFolderFiles(selectedFile.fullPath);
+                        backArrow.IsVisible = true;
+                    }
+                }
+            }
+            
+        }
         protected async override void OnAppearing()
         {
             base.OnAppearing();
             try
             {
+                backArrow.IsVisible = false;
                 mainScrollView.IsVisible = false;
                 loadingStackLayout.IsVisible = true;
                 if (BindingContext is MainWindowViewModel viewModel)
@@ -34,7 +54,8 @@ namespace DesktopApp
                     viewModel.Files.Clear();
                     viewModel.Labels.Clear();
                     viewModel.FilteredFiles.Clear();
-                    await viewModel.GetFilesAndNames();
+                    //await viewModel.GetFilesAndNames();
+                    await viewModel.GetFolderFiles("/");
                     int numberOfLables = await viewModel.GetLabelFileNames();
                     //int numberOfLables = viewModel.GetTags();
                     if (numberOfLables <= 0)
@@ -55,9 +76,11 @@ namespace DesktopApp
                         filledBellImage.IsVisible = false;
                         notificationNumberLabel.Text = "0";
                     }
-                    //viewModel.Test();
+                    ////viewModel.Test();
                     mainScrollView.IsVisible = true;
                     loadingStackLayout.IsVisible = false;
+
+                    //viewModel.Test();
    
                 }
             }
@@ -72,18 +95,16 @@ namespace DesktopApp
 
         }
 
-
-
         private async void OnDownloadClicked(object sender, EventArgs e)
         {
-            if (sender is Button button && button.CommandParameter is string fileName)
+            if (sender is Button button && button.CommandParameter is Models.File f)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
                     DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
-                    string dnFolder = await viewModel.DownloadFile(fileName);
-                    await DisplayAlert("Info", fileName+" has downloaded in folder: "+dnFolder, "OK");
+                    string dnFolder = await viewModel.DownloadFile(f.fullPath, f.fileName);
+                    await DisplayAlert("Info", f.fileName+" has downloaded in folder: "+dnFolder, "OK");
                 }
             }
 
@@ -92,32 +113,53 @@ namespace DesktopApp
 
         private async void OnMenuFlyoutItemDownloadClick(object sender, EventArgs e)
         {
-            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is Models.File f)
             {
-                var viewModel = BindingContext as MainWindowViewModel;
-                if (viewModel != null)
+
+                if (f.isFolder == true)
                 {
-                    DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
-                    string dnFolder = await viewModel.DownloadFile(fileName);
-                    await DisplayAlert("Info", fileName + " has been downloaded in folder: " + dnFolder, "OK");
+                    mf.IsEnabled = false;
+                    await DisplayAlert("Info", "Your can not do this operations with a folder", "OK");
+                }
+
+                else
+                {
+
+                    var viewModel = BindingContext as MainWindowViewModel;
+                    if (viewModel != null)
+                    {
+
+                        DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
+                        string dnFolder = await viewModel.DownloadFile(f.fullPath, f.fileName);
+                        await DisplayAlert("Info", f.fileName + " has been downloaded in folder: " + dnFolder, "OK");
+                    }
                 }
             }
         }
 
         private async void OnMenuFlyoutItemSendClick(object sender, EventArgs e)
         {
-            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is Models.File f)
             {
-                var sendPopup = new SendPopup(fileName);
-
-                // Attach an event handler to the Closed event
-                sendPopup.Closed += async (s, args) =>
+                if (f.isFolder == true)
                 {
-                    // Show the DisplayAlert after the popup is closed
-                    await DisplayAlert("Info", "Your file has been sent", "OK");
-                };
+                    mf.IsEnabled = false;
+                    await DisplayAlert("Info", "Your can not do this operations with a folder", "OK");
+                }
+                else
+                {
 
-                this.ShowPopup(sendPopup);
+                    var sendPopup = new SendPopup(f.fileName);
+
+                    // Attach an event handler to the Closed event
+                    sendPopup.Closed += async (s, args) =>
+                    {
+                        // Show the DisplayAlert after the popup is closed
+                        await DisplayAlert("Info", "Your file has been sent", "OK");
+                    };
+
+                    this.ShowPopup(sendPopup);
+                }
             }
         }
 
@@ -179,8 +221,9 @@ namespace DesktopApp
 
         private async void OnMenuItemDeleteClicked(object sender, EventArgs e)
         {
-            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is Models.File f)
             {
+
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
@@ -189,7 +232,7 @@ namespace DesktopApp
                     {
                         try
                         {
-                            await viewModel.DeleteFile(fileName);
+                            await viewModel.DeleteFile(f.fileName);
                             await DisplayAlert("Info", "Your file has been deleted", "OK");
 
                         }
@@ -206,7 +249,7 @@ namespace DesktopApp
 
         private async void OnActionsButtonClicked(object sender, EventArgs e)
         {
-            if (sender is Button button && button.CommandParameter is string fileName)
+            if (sender is Button button && button.CommandParameter is Models.File f)
             {
                 var result = await DisplayActionSheet("Press one of the following: ", "Cancel", null, "Download", "Send", "Delete");
 
@@ -307,35 +350,51 @@ namespace DesktopApp
 
         private async void OnMenuItemAddLabelClicked(object sender, EventArgs e)
         {
-            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is Models.File f)
             {
-                var viewModel = BindingContext as MainWindowViewModel;
-                if (viewModel != null)
+                if (f.isFolder == true)
                 {
-                    List<string> candidateLabels = await viewModel.GetCandidateLabels(fileName);
-                    await this.ShowPopupAsync(new AddLabelToFilePopup(fileName, candidateLabels));
-                    int numberOfLables = await viewModel.GetLabelFileNames();
-                    if (numberOfLables <= 0)
-                        labelCollectionView.WidthRequest = 650;
-                    else
-                        labelCollectionView.WidthRequest = -1;
+                    mf.IsEnabled = false;
+                    await DisplayAlert("Info", "Your can not do this operations with a folder", "OK");
+                }
+                else
+                {
+                    var viewModel = BindingContext as MainWindowViewModel;
+                    if (viewModel != null)
+                    {
+                        List<string> candidateLabels = await viewModel.GetCandidateLabels(f.fileName);
+                        await this.ShowPopupAsync(new AddLabelToFilePopup(f.fileName, candidateLabels));
+                        int numberOfLables = await viewModel.GetLabelFileNames();
+                        if (numberOfLables <= 0)
+                            labelCollectionView.WidthRequest = 650;
+                        else
+                            labelCollectionView.WidthRequest = -1;
+                    }
                 }
             }
         }
         private async void OnMenuItemRemoveLabelClicked(object sender, EventArgs e)
         {
-            if (sender is MenuFlyoutItem mf && mf.CommandParameter is string fileName)
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is Models.File f)
             {
-                var viewModel = BindingContext as MainWindowViewModel;
-                if (viewModel != null)
+                if (f.isFolder == true)
                 {
-                    List<string> candidateLabels = await viewModel.GetCandidateLabelsForRemoving(fileName);
-                    await this.ShowPopupAsync(new RemoveLabelFilePopup(fileName, candidateLabels));
-                    int numberOfLables = await viewModel.GetLabelFileNames();
-                    if (numberOfLables <= 0)
-                        labelCollectionView.WidthRequest = 650;
-                    else
-                        labelCollectionView.WidthRequest = -1;
+                    mf.IsEnabled = false;
+                    await DisplayAlert("Info", "Your can not do this operations with a folder", "OK");
+                }
+                else
+                {
+                    var viewModel = BindingContext as MainWindowViewModel;
+                    if (viewModel != null)
+                    {
+                        List<string> candidateLabels = await viewModel.GetCandidateLabelsForRemoving(f.fileName);
+                        await this.ShowPopupAsync(new RemoveLabelFilePopup(f.fileName, candidateLabels));
+                        int numberOfLables = await viewModel.GetLabelFileNames();
+                        if (numberOfLables <= 0)
+                            labelCollectionView.WidthRequest = 650;
+                        else
+                            labelCollectionView.WidthRequest = -1;
+                    }
                 }
             }
         }
@@ -408,6 +467,19 @@ namespace DesktopApp
             {
                 await viewModel.SortBySize();
                 fcView.ItemsSource = viewModel.Files;
+            }
+        }
+
+        private async void backArrow_Clicked(object sender, EventArgs e)
+        {
+            if (BindingContext is MainWindowViewModel viewModel)
+            {
+                if (viewModel.PrevFolder == "/")
+                {
+                    backArrow.IsVisible = false;
+                }
+                await viewModel.GetFolderFiles(viewModel.PrevFolder);
+
             }
         }
     }

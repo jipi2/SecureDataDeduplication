@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,25 +26,20 @@ namespace DesktopApp.ViewModels
         private int dateSort = 0;
         private int sizeSort = 0;
         private List<LabelFileNames> _labelFileNames;
-
-        public class File
-        {
-            public string fileName { get; set; }
-            public float fileSize { get; set; }
-            public string fileSizeStr { get; set; }
-            public string uploadDate { get; set; }
-        }
-
+        private List<Folder> _foldersList;
+        private bool isFirst = true;
+        public string PrevFolder = "";
         public MainWindowViewModel()
         {
             dateSort = 0;
-            _files = new ObservableCollection<File>();
+            _files = new ObservableCollection<Models.File>();
             _labels = new ObservableCollection<LabelModel>();
-            _filteredFiles = new ObservableCollection<File>();
+            _filteredFiles = new ObservableCollection<Models.File>();
             _recFiles = new ObservableCollection<RecievedFilesDto>();
             _searchText = "";
             _labelFileNames = new List<LabelFileNames>();
-            _labeledFiles = new ObservableCollection<File>();
+            _labeledFiles = new ObservableCollection<Models.File>();
+            _foldersList = new List<Folder>();
 
         }
 
@@ -92,8 +88,8 @@ namespace DesktopApp.ViewModels
             }
         }
 
-        private ObservableCollection<File> _files ;
-        public ObservableCollection<File> Files
+        private ObservableCollection<Models.File> _files ;
+        public ObservableCollection<Models.File> Files
         {
             get { return _files; }
             set
@@ -106,10 +102,10 @@ namespace DesktopApp.ViewModels
             }
         }
 
-        private ObservableCollection<File> _labeledFiles;
+        private ObservableCollection<Models.File> _labeledFiles;
 
-        private ObservableCollection<File> _filteredFiles;
-        public ObservableCollection<File> FilteredFiles
+        private ObservableCollection<Models.File> _filteredFiles;
+        public ObservableCollection<Models.File> FilteredFiles
         {
             get => _filteredFiles;
             set
@@ -134,7 +130,7 @@ namespace DesktopApp.ViewModels
 
             for (int i = 0; i < 15; i++)
             {
-                File f = new File
+                Models.File f = new Models.File
                 {
                     fileName = "file" + i,
                     uploadDate = "2021-10-1" + i
@@ -190,7 +186,7 @@ namespace DesktopApp.ViewModels
             {
                 foreach (var file in userFileNames)
                 {
-                    File f = new File
+                    Models.File f = new Models.File
                     {
                         fileName = file.FileName,
                         fileSize = file.fileSize,
@@ -203,7 +199,104 @@ namespace DesktopApp.ViewModels
 
         }
 
-        public async Task<string> DownloadFile(string fileName) //ceva nu merge cu stersul fisiereulor
+        public async Task GetFolderFiles(string path)
+        {
+            if (isFirst == false)
+            {
+                if (_foldersList.Any(f => f.fullpath == path))
+                {
+                    Folder? f = _foldersList.FirstOrDefault(f => f.fullpath == path);
+                    if (f != null)
+                    {
+                        _files.Clear();
+                        foreach (var file in f.folderFiles)
+                        {
+                            Models.File fileModel = new Models.File
+                            {
+                                fileName = file.fileName,
+                                fileSize = file.fileSize,
+                                fileSizeStr = getHumanSize(file.fileSize),
+                                uploadDate = file.uploadDate,
+                                fullPath = file.fullPath,
+                                isFolder = file.isFolder
+                            };
+                            _files.Add(fileModel);
+                        }
+                        if (path == "/")
+                            PrevFolder = "";
+                        else
+                        {
+                            string[] segments = path.Split('/');
+                            string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+                            if (folderPath == "")
+                                PrevFolder = "/";
+                            else
+                                PrevFolder = folderPath;
+                        }
+                    }
+                }
+                else
+                {
+
+                    string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                    if (jwt == null)
+                    {
+                        throw new Exception("Your session expired!");
+                    }
+                    var httpClient = HttpServiceCustom.GetApiClient();
+                    httpClient.DefaultRequestHeaders.Remove("Authorization");
+                    httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+                    try
+                    {
+                        string aux = path;
+                        path = path.Replace("/", "%2F");
+                        Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
+                        if (f != null)
+                        {
+                            _files.Clear();
+                            foreach (var file in f.folderFiles)
+                            {
+                                Models.File fileModel = new Models.File
+                                {
+                                    fileName = file.fileName,
+                                    fileSize = file.fileSize,
+                                    fileSizeStr = getHumanSize(file.fileSize),
+                                    uploadDate = file.uploadDate,
+                                    fullPath = file.fullPath,
+                                    isFolder = file.isFolder
+                                };
+                                _files.Add(fileModel);
+                            }
+                            _foldersList.Add(f);
+
+                            if (aux == "/")
+                                PrevFolder = "";
+                            else
+                            {
+                                string[] segments = aux.Split('/');
+                                string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+                                if (folderPath == "")
+                                    PrevFolder = "/";
+                                else
+                                    PrevFolder = folderPath;
+                            }
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+            }
+            else
+            {
+                isFirst = false;
+            }
+        }
+
+
+        public async Task<string> DownloadFile(string fileName, string acutalFileNameWithoutPath) 
         {
             try
             {
@@ -214,7 +307,7 @@ namespace DesktopApp.ViewModels
 
                 var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName);
                 //var response = await httpClient.GetStreamAsync("testBACK");
-                string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + "_enc");
+                string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, acutalFileNameWithoutPath + "_enc");
                 Debug.WriteLine(saveFilePath);
                 if (response != null && response.CanRead)
                 {
@@ -236,7 +329,7 @@ namespace DesktopApp.ViewModels
                 Debug.WriteLine(keyAndIvDto.base64iv);
 
                 string downloadFolder = Environment.GetEnvironmentVariable("USERPROFILE") + @"\" + "Downloads";
-                string filePath = Path.Combine(downloadFolder, fileName);
+                string filePath = Path.Combine(downloadFolder, acutalFileNameWithoutPath);
                 var encFileStream = System.IO.File.OpenRead(saveFilePath);
 
                 Utils.DecryptAndSaveFileWithAesGCM(encFileStream, filePath,
@@ -589,12 +682,12 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
         {
             if(dateSort == 0)
             {
-                _files = new ObservableCollection<File>(_files.OrderBy(f => f.uploadDate));
+                _files = new ObservableCollection<Models.File>(_files.OrderBy(f => f.uploadDate));
                 dateSort = 1;
             }
             else
             {
-                _files = new ObservableCollection<File>(_files.OrderByDescending(f => f.uploadDate));
+                _files = new ObservableCollection<Models.File>(_files.OrderByDescending(f => f.uploadDate));
                 dateSort = 0;
             }
         }
@@ -705,10 +798,10 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             {
                 // Filter files based on search text
                 if(_labeledFiles.Count() > 0)
-                    _filteredFiles = new ObservableCollection<File>(
+                    _filteredFiles = new ObservableCollection<Models.File>(
                         _labeledFiles.Where(file => file.fileName.Contains(_searchText)));
                 else
-                    _filteredFiles = new ObservableCollection<File>(
+                    _filteredFiles = new ObservableCollection<Models.File>(
                         _files.Where(file => file.fileName.Contains(_searchText)));
             }
         }
@@ -776,12 +869,12 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
         {
             if (sizeSort == 0)
             {
-                _files = new ObservableCollection<File>(_files.OrderBy(f => f.fileSize));
+                _files = new ObservableCollection<Models.File>(_files.OrderBy(f => f.fileSize));
                 sizeSort = 1;
             }
             else
             {
-                _files = new ObservableCollection<File>(_files.OrderByDescending(f => f.fileSize));
+                _files = new ObservableCollection<Models.File>(_files.OrderByDescending(f => f.fileSize));
                 sizeSort = 0;
             }
         }

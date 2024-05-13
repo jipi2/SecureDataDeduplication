@@ -72,6 +72,7 @@ namespace DesktopApp
                 uploadButton.IsVisible = false;
                 uploadText.IsVisible = false;
                 plusButton.IsVisible = true;
+                progressBarBorder.IsVisible = false;
             }
 		}
 

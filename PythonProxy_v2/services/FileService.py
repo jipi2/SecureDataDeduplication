@@ -64,7 +64,9 @@ class FileService():
         return tag
     
     async def __verifyTag(self, base64tag:str):
+        print('here40')
         response = await self.gateWay.callBackendPostMethodWithSimpleParams("/api/File/checkTag", self.authService.token, base64tag)
+        print('here50')
         if response.text == "false":
             return False
         return True
@@ -126,6 +128,7 @@ class FileService():
     def __checkIfUserHasFile(self, filename): #verifica numai daca userul are fisierul in cache
         basedb = Base()
         session = basedb.getSession()
+        print(filename)
         result = session.query(UserFile).join(User, UserFile.user_id == User.id).filter(and_(UserFile.fileName == filename, User.email == self.userEmail)).all() # asta trebuie verificata
         if not result:
             return False
@@ -191,10 +194,12 @@ class FileService():
                 self.__saveUser(session)
                 user = session.query(User).filter(User.email==self.userEmail).first()
             file = session.query(File).filter(File.tag == base64tag).first()
+            print('here')
             if not file:
+                print('aici nu trebuie sa intre')
                 user_path = os.getcwd()+'/uploadedFiles/'+self.userEmail
                 await self.__createPathForUserIfItDoesntExist(user_path)
-                file_path = os.getcwd()+'/uploadedFiles/'+self.userEmail+'/'+self.filename
+                file_path = os.getcwd()+'/uploadedFiles/'+self.userEmail+'/'+fileToSave.filename
                 
                 with open(file_path, "wb") as buffer:
                     while True:
@@ -202,18 +207,20 @@ class FileService():
                         if not chunk:
                             break
                         buffer.write(chunk)
-                        
+                print('here_aproape')
                 blob_file = BlobFile(filePath=file_path)
                 new_file = File(tag=base64tag, blob_file=blob_file, size=fileToSave.size)
                 session.add(new_file)
                 session.commit()
                 file = session.query(File).filter(File.tag == base64tag).first()
-                
+            
+            print('am ajuns aici')     
             size = file.size    
             new_user_file = UserFile(user_id=user.id, file_id=file.id, key=self.base64Key, iv=self.base64Iv, fileName=self.filename, date=datetime.datetime.utcnow())
             session.add(new_user_file)
             session.commit()
             session.close()
+            print('here_final')
             
             response = await self.gateWay.callBackendPostMethodDto("/api/File/saveFileInfoFromCache", self.authService.token, FileInfoFromCache(fileSize=size,base64Tag=base64tag, fileName=self.filename, userEmail=self.userEmail, uploadDate=str(datetime.datetime.utcnow())))
             
@@ -230,10 +237,12 @@ class FileService():
     async def computeFileVerification_v2(self, file:UploadFile, tag):        
         await self.authService.getProxyToken()
         await self.__getUserEmail()
-       
+        print('here')
         if self.__checkIfUserHasFile(self.filename) == True:
+            print('here2')
             raise Exception("User already has this file")
         if await self.__verifyTag(tag) == False:
+            print('here2')
             await self.__writeFileOnDisk(file, tag)
 
         else:

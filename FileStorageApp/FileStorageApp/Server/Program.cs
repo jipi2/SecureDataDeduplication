@@ -46,6 +46,7 @@ builder.Services.AddScoped<RespRepository>();
 builder.Services.AddScoped<UserFileRepository>();
 builder.Services.AddScoped<FileTransferRepo>();
 builder.Services.AddScoped<LabelRepository>();
+builder.Services.AddScoped<FileFolderRepo>();
 
 //Services
 builder.Services.AddScoped<UserService>();
@@ -55,7 +56,8 @@ builder.Services.AddScoped<FileService>();
 //builder.Services.AddScoped<IConfiguration>();
 builder.Services.AddScoped<AzureBlobService>();
 builder.Services.AddScoped<LabelService>();
-builder.Services.AddScoped<EmailService>(); 
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<FileFolderService>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {

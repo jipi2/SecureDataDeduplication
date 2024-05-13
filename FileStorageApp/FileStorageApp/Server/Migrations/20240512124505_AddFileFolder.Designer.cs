@@ -4,6 +4,7 @@ using FileStorageApp.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileStorageApp.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240512124505_AddFileFolder")]
+    partial class AddFileFolder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,9 +58,6 @@ namespace FileStorageApp.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("FullPathName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -65,7 +65,7 @@ namespace FileStorageApp.Server.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserFileId")
+                    b.Property<int>("UserFileId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
@@ -379,7 +379,9 @@ namespace FileStorageApp.Server.Migrations
 
                     b.HasOne("FileStorageApp.Server.Entity.UserFile", "UserFile")
                         .WithMany()
-                        .HasForeignKey("UserFileId");
+                        .HasForeignKey("UserFileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FileStorageApp.Server.Entity.User", "User")
                         .WithMany()

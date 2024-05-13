@@ -134,7 +134,7 @@ namespace DesktopApp.ViewModels
 
             string encFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _fileModel.encFileName);
 
-            var progressableContent = new ProgressableStreamContent(new StreamContent(File.OpenRead(encFilePath)), (uploaded, total) =>
+            var progressableContent = new ProgressableStreamContent(new StreamContent(System.IO.File.OpenRead(encFilePath)), (uploaded, total) =>
             {
                 // Progress callback - you can update UI or perform other actions based on the upload progress
                 double progressPercentage = (double)uploaded / total;
@@ -145,7 +145,7 @@ namespace DesktopApp.ViewModels
 
             var multipartContent = new MultipartFormDataContent();
            
-            var fileStream = File.OpenRead(encFilePath);
+            var fileStream = System.IO.File.OpenRead(encFilePath);
             multipartContent.Add(new StringContent(fileDto.fileName), "fileName");
             multipartContent.Add(new StringContent(fileDto.base64Key), "base64Key");
             multipartContent.Add(new StringContent(fileDto.base64Iv), "base64Iv");
@@ -167,7 +167,7 @@ namespace DesktopApp.ViewModels
             stopwatch.Stop();
             Debug.WriteLine("Challenge time: " + stopwatch.Elapsed);
             fileStream.Close();
-            File.Delete(encFilePath);
+            System.IO.File.Delete(encFilePath);
 
             UploadProgress = 0;
         }

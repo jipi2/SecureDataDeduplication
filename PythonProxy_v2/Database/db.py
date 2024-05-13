@@ -16,8 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# engine = create_engine("mysql+mysqlconnector://root:root@localhost:2703/cache_v2")
-engine = create_engine(os.environ.get('DB_URL'))
+engine = create_engine("mysql+mysqlconnector://root:root@localhost:2703/cache_v2")
+# engine = create_engine(os.environ.get('DB_URL'))
 
 Session = sessionmaker(bind=engine)
 

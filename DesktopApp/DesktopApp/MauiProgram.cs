@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Mopups.Hosting;
 using Python.Runtime;
+using Syncfusion.Maui.Core.Hosting;
 using System.Reflection;
 using System.Security.Cryptography;
 

@@ -24,6 +24,7 @@ namespace DesktopApp
             if (MainPage is AppShell shell)
             {
                 await shell.SetRootPageSignIn();
+                //await shell.SetRootPageMainPage();
 
                 //string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
                 //var httpClient = HttpServiceCustom.GetApiClient();

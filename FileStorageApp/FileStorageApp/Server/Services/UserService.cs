@@ -17,12 +17,15 @@ namespace FileStorageApp.Server.Services
         public RoleRepository _roleRepo { get; set; }
         public SecurityManager _secManager { get; set; }
         public EmailService _emailService { get; set;}
-        public UserService(UserRepository userRepository, SecurityManager secManager, RoleRepository roleRepository, EmailService emailService)
+
+        public FileFolderRepo _fileFolderRepo { get; set; }
+        public UserService(UserRepository userRepository, SecurityManager secManager, RoleRepository roleRepository, EmailService emailService, FileFolderRepo fileFolderRepo)
         {
             _userRepo = userRepository;
             _secManager = secManager;
             _roleRepo = roleRepository;
             _emailService = emailService;
+            _fileFolderRepo = fileFolderRepo;
         }
 
         private void sendVerificatoinCodeViaEmail(User user)
@@ -63,9 +66,9 @@ namespace FileStorageApp.Server.Services
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
 
-            _userRepo.SaveUser(newUser);
-
-            sendVerificatoinCodeViaEmail(newUser);
+            await _userRepo.SaveUser(newUser);
+            await _fileFolderRepo.CreateRootFolderForUser(newUser);
+            //sendVerificatoinCodeViaEmail(newUser);
 
             return (new Response { Succes = true, Message = "User registered successfully", AccessToken = _secManager.GetNewJwt(newUser) }); ;
         }

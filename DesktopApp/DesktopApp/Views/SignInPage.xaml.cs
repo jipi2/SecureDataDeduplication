@@ -4,6 +4,7 @@ using CryptoLib;
 using Org.BouncyCastle.Security;
 using DesktopApp.HttpFolder;
 using CommunityToolkit.Maui.Views;
+using Syncfusion.Maui.Core.Carousel;
 
 
 namespace DesktopApp
@@ -18,10 +19,18 @@ namespace DesktopApp
             SecureStorage.Default.RemoveAll();
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
             SecureStorage.Default.RemoveAll();
+            
+            //stergem asta dupa testare
+            if (BindingContext is SignInViewModel viewModel)
+            {
+                await viewModel.Login();
+                await Shell.Current.GoToAsync("//MainPage");
+            }
+            //atat stergem
         }
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
