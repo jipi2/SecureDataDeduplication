@@ -5,7 +5,7 @@
              Title=""
              Shell.FlyoutBehavior="Disabled"
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
-             
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
              >
 
     <ContentPage.BindingContext>
@@ -26,14 +26,18 @@
         <StackLayout Padding="20" VerticalOptions="CenterAndExpand" MaximumWidthRequest="500">
             <Label Text="Register Here" FontSize="24" HorizontalOptions="Center" Margin="0,0,0,20" />
 
-            <Entry Placeholder="Last Name" FontSize="18" Margin="0,0,0,10" Text ="{Binding LastName}"/>
-            <Entry Placeholder="First Name" FontSize="18" Margin="0,0,0,10" Text="{Binding FirstName}"/>
-            <Entry Placeholder="Email" FontSize="18" Margin="0,0,0,10" Text="{Binding Email}" />
+            
+            <material:TextField Title="Last Name" FontSize="18" Margin="0,0,0,10" Text ="{Binding LastName}" />
 
+            <material:TextField Title="First Name" FontSize="18" Margin="0,0,0,10" Text="{Binding FirstName}" />
 
-            <Entry Placeholder="Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding Password}"/>
-            <Entry Placeholder="Confirm Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding ConfirmPassword}"/>
+            <material:TextField Title="Email" FontSize="18" Margin="0,0,0,10" Text="{Binding Email}" />
 
+            
+            <material:TextField Title="Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding Password}" />
+           
+            <material:TextField Title="Confirm Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding ConfirmPassword}" />
+            
             <Button Text="Register" FontSize="20" BackgroundColor="#0078D4" TextColor="White" CornerRadius="10"  x:Name="registerButton" Clicked="registerButton_Clicked" />
             <Button Text="Cancel" FontSize="20" Margin="0,10,0,0" BackgroundColor="Red" TextColor="White" CornerRadius="10"  x:Name="cancelButton" Clicked="cancelButton_Clicked" />
 

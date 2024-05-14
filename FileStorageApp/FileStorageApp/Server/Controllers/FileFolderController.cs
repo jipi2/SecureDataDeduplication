@@ -65,5 +65,53 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet("getAllFolderForUser")]
+        [Authorize]
+        public async Task<IActionResult> GetAllFoldersForUser()
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                FolderHierarchy? dto =  await _fileFolderService.GetAllFolders(id);
+                if (dto != null)
+                    return Ok(dto);
+                else
+                    return BadRequest("The hierarcy is null");
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("getAllFolderWithFilesForUser")]
+        [Authorize]
+        public async Task<IActionResult> GetAllFoldersWithFilesForUser()
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                SimpleFileModelDto? dto = await _fileFolderService.GetAllFoldersWithFiles(id);
+                if (dto != null)
+                    return Ok(dto);
+                else
+                    return BadRequest("The hierarcy is null");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

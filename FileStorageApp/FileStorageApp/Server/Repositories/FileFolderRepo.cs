@@ -1,5 +1,6 @@
 ﻿using FileStorageApp.Server.Database;
 using FileStorageApp.Server.Entity;
+using FileStorageApp.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
@@ -112,6 +113,157 @@ namespace FileStorageApp.Server.Repositories
                 throw e;
             }
         }
-        
+
+        //public async Task<FileFolder?> GetFolderHierarchyForUser(User user)
+        //{
+        //    try
+        //    {
+        //        // Fetch the root folder for the user ("/")
+        //        var rootFolder = await _context.FileFolders
+        //            .Include(f => f.ChildFileFolders) // Include child folders
+        //            .FirstOrDefaultAsync(f => f.UserId == user.Id && f.FullPathName == "/" && f.UserFileId == null); // Exclude files
+
+        //        // Populate child folders recursively
+        //        await PopulateChildFolders(rootFolder);
+
+        //        // Return the root folder with populated child folders
+        //        return rootFolder;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw e;
+        //    }
+        //}
+
+        //private async Task PopulateChildFolders(FileFolder parentFolder)
+        //{
+        //    if (parentFolder != null)
+        //    {
+        //        // Fetch child folders for the parent folder
+        //        parentFolder.ChildFileFolders = await _context.FileFolders
+        //            .Where(f => f.ParentId == parentFolder.Id && f.UserFileId == null) // Exclude files
+        //            .ToListAsync();
+
+        //        // Recursively populate child folders
+        //        foreach (var childFolder in parentFolder.ChildFileFolders)
+        //        {
+        //            await PopulateChildFolders(childFolder);
+        //        }
+        //    }
+        //}
+
+        public async Task<FolderHierarchy?> GetFolderHierarchyForUser(User user)
+        {
+            try
+            {
+                // Fetch the root folder for the user ("/")
+                var rootFolder = await _context.FileFolders
+                    .Include(f => f.ChildFileFolders) // Include child folders
+                    .FirstOrDefaultAsync(f => f.UserId == user.Id && f.FullPathName == "/" && f.UserFileId == null); // Exclude files
+
+                // Populate child folders recursively
+                var rootFolderDTO = await PopulateJustChildFolders(rootFolder);
+
+                // Return the root folder DTO with populated child folders
+                return rootFolderDTO;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private async Task<FolderHierarchy?> PopulateJustChildFolders(FileFolder parentFolder)
+        {
+            if (parentFolder != null)
+            {
+                // Create a new DTO for the parent folder
+                string name = parentFolder.FullPathName.Split('/').Last();
+                if (name == "") name = "/";
+                var parentFolderDTO = new FolderHierarchy
+                {
+                    FullPathName = parentFolder.FullPathName,
+                    Name = name,
+                    Children = new List<FolderHierarchy>()
+                };
+
+                // Fetch child folders for the parent folder
+                var childFolders = await _context.FileFolders
+                    .Where(f => f.ParentId == parentFolder.Id && f.UserFileId == null) // Exclude files
+                    .ToListAsync();
+
+                // Recursively populate child folders
+                foreach (var childFolder in childFolders)
+                {
+                    // Populate child folders recursively
+                    var childFolderDTO = await PopulateJustChildFolders(childFolder);
+
+                    // Add the child folder DTO to the parent folder DTO
+                    parentFolderDTO.Children.Add(childFolderDTO);
+                }
+
+                return parentFolderDTO;
+            }
+
+            return null;
+        }
+
+        public async Task<SimpleFileModelDto?> GetFolderWithFilesHierarchyForUser(User user)
+        {
+            try
+            {
+                // Fetch the root folder for the user ("/")
+                var rootFolder = await _context.FileFolders
+                    .Include(f => f.ChildFileFolders) // Include child folders
+                    .FirstOrDefaultAsync(f => f.UserId == user.Id && f.FullPathName == "/"); // Exclude files
+
+                // Populate child folders recursively
+                var rootFolderDTO = await PopulateJustChildFoldersAndFiles(rootFolder);
+
+                // Return the root folder DTO with populated child folders
+                return rootFolderDTO;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private async Task<SimpleFileModelDto?> PopulateJustChildFoldersAndFiles(FileFolder parentFolder)
+        {
+            if (parentFolder != null)
+            {
+                // Create a new DTO for the parent folder
+                string name = parentFolder.FullPathName.Split('/').Last();
+                if (name == "") name = "/";
+                bool isFolder = parentFolder.UserFileId == null;
+                var parentFolderDTO = new SimpleFileModelDto
+                {
+                    FullPathName = parentFolder.FullPathName,
+                    Name = name,
+                    IsFolder = isFolder,
+                    Children = new List<SimpleFileModelDto>()
+                };
+
+                // Fetch child folders for the parent folder
+                var childFolders = await _context.FileFolders
+                    .Where(f => f.ParentId == parentFolder.Id ) // Exclude files
+                    .ToListAsync();
+
+                // Recursively populate child folders
+                foreach (var childFolder in childFolders)
+                {
+                    // Populate child folders recursively
+                    var childFolderDTO = await PopulateJustChildFoldersAndFiles(childFolder);
+
+                    // Add the child folder DTO to the parent folder DTO
+                    parentFolderDTO.Children.Add(childFolderDTO);
+                }
+
+                return parentFolderDTO;
+            }
+
+            return null;
+        }
     }
 }

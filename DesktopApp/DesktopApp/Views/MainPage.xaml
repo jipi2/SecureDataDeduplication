@@ -3,14 +3,17 @@
             x:Class="DesktopApp.MainPage"
             xmlns:local="clr-namespace:DesktopApp"
             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
-            >
-
-
+            xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+            xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             >
 
     <ContentPage.Resources>
         <x:String x:Key="bell">&#xf0f3;</x:String>
         <x:String x:Key="user_icon">&#xf2bd;</x:String>
         <x:String x:Key="plus_icon">&#xf055;</x:String>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <Shell.BackButtonBehavior>
@@ -21,13 +24,13 @@
         <Grid BackgroundColor="Transparent">
             <Grid.Background>
                 <LinearGradientBrush StartPoint="0,0"
-                                         EndPoint="1,1">
+                                     EndPoint="1,1">
                     <GradientStop Color="#130D18"
-                                      Offset="0.1" />
+                                  Offset="0.1" />
                     <GradientStop Color="#372746"
-                                      Offset="0.6" />
+                                  Offset="0.6" />
                     <GradientStop Color="#392849"
-                                      Offset="1.0" />
+                                  Offset="1.0" />
                 </LinearGradientBrush>
             </Grid.Background>
 
@@ -47,24 +50,11 @@
                  HorizontalOptions="End"
                  Margin="0,1,5,0"
                  Text="{Binding SearchText, Mode=TwoWay}"
-                 TextChanged="SearchBar_TextChanged"
-                 >
+                 TextChanged="SearchBar_TextChanged">
                 </SearchBar>
 
-
-                <!--<Button
-                Text="+"
-                WidthRequest="20"
-                HorizontalOptions="End"
-                FontSize="30"
-                HeightRequest="0"
-                Margin="5,2,5,0"
-                CornerRadius="20"
-                Clicked="OnAddButtonClicked"
-                />-->
-
                 <ImageButton Clicked="OnAddButtonClicked" Margin="5,2,5,0" Background="Transparent">
-                    <ImageButton.Source >
+                    <ImageButton.Source>
                         <FontImageSource FontFamily="FAS" Glyph="{StaticResource plus_icon}" Color="White" Size="35" />
                     </ImageButton.Source>
                 </ImageButton>
@@ -76,7 +66,7 @@
                 </Image>
                 <Image Margin="0,0,0,0" IsVisible="False" x:Name="filledBellImage">
                     <Image.Source>
-                        <FontImageSource FontFamily="FAS" Glyph="{StaticResource bell}" Color="Red" ></FontImageSource>
+                        <FontImageSource FontFamily="FAS" Glyph="{StaticResource bell}" Color="Red"></FontImageSource>
                     </Image.Source>
                     <Image.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnFilledBellTapped" />
@@ -104,47 +94,87 @@
                               Offset="1.0" />
             </LinearGradientBrush>
         </Grid.Background>
+
         <VerticalStackLayout x:Name="loadingStackLayout" IsVisible="True">
             <ActivityIndicator Margin="0,400,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"/>
         </VerticalStackLayout>
 
-        <ScrollView x:Name="mainScrollView" IsVisible="False">
-            <VerticalStackLayout Spacing="10" Margin="0,50,0,0" >
-                <FlexLayout Direction="Row" JustifyContent="Start">
+        <ScrollView x:Name="mainScrollView" IsVisible="False" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="10" Margin="0,50,0,0">
 
-                    <VerticalStackLayout FlexLayout.Grow="0.0" MaximumWidthRequest="500" 
-                                    VerticalOptions="FillAndExpand" Margin="10,0,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="1600"/>
+                    </Grid.ColumnDefinitions>
 
+                    <BoxView Grid.Column="0" Color="#24122C" Margin="-10,0,100,0" CornerRadius="20" />
+
+                    <!-- BoxView for the second column background color -->
+                    <BoxView Grid.Column="1" Color="#24122C" Margin="-90,0,0,0" CornerRadius="20"/>
+
+                    <VerticalStackLayout Grid.Column="0" MaximumWidthRequest="500"
+                                         VerticalOptions="FillAndExpand" Margin="10,0,0,0">
+
+                        <ScrollView Orientation="Both" WidthRequest="380" HeightRequest="430" Margin="0,0,150,10" VerticalScrollBarVisibility="Never">
+                            
+                            <material:TreeView Margin="10,10,0,0" ItemsSource="{Binding Nodes}" SelectionMode="Single" UseAnimation="True" SelectedItem="{Binding SelectedItem}">
+                                <material:TreeView.ItemTemplate>
+                                    <DataTemplate>
+                                        <HorizontalStackLayout Spacing="10">
+                                            <Image IsVisible="{Binding IsFolder}" IsEnabled="False">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="FAS" Glyph="&#xf07b;" Color="#690E90" Size="24"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <Image IsVisible="{Binding IsFolder, Converter={StaticResource InvertedBoolConverter}}" IsEnabled="False">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="FAS" Glyph="&#xf15b;" Color="#928B95" Size="24"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="18" />
+                                            <Label Text="{Binding Children.Count, StringFormat='({0})'}" FontSize="18" />
+                                            <FlyoutBase.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Text="Create Folder"/>
+                                                </MenuFlyout>
+                                            </FlyoutBase.ContextFlyout>
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </material:TreeView.ItemTemplate>
+                            </material:TreeView>
+
+                        </ScrollView>
                         <Label Text="Filter by Label:" FontSize="20" HorizontalTextAlignment="Start" Margin="0,0,0,20"/>
 
-                        <CollectionView x:Name="labelCollectionView" ItemsSource="{Binding Labels}" HeightRequest="650" VerticalScrollBarVisibility="Always">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Vertical" />
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackLayout Orientation="Horizontal" Padding="10">
-                                        <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center" CheckedChanged="CheckBox_CheckedChanged"/>
-                                        <Label Text="{Binding labelName}" VerticalOptions="Center" MaximumWidthRequest="100"/>
-                                        <FlyoutBase.ContextFlyout>
-                                            <MenuFlyout>
-                                                <MenuFlyoutItem Text="Delete" Clicked="OnLabelMenuDeleteClicked" CommandParameter="{Binding labelName}"/>
-                                            </MenuFlyout>
-                                        </FlyoutBase.ContextFlyout>
-                                    </StackLayout>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                        <ScrollView HeightRequest="190" VerticalScrollBarVisibility="Never">
+                            <CollectionView x:Name="labelCollectionView" ItemsSource="{Binding Labels}">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Vertical" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackLayout Orientation="Horizontal" Padding="10">
+                                            <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center" CheckedChanged="CheckBox_CheckedChanged"/>
+                                            <Label Text="{Binding labelName}" VerticalOptions="Center" MaximumWidthRequest="100"/>
+                                            <FlyoutBase.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Text="Delete" Clicked="OnLabelMenuDeleteClicked" CommandParameter="{Binding labelName}"/>
+                                                </MenuFlyout>
+                                            </FlyoutBase.ContextFlyout>
+                                        </StackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
 
                         <Button Margin="0,55,0,0" Text="Add Label" WidthRequest="200" HorizontalOptions="Start" Clicked="OnAddLabelClicked"/>
-
                     </VerticalStackLayout>
-                                        
-                    <VerticalStackLayout Spacing="10" Margin="10,0,20,10" Padding="0,0,0,0">
-                        <CollectionView x:Name="fcView" ItemsSource="{Binding Files}"  Margin="0,0,200,0" HeightRequest="800" VerticalScrollBarVisibility="Default">
 
-                            <CollectionView.Header >
-                                <Frame BackgroundColor="Transparent" Margin="10"  VerticalOptions="Start" BorderColor="Transparent">
+                    <VerticalStackLayout Grid.Column="1" Spacing="10" Margin="-100,0,20,10" Padding="0,0,0,0">
+                        <CollectionView x:Name="fcView" ItemsSource="{Binding Files}" Margin="0,0,200,0" HeightRequest="800" VerticalScrollBarVisibility="Default">
+                            <CollectionView.Header>
+                                <Frame BackgroundColor="Transparent" Margin="10" VerticalOptions="Start" BorderColor="Transparent">
                                     <Grid ColumnDefinitions="Auto,*,*,*,*">
                                         <ImageButton BackgroundColor="Transparent" Margin="0,0,0,10" Grid.Column="0" x:Name="backArrow" Clicked="backArrow_Clicked">
                                             <ImageButton.Source>
@@ -152,49 +182,38 @@
                                             </ImageButton.Source>
                                         </ImageButton>
                                         <Label TextColor="DarkGray" Text="Uploaded Files" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="40"/>
-                                        <Button TextColor="DarkGray" Padding="0,0,0,20" BackgroundColor="Transparent" Text="Upload Date" Clicked="OnUploadDateClick"  Grid.Column="2" FontSize="40"/>
+                                        <Button TextColor="DarkGray" Padding="0,0,0,20" BackgroundColor="Transparent" Text="Upload Date" Clicked="OnUploadDateClick" Grid.Column="2" FontSize="40"/>
                                         <Button TextColor="DarkGray" Text="Size" Padding="0,0,0,20" BackgroundColor="Transparent" Grid.Column="3" Clicked="OnSizeButtonClicked" FontSize="40"/>
                                         <Label TextColor="DarkGray" Text="Options" Grid.Column="4" HorizontalTextAlignment="Center" FontSize="40"/>
-                                        <BoxView Color="Gray" HeightRequest="5" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="-1500,70,0,0" />
-
+                                        <BoxView Color="Gray" HeightRequest="5" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="-1500,70,0,0"/>
                                     </Grid>
                                 </Frame>
                             </CollectionView.Header>
-                            
-                            <CollectionView.ItemTemplate>
 
+                            <CollectionView.ItemTemplate>
                                 <DataTemplate>
                                     <Frame BackgroundColor="Transparent" BorderColor="Transparent">
-
-                                        <Grid ColumnDefinitions="Auto,*,*,*,*" >
-                                        
+                                        <Grid ColumnDefinitions="Auto,*,*,*,*">
                                             <Label TextColor="DarkGray" Text="{Binding fileName}" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="20"/>
-
                                             <Label TextColor="DarkGray" Text="{Binding uploadDate}" Grid.Column="2" HorizontalTextAlignment="Center" FontSize="20"/>
-
-                                            <Label TextColor="DarkGray" Text="{Binding fileSizeStr}" Grid.Column="3" HorizontalTextAlignment="Center" FontSize="20" >
+                                            <Label TextColor="DarkGray" Text="{Binding fileSizeStr}" Grid.Column="3" HorizontalTextAlignment="Center" FontSize="20">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding isFolder}" Value="True">
                                                         <Setter Property="IsVisible" Value="False"/>
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
-
                                             <Button Text="Actions" Grid.Column="4" HorizontalOptions="Center" VerticalOptions="Start"
-                    Clicked="OnActionsButtonClicked" CommandParameter="{Binding .}" >
+                                                    Clicked="OnActionsButtonClicked" CommandParameter="{Binding .}">
                                                 <Button.Triggers>
                                                     <DataTrigger TargetType="Button" Binding="{Binding isFolder}" Value="True">
                                                         <Setter Property="IsVisible" Value="False"/>
                                                     </DataTrigger>
                                                 </Button.Triggers>
                                             </Button>
-
-                                            <!--<BoxView Color="Gray" HeightRequest="2" VerticalOptions="End" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="-100,70,0,0"/>-->
-
                                             <FlyoutBase.ContextFlyout>
-
                                                 <MenuFlyout>
-                                                    <MenuFlyoutItem Text="Download" Clicked="OnMenuFlyoutItemDownloadClick" CommandParameter="{Binding .}" />
+                                                    <MenuFlyoutItem Text="Download" Clicked="OnMenuFlyoutItemDownloadClick" CommandParameter="{Binding .}"/>
                                                     <MenuFlyoutSeparator/>
                                                     <MenuFlyoutItem Text="Send" Clicked="OnMenuFlyoutItemSendClick" CommandParameter="{Binding .}"/>
                                                     <MenuFlyoutSeparator/>
@@ -203,26 +222,16 @@
                                                     <MenuFlyoutItem Text="Add Label" Clicked="OnMenuItemAddLabelClicked" CommandParameter="{Binding .}"/>
                                                     <MenuFlyoutSeparator/>
                                                     <MenuFlyoutItem Text="Remove Label" Clicked="OnMenuItemRemoveLabelClicked" CommandParameter="{Binding .}"/>
-
                                                 </MenuFlyout>
                                             </FlyoutBase.ContextFlyout>
-
                                         </Grid>
                                     </Frame>
-
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
-
                     </VerticalStackLayout>
-
-                </FlexLayout>
-
-
+                </Grid>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
-
-
-
 </ContentPage>

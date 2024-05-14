@@ -7,7 +7,7 @@
              xmlns:handless="clr-namespace:DesktopApp.Handlers"
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
              Shell.FlyoutBehavior="Disabled"
-            
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
              >
 
     <Shell.BackButtonBehavior>
@@ -33,8 +33,9 @@
         <StackLayout Padding="20" VerticalOptions="CenterAndExpand" MaximumWidthRequest="500">
             <Label Text="Welcome" FontSize="24" HorizontalOptions="Center" Margin="0,0,0,20" />
 
-            <Entry Placeholder="Email" FontSize="18" Margin="0,0,0,10" Text="{Binding Email}"/>
-            <Entry Placeholder="Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding Password}"/>
+            <material:TextField Title="Email" FontSize="18" Margin="0,0,0,10" Text="{Binding Email}" />
+            
+            <material:TextField Title="Password" FontSize="18" IsPassword="True" Margin="0,0,0,20" Text="{Binding Password}"  />
 
             <Button Text="Login" FontSize="20" BackgroundColor="#0078D4" TextColor="White" CornerRadius="10"  x:Name="loginButton" Clicked="OnLoginClicked" CommandParameter="{Binding .}"/>
 

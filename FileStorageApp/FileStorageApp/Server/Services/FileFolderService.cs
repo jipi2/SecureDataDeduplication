@@ -98,7 +98,6 @@ namespace FileStorageApp.Server.Services
                     {
                         fileName = f.FullPathName.Split('/').Last(),
                         fullPath = f.FullPathName,
-                        //fileSize = (float)f.UserFile.FileMetadata.Size,
                         uploadDate = f.CreationDate.ToString("yyyy-MM-dd")
                     };
 
@@ -121,6 +120,25 @@ namespace FileStorageApp.Server.Services
                 }
             }
             return folderDto;
+        }
+
+        public async Task<FolderHierarchy?> GetAllFolders(string userId)
+        {
+            User? user = await _userRepository.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found");
+
+            FolderHierarchy? folders = await _fileFolderRepo.GetFolderHierarchyForUser(user);
+            return folders;
+
+        }
+
+        public async Task<SimpleFileModelDto> GetAllFoldersWithFiles(string userId)
+        {
+            User? user = await _userRepository.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found");
+
+            SimpleFileModelDto? folders = await _fileFolderRepo.GetFolderWithFilesHierarchyForUser(user);
+            return folders;
         }
     }
 }

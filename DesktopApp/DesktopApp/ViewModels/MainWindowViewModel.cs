@@ -1,27 +1,25 @@
-﻿using CryptoLib;
+﻿using CommunityToolkit.Maui.Core.Primitives;
+using CryptoLib;
 using DesktopApp.Dto;
 using DesktopApp.HttpFolder;
 using DesktopApp.KeysService;
 using DesktopApp.Models;
 using FileStorageApp.Shared.Dto;
 using Python.Runtime;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
+
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using Folder = DesktopApp.Models.Folder;
+
 
 namespace DesktopApp.ViewModels
 {
-    public class MainWindowViewModel :INotifyPropertyChanged
+    public class MainWindowViewModel : BindableObject, INotifyPropertyChanged
     {
         private int dateSort = 0;
         private int sizeSort = 0;
@@ -29,6 +27,7 @@ namespace DesktopApp.ViewModels
         private List<Folder> _foldersList;
         private bool isFirst = true;
         public string PrevFolder = "";
+        public ObservableCollection<SimpleFileHierarchyModel> Nodes { get; set; } = new();
         public MainWindowViewModel()
         {
             dateSort = 0;
@@ -40,7 +39,50 @@ namespace DesktopApp.ViewModels
             _labelFileNames = new List<LabelFileNames>();
             _labeledFiles = new ObservableCollection<Models.File>();
             _foldersList = new List<Folder>();
+            _selectedItem = new SimpleFileHierarchyModel();
+            //Nodes.Add(new MyItem("A")
+            //{
+            //    Children =
+            //{
+            //    new MyItem("A.1"),
+            //    new MyItem("A.2"),
+            //}
+            //});
+            //Nodes.Add(new MyItem("B")
+            //{
+            //    Children =
+            //{
+            //    new MyItem("B.1")
+            //    {
+            //        Children =
+            //        {
+            //            new MyItem("B.1.a"),
+            //            new MyItem("B.1.b"),
+            //            new MyItem("B.1.c"),
+            //            new MyItem("B.1.d"),
 
+            //        }
+            //    },
+            //    new MyItem("B.2"),
+            //}
+            //});
+            //Nodes.Add(new MyItem("C"));
+            //Nodes.Add(new MyItem("D"));
+
+        }
+
+        private SimpleFileHierarchyModel _selectedItem;
+        public SimpleFileHierarchyModel SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                if (_selectedItem != value)
+                {
+                    _selectedItem = value;
+                    OnPropertyChanged(nameof(SelectedItem));
+                }
+            }
         }
 
         private string _searchText;
@@ -151,6 +193,29 @@ namespace DesktopApp.ViewModels
 
         }
 
+        public async Task GetFolderWithFilesHierarchy()
+        {
+            try
+            {
+                string? jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                if (jwt == null)
+                {
+
+                    return;
+                }
+                Nodes.Clear();
+                var httpClient = HttpServiceCustom.GetApiClient(jwt);
+                SimpleFileHierarchyModel? node = await httpClient.GetFromJsonAsync<SimpleFileHierarchyModel>("/api/FileFolder/getAllFolderWithFilesForUser");
+                if (node != null)
+                {
+                    Nodes.Add(node);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
         private string getHumanSize(float size)
         {
             float value;
@@ -199,13 +264,148 @@ namespace DesktopApp.ViewModels
 
         }
 
+        public string GetParentFolderFormPath(string path)
+        {
+            string[] segments = path.Split('/');
+            string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+            if (folderPath == "") folderPath = "/";
+            return folderPath;
+        }
+        public async Task RenewAllFolders()
+        {
+            try
+            {
+                _foldersList.Clear();
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetApiClient(jwt);
+                string path = "%2F";
+                Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
+                if (f != null)
+                {
+                    _files.Clear();
+                    foreach (var file in f.folderFiles)
+                    {
+                        Models.File fileModel = new Models.File
+                        {
+                            fileName = file.fileName,
+                            fileSize = file.fileSize,
+                            fileSizeStr = getHumanSize(file.fileSize),
+                            uploadDate = file.uploadDate,
+                            fullPath = file.fullPath,
+                            isFolder = file.isFolder
+                        };
+                        _files.Add(fileModel);
+                    }
+                    _foldersList.Add(f);
+                }
+                PrevFolder = "";
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public async Task RenewFolder(string path)
+        {
+            try
+            {
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetApiClient(jwt);
+                string aux = path;
+                path = path.Replace("/", "%2F");
+                Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
+                if (f != null)
+                {
+                    _files.Clear();
+                    foreach (var file in f.folderFiles)
+                    {
+                        Models.File fileModel = new Models.File
+                        {
+                            fileName = file.fileName,
+                            fileSize = file.fileSize,
+                            fileSizeStr = getHumanSize(file.fileSize),
+                            uploadDate = file.uploadDate,
+                            fullPath = file.fullPath,
+                            isFolder = file.isFolder
+                        };
+                        _files.Add(fileModel);
+                    }
+                    _foldersList.Add(f);
+
+                    if (aux == "/")
+                        PrevFolder = "";
+                    else
+                    {
+                        string[] segments = aux.Split('/');
+                        string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+                        if (folderPath == "")
+                            PrevFolder = "/";
+                        else
+                            PrevFolder = folderPath;
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+        }
+
+
         public async Task GetFolderFiles(string path)
         {
-            if (isFirst == false)
+
+            if (_foldersList.Any(f => f.fullpath == path))
             {
-                if (_foldersList.Any(f => f.fullpath == path))
+                Folder? f = _foldersList.FirstOrDefault(f => f.fullpath == path);
+                if (f != null)
                 {
-                    Folder? f = _foldersList.FirstOrDefault(f => f.fullpath == path);
+                    _files.Clear();
+                    foreach (var file in f.folderFiles)
+                    {
+                        Models.File fileModel = new Models.File
+                        {
+                            fileName = file.fileName,
+                            fileSize = file.fileSize,
+                            fileSizeStr = getHumanSize(file.fileSize),
+                            uploadDate = file.uploadDate,
+                            fullPath = file.fullPath,
+                            isFolder = file.isFolder
+                        };
+                        _files.Add(fileModel);
+                    }
+                    if (path == "/")
+                        PrevFolder = "";
+                    else
+                    {
+                        string[] segments = path.Split('/');
+                        string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+                        if (folderPath == "")
+                            PrevFolder = "/";
+                        else
+                            PrevFolder = folderPath;
+                    }
+                }
+            }
+            else
+            {
+
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                if (jwt == null)
+                {
+                    throw new Exception("Your session expired!");
+                }
+                var httpClient = HttpServiceCustom.GetApiClient();
+                httpClient.DefaultRequestHeaders.Remove("Authorization");
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
+                try
+                {
+                    string aux = path;
+                    path = path.Replace("/", "%2F");
+                    Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
                     if (f != null)
                     {
                         _files.Clear();
@@ -222,11 +422,13 @@ namespace DesktopApp.ViewModels
                             };
                             _files.Add(fileModel);
                         }
-                        if (path == "/")
+                        _foldersList.Add(f);
+
+                        if (aux == "/")
                             PrevFolder = "";
                         else
                         {
-                            string[] segments = path.Split('/');
+                            string[] segments = aux.Split('/');
                             string folderPath = string.Join("/", segments.Take(segments.Length - 1));
                             if (folderPath == "")
                                 PrevFolder = "/";
@@ -234,65 +436,14 @@ namespace DesktopApp.ViewModels
                                 PrevFolder = folderPath;
                         }
                     }
+
                 }
-                else
+                catch (Exception e)
                 {
-
-                    string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
-                    if (jwt == null)
-                    {
-                        throw new Exception("Your session expired!");
-                    }
-                    var httpClient = HttpServiceCustom.GetApiClient();
-                    httpClient.DefaultRequestHeaders.Remove("Authorization");
-                    httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
-                    try
-                    {
-                        string aux = path;
-                        path = path.Replace("/", "%2F");
-                        Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
-                        if (f != null)
-                        {
-                            _files.Clear();
-                            foreach (var file in f.folderFiles)
-                            {
-                                Models.File fileModel = new Models.File
-                                {
-                                    fileName = file.fileName,
-                                    fileSize = file.fileSize,
-                                    fileSizeStr = getHumanSize(file.fileSize),
-                                    uploadDate = file.uploadDate,
-                                    fullPath = file.fullPath,
-                                    isFolder = file.isFolder
-                                };
-                                _files.Add(fileModel);
-                            }
-                            _foldersList.Add(f);
-
-                            if (aux == "/")
-                                PrevFolder = "";
-                            else
-                            {
-                                string[] segments = aux.Split('/');
-                                string folderPath = string.Join("/", segments.Take(segments.Length - 1));
-                                if (folderPath == "")
-                                    PrevFolder = "/";
-                                else
-                                    PrevFolder = folderPath;
-                            }
-                        }
-
-                    }
-                    catch (Exception e)
-                    {
-                        throw e;
-                    }
+                    throw e;
                 }
             }
-            else
-            {
-                isFirst = false;
-            }
+            
         }
 
 
@@ -675,7 +826,7 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
                 throw new Exception("Could not delete file");
             }
 
-            await GetFilesAndNames();
+            //await GetFilesAndNames();
         }
 
         public async Task SortByUploadDate()

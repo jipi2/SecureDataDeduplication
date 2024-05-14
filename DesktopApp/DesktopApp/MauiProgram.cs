@@ -9,6 +9,7 @@ using Python.Runtime;
 using Syncfusion.Maui.Core.Hosting;
 using System.Reflection;
 using System.Security.Cryptography;
+using UraniumUI;
 
 namespace DesktopApp
 {
@@ -16,9 +17,7 @@ namespace DesktopApp
     {
         public static MauiApp CreateMauiApp()
         {
-            RSA pvKey;
-            RSA pubKey;
-
+ 
             Runtime.PythonDLL = "C:\\Users\\Jipi\\AppData\\Local\\Programs\\Python\\Python311\\python311.dll";
             var builder = MauiApp.CreateBuilder();
 
@@ -35,6 +34,8 @@ namespace DesktopApp
                 .UseMauiApp<App>()
                 .ConfigureMopups()
                 .UseMauiCommunityToolkit()
+                .UseUraniumUI()
+                .UseUraniumUIMaterial()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

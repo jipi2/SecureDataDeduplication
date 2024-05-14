@@ -6,8 +6,11 @@
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
              CanBeDismissedByTappingOutsideOfPopup="True"
              Color="Transparent"
+          
              >
 
+   
+    
     <Grid>
         <Frame BackgroundColor="Transparent" CornerRadius="20" x:Name="mainFrame">
 

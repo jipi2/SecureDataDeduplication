@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Maui.Views;
-using DesktopApp.Dto;
 using DesktopApp.Models;
 using DesktopApp.ViewModels;
-using Microsoft.Maui.Storage;
 using Mopups.Services;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace DesktopApp
@@ -44,6 +41,7 @@ namespace DesktopApp
         protected async override void OnAppearing()
         {
             base.OnAppearing();
+
             try
             {
                 backArrow.IsVisible = false;
@@ -55,7 +53,8 @@ namespace DesktopApp
                     viewModel.Labels.Clear();
                     viewModel.FilteredFiles.Clear();
                     //await viewModel.GetFilesAndNames();
-                    await viewModel.GetFolderFiles("/");
+                    await viewModel.GetFolderWithFilesHierarchy();
+                    await viewModel.RenewAllFolders();
                     int numberOfLables = await viewModel.GetLabelFileNames();
                     //int numberOfLables = viewModel.GetTags();
                     if (numberOfLables <= 0)
@@ -81,7 +80,7 @@ namespace DesktopApp
                     loadingStackLayout.IsVisible = false;
 
                     //viewModel.Test();
-   
+
                 }
             }
             catch (Exception ex)
@@ -192,7 +191,7 @@ namespace DesktopApp
 
         private async void OnDeleteClicked(object sender, EventArgs e)
         {
-            if (sender is Button button && button.CommandParameter is string fileName)
+            if (sender is Button button && button.CommandParameter is Models.File f)
             {
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
@@ -202,9 +201,10 @@ namespace DesktopApp
                     {
                         try
                         {
-                            await viewModel.DeleteFile(fileName);
+                            await viewModel.DeleteFile(f.fullPath);
+                            await viewModel.RenewFolder(viewModel.GetParentFolderFormPath(f.fullPath));
                             fcView.ItemsSource = viewModel.Files;
-                            await DisplayAlert("Info", "Your file has been deleted", "OK");
+                            await DisplayAlert("Info", "Your file has been deleted", "OK"); 
 
                         }
                         catch (Exception ex)
@@ -232,7 +232,9 @@ namespace DesktopApp
                     {
                         try
                         {
-                            await viewModel.DeleteFile(f.fileName);
+                            await viewModel.DeleteFile(f.fullPath);    
+                            await viewModel.RenewFolder(viewModel.GetParentFolderFormPath(f.fullPath));
+                            fcView.ItemsSource = viewModel.Files;
                             await DisplayAlert("Info", "Your file has been deleted", "OK");
 
                         }

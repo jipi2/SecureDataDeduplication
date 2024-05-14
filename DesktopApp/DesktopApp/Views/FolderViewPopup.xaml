@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DesktopApp.Views.FolderViewPopup"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+             xmlns:mopupsanim="clr-namespace:Mopups.Animations;assembly=Mopups"
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             CloseWhenBackgroundIsClicked="True">
+
+
+    <mopups:PopupPage.Animation>
+        <mopupsanim:ScaleAnimation
+            DurationIn="700"
+            EasingIn="BounceOut"
+            PositionIn="Bottom"
+            PositionOut="Center"
+            ScaleIn="1"
+            ScaleOut="0.7" />
+    </mopups:PopupPage.Animation>
+
+    <mopups:PopupPage.BindingContext>
+        <viewModels:FolderPopupViewModel />
+    </mopups:PopupPage.BindingContext>
+
+    <Border Background="Transparent" WidthRequest="500" HeightRequest="700">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="20,20,20,20" />
+        </Border.StrokeShape>
+        <Grid Background="#16071B" WidthRequest="500" HeightRequest="700" >
+            <ScrollView Orientation="Both">
+                <VerticalStackLayout>
+                    <material:TreeView Margin="10,10,0,0" ItemsSource="{Binding Nodes}" SelectionMode="Single" UseAnimation="True" SelectedItem="{Binding SelectedItem}">
+                        <material:TreeView.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout Spacing="10">
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="FAS" Glyph="&#xf07b;" Color="#B5DA00" Size="24"/>
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="18" />
+                                    <Label Text="{Binding Children.Count, StringFormat='({0})'}" FontSize="18" />
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </material:TreeView.ItemTemplate>
+                    </material:TreeView>
+                    <HorizontalStackLayout HorizontalOptions="Center" Margin="0,30,0,0" Spacing="50">
+                        <Button Text="Select" x:Name="selectButton" Clicked="selectButton_Clicked" BackgroundColor="#7700FF" TextColor="White" WidthRequest="100" HeightRequest="40"/>
+                        <Button Text="Cancel" x:Name="cancelButton" Clicked="cancelButton_Clicked" BackgroundColor="Red" TextColor="White" WidthRequest="100" HeightRequest="40"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </Border>
+</mopups:PopupPage>

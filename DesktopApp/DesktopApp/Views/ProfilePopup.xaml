@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
              BackgroundColor="Transparent"
              >
-
+    
     <Grid BackgroundColor="Transparent" WidthRequest="350" HeightRequest="220" Margin="0,0,1480,720" >
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0"

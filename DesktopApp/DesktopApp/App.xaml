@@ -1,7 +1,8 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DesktopApp"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
              x:Class="DesktopApp.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,18 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <!--TreeView Regular Arrow -->
+            <Style TargetType="Path" Class="TreeView.Arrow" BaseResourceKey="Microsoft.Maui.Controls.Shapes.Path">
+                <Setter Property="Fill" Value="Red" /> <!--Value="#6A4B86"-->
+            </Style>
+
+            <!--TreeView Selected Arrow -->
+            <Style TargetType="Path" Class="TreeView.Arrow.Selected" BaseResourceKey="Microsoft.Maui.Controls.StyleClass.TreeView.Arrow">
+                <Setter Property="Fill" Value="White" />
+            </Style>
+            <Style TargetType="material:TreeView">
+                <Setter Property="SelectionColor" Value="#392849" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

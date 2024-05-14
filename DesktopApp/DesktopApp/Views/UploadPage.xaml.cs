@@ -1,4 +1,6 @@
 using DesktopApp.ViewModels;
+using DesktopApp.Views;
+using Mopups.Services;
 using System.Diagnostics;
 
 namespace DesktopApp
@@ -6,7 +8,8 @@ namespace DesktopApp
 	public partial class UploadPage : ContentPage
 	{
 		private UploadPageViewModel _viewModel;
-		public UploadPage()
+        public string path = "";
+        public UploadPage()
 		{
 			InitializeComponent();
 			BindingContext = _viewModel = new UploadPageViewModel();
@@ -19,6 +22,8 @@ namespace DesktopApp
             uploadButton.IsVisible = false;
             uploadText.IsVisible = false;
 			plusButton.IsVisible = true;
+
+            path = "";
         }
 
         private async void OnSelectFileClicked(object sender, EventArgs e)
@@ -26,7 +31,17 @@ namespace DesktopApp
 			try
 			{
 				await _viewModel.SelectFile();
-				fileNameFrame.IsVisible = true;
+
+                var popup = new FolderViewPopup();
+                await MopupService.Instance.PushAsync(popup);
+                var result = await popup.PopupDismissedTask;
+                if (result == "")
+                {
+                    await DisplayAlert("Info", "You need to select a folder to upload the file", "OK");
+                    return;
+                }
+                path = result;
+                fileNameFrame.IsVisible = true;
 				uploadButton.IsVisible = true;
 				uploadText.IsVisible = true;
 				plusButton.IsVisible = false;
@@ -41,7 +56,8 @@ namespace DesktopApp
         {
 			try
 			{
-				uploadButton.IsEnabled = false;
+
+                uploadButton.IsEnabled = false;
 				//await DisplayAlert("Info", "Your file is being encrypted", "OK");
 
 				mainBorder.IsVisible = false;
@@ -50,7 +66,7 @@ namespace DesktopApp
 
 				loadingBorder.IsVisible = false;
 				progressBarBorder.IsVisible = true;
-                await _viewModel.UploadFile();
+                await _viewModel.UploadFile(path);
 
                 progressBarBorder.IsVisible = false;
                 mainBorder.IsVisible = true;

@@ -113,7 +113,7 @@ namespace DesktopApp.ViewModels
         }
 
 
-        public async Task UploadFile()
+        public async Task UploadFile(string path)
         {
             if (_fileModel.key == null || _fileModel.iv == null || _fileModel.base64Tag == null 
                 || _fileModel.fileName == null || _fileModel.encFileName == null)
@@ -144,9 +144,11 @@ namespace DesktopApp.ViewModels
             });
 
             var multipartContent = new MultipartFormDataContent();
-           
+
+            if (path != "/") path += "/";
+
             var fileStream = System.IO.File.OpenRead(encFilePath);
-            multipartContent.Add(new StringContent(fileDto.fileName), "fileName");
+            multipartContent.Add(new StringContent(path+fileDto.fileName), "fileName");
             multipartContent.Add(new StringContent(fileDto.base64Key), "base64Key");
             multipartContent.Add(new StringContent(fileDto.base64Iv), "base64Iv");
             multipartContent.Add(new StringContent(fileDto.base64Tag), "base64Tag");

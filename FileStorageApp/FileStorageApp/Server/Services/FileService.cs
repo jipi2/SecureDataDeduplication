@@ -699,6 +699,7 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("File does not exist!");
             if(luf.Count > 1)
             {
+                await _fileFolderRepo.DeleteFile(user, fileName);
                 await _userFileRepo.DeleteUserFile(userFile);
             }
             else
@@ -710,6 +711,7 @@ namespace FileStorageApp.Server.Services
                 {
                     throw new Exception("Could not delete from cloud");
                 }
+                await _fileFolderRepo.DeleteFile(user, fileName);
                 await _userFileRepo.DeleteUserFile(userFile);
                 await _fileRepo.DeleteFile(fileMeta);
             }

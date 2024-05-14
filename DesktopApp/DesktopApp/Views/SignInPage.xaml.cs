@@ -23,7 +23,7 @@ namespace DesktopApp
         {
             base.OnAppearing();
             SecureStorage.Default.RemoveAll();
-            
+
             //stergem asta dupa testare
             if (BindingContext is SignInViewModel viewModel)
             {
