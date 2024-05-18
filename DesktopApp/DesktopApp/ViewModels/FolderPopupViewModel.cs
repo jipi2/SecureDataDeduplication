@@ -53,6 +53,7 @@ namespace DesktopApp.ViewModels
 
         public async void GetFolders()
         {
+            Nodes.Clear();
             string? jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
             if (jwt == null)
             {
@@ -65,6 +66,31 @@ namespace DesktopApp.ViewModels
             {
                 Nodes.Add(node);
             }
+        }
+
+        public async Task CreateFolder(string parentFolderPath, string newFolderName)
+        {
+            try
+            {
+                string newFolder;
+                if (parentFolderPath == "/")
+                    newFolder = parentFolderPath + newFolderName;
+                else
+                    newFolder = parentFolderPath + "/" + newFolderName;
+
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetApiClient(jwt);
+                var response = await httpClient.PostAsJsonAsync("/api/FileFolder/createFolder", newFolder);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception("Could not create folder");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
     }
 }

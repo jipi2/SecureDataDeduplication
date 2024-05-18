@@ -9,11 +9,13 @@ namespace DesktopApp
 	public partial class SendPopup 
 	{
 		private string _fileName;
-		public SendPopup(string fileName)
+		private string _fullPath;
+		public SendPopup(string fileName, string fullPath)
 		{
 			InitializeComponent();
 			_fileName = fileName;
-		}
+            _fullPath = fullPath;
+        }
 
 		private async void OnSendButtonClicked(object sender, EventArgs e)
 		{
@@ -27,7 +29,7 @@ namespace DesktopApp
 
 					mainFrame.IsVisible = false;
 					loadingFrame.IsVisible = true;
-					await viewModel.SendFile(_fileName, destEmail);
+					await viewModel.SendFile(_fullPath ,_fileName, destEmail);
 
 					this.Close();
                 }

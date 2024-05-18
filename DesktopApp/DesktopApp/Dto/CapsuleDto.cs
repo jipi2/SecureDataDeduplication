@@ -11,6 +11,8 @@ namespace DesktopApp.Dto
         public string base64KeyCapsule { get; set; }
         public string  base64IvCapsule { get; set; }
         public string fileName { get; set; }
+        public string fullPath { get; set; }
         public  string destEmail { get; set; }
+        public string base64Tag { get; set; }
     }
 }

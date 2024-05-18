@@ -17,6 +17,7 @@ namespace FileStorageApp.Server.Entity
         public string FileName { get; set; }
         public string base64EncKey { get; set; }
         public string base64EncIv { get; set; }
+        public string Tag { get; set; }
         public bool isDeleted { get; set; }
         public bool isInCache { get; set; }
     }

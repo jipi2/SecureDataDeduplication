@@ -158,10 +158,13 @@ namespace FileStorageApp.Server.Repositories
             {
                 // Fetch the root folder for the user ("/")
                 var rootFolder = await _context.FileFolders
-                    .Include(f => f.ChildFileFolders) // Include child folders
+                    .Include(f => f.ChildFileFolders) 
                     .FirstOrDefaultAsync(f => f.UserId == user.Id && f.FullPathName == "/" && f.UserFileId == null); // Exclude files
 
                 // Populate child folders recursively
+                if(rootFolder.ChildFileFolders != null)
+                    rootFolder.ChildFileFolders = rootFolder.ChildFileFolders?
+                        .OrderBy(f => f.FullPathName).ToList();
                 var rootFolderDTO = await PopulateJustChildFolders(rootFolder);
 
                 // Return the root folder DTO with populated child folders
@@ -189,7 +192,8 @@ namespace FileStorageApp.Server.Repositories
 
                 // Fetch child folders for the parent folder
                 var childFolders = await _context.FileFolders
-                    .Where(f => f.ParentId == parentFolder.Id && f.UserFileId == null) // Exclude files
+                    .Where(f => f.ParentId == parentFolder.Id && f.UserFileId == null)
+                    .OrderBy(f => f.FullPathName)
                     .ToListAsync();
 
                 // Recursively populate child folders
@@ -218,7 +222,13 @@ namespace FileStorageApp.Server.Repositories
                     .FirstOrDefaultAsync(f => f.UserId == user.Id && f.FullPathName == "/"); // Exclude files
 
                 // Populate child folders recursively
+                if (rootFolder.ChildFileFolders != null)
+                    rootFolder.ChildFileFolders = rootFolder.ChildFileFolders
+                       .OrderByDescending(f => f.UserFileId != null)
+                       .ThenBy(f => f.FullPathName)
+                       .ToList();
                 var rootFolderDTO = await PopulateJustChildFoldersAndFiles(rootFolder);
+
 
                 // Return the root folder DTO with populated child folders
                 return rootFolderDTO;
@@ -247,7 +257,9 @@ namespace FileStorageApp.Server.Repositories
 
                 // Fetch child folders for the parent folder
                 var childFolders = await _context.FileFolders
-                    .Where(f => f.ParentId == parentFolder.Id ) // Exclude files
+                    .Where(f => f.ParentId == parentFolder.Id )
+                    .OrderBy(f => f.UserFileId != null) // Folders (UserFileId == null) first
+                    .ThenBy(f => f.FullPathName) // Then alphabetical
                     .ToListAsync();
 
                 // Recursively populate child folders
@@ -263,6 +275,20 @@ namespace FileStorageApp.Server.Repositories
                 return parentFolderDTO;
             }
 
+            return null;
+        }
+
+       public async Task<List<FileFolder>?> GetChildren(FileFolder folder)
+        {
+            if (folder != null)
+            {
+                var childFolders = await _context.FileFolders
+                  .Where(f => f.ParentId == folder.Id)
+                  .OrderBy(f => f.UserFileId != null) // Folders (UserFileId == null) first
+                  .ThenBy(f => f.FullPathName) // Then alphabetical
+                  .ToListAsync();
+                return childFolders;
+            }
             return null;
         }
     }

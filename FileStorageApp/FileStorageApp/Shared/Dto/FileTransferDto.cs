@@ -11,8 +11,10 @@ namespace FileStorageApp.Shared.Dto
         public string senderToken { get; set; }
         public string recieverEmail { get; set; }
         public string fileName { get; set; }
+        public string fullPath { get; set; }
         public string base64EncKey { get; set; }
         public string base64EncIv { get; set; }
+        public string base64Tag { get; set; }
         public bool isInCache { get; set; }
     }
 }

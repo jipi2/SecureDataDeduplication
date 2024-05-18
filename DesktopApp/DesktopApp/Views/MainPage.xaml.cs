@@ -3,11 +3,13 @@ using DesktopApp.Models;
 using DesktopApp.ViewModels;
 using Mopups.Services;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace DesktopApp
 {
     public partial class MainPage : ContentPage
     {
+        private bool isFirst = true;
         public MainPage()
         {
             InitializeComponent();
@@ -41,6 +43,13 @@ namespace DesktopApp
         protected async override void OnAppearing()
         {
             base.OnAppearing();
+
+            //if (isFirst == true)
+            //{
+            //    await Shell.Current.GoToAsync("//SignInPage");
+            //    isFirst = false;
+            //}
+
 
             try
             {
@@ -148,7 +157,7 @@ namespace DesktopApp
                 else
                 {
 
-                    var sendPopup = new SendPopup(f.fileName);
+                    var sendPopup = new SendPopup(f.fileName, f.fullPath);
 
                     // Attach an event handler to the Closed event
                     sendPopup.Closed += async (s, args) =>
@@ -167,9 +176,9 @@ namespace DesktopApp
             try
             {
 
-                if (sender is Button button && button.CommandParameter is string fileName)
+                if (sender is Button button && button.CommandParameter is Models.File f)
                 {
-                    var sendPopup = new SendPopup(fileName);
+                    var sendPopup = new SendPopup(f.fileName, f.fullPath);
 
 
                     sendPopup.Closed += async (s, args) =>
@@ -286,7 +295,9 @@ namespace DesktopApp
                     await this.ShowPopupAsync(new TransferPagePopout());
 
                     viewModel.Files.Clear();
-                    await viewModel.GetFilesAndNames();
+                    //await viewModel.GetFilesAndNames();
+                    await viewModel.RenewAllFolders();
+                    await viewModel.GetFolderWithFilesHierarchy();
                     int numberOfRecFiles = await viewModel.GetReceivedFilesFromUsers();
                     if (numberOfRecFiles > 0)
                     {
@@ -483,6 +494,71 @@ namespace DesktopApp
                 await viewModel.GetFolderFiles(viewModel.PrevFolder);
 
             }
+        }
+
+        private async void CreateFolder_Clicked(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is SimpleFileHierarchyModel parentFolder)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                if (viewModel != null)
+                {
+                    string newFolderName = await DisplayPromptAsync("Folder Name", "Enter your new folder name", "Ok", "Cancel", "Folder Name", maxLength: 100, keyboard: Keyboard.Text, initialValue: "");
+                    if (newFolderName != null)
+                    {
+                        var invalidCharsPattern = @"[\/~!@#$%^&*(){}\[\]?;.,\""]";
+                        var regex = new Regex(invalidCharsPattern);
+                        if (!regex.IsMatch(newFolderName))
+                        {
+                            try
+                            {
+                                await viewModel.CreateFolder(parentFolder.FullPathName, newFolderName);
+                                await viewModel.RenewAllFolders();
+                                await viewModel.GetFolderWithFilesHierarchy();
+                                await DisplayAlert("Succes", "The folder has been created!", "Ok"); 
+                            }
+                            catch (Exception ex)
+                            {
+                                await DisplayAlert("Error",ex.Message, "Ok");
+                            }
+                        }
+                        else
+                        {
+                            // Show an alert if the input is invalid
+                            await DisplayAlert("Invalid Input", "The folder name contains invalid characters. Please avoid using /~!@#$%^&*(){}?;.,\".", "Ok");
+                        }
+                    }
+                }
+            }
+
+        }
+        private async void DeleteFolder_Clicked(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is SimpleFileHierarchyModel folder)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                if (viewModel != null)
+                {
+  
+                    try
+                    {
+                        bool result = await DisplayAlert("Info", "Are you sure do you want to delete this folder?", "Ok", "Cancel");
+                        if (result == true)
+                        {
+                            await viewModel.DeleteFolder(folder);
+                            await viewModel.RenewAllFolders();
+                            await viewModel.GetFolderWithFilesHierarchy();
+                            await DisplayAlert("Succes", "The folder has been deleted!", "Ok");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await DisplayAlert("Error", ex.Message, "Ok");
+                    }
+ 
+                }
+            }
+
         }
     }
 }

@@ -110,7 +110,6 @@
 
                     <BoxView Grid.Column="0" Color="#24122C" Margin="-10,0,100,0" CornerRadius="20" />
 
-                    <!-- BoxView for the second column background color -->
                     <BoxView Grid.Column="1" Color="#24122C" Margin="-90,0,0,0" CornerRadius="20"/>
 
                     <VerticalStackLayout Grid.Column="0" MaximumWidthRequest="500"
@@ -136,7 +135,8 @@
                                             <Label Text="{Binding Children.Count, StringFormat='({0})'}" FontSize="18" />
                                             <FlyoutBase.ContextFlyout>
                                                 <MenuFlyout>
-                                                    <MenuFlyoutItem Text="Create Folder"/>
+                                                    <MenuFlyoutItem IsEnabled="{Binding IsFolder}" Text="New Folder" Clicked="CreateFolder_Clicked" CommandParameter="{Binding .}" />
+                                                    <MenuFlyoutItem IsEnabled="{Binding IsFolder}" Text="Delete Folder" Clicked="DeleteFolder_Clicked" CommandParameter="{Binding .}" />
                                                 </MenuFlyout>
                                             </FlyoutBase.ContextFlyout>
                                         </HorizontalStackLayout>
@@ -161,6 +161,7 @@
                                                 <MenuFlyout>
                                                     <MenuFlyoutItem Text="Delete" Clicked="OnLabelMenuDeleteClicked" CommandParameter="{Binding labelName}"/>
                                                 </MenuFlyout>
+                                                
                                             </FlyoutBase.ContextFlyout>
                                         </StackLayout>
                                     </DataTemplate>
@@ -194,6 +195,16 @@
                                 <DataTemplate>
                                     <Frame BackgroundColor="Transparent" BorderColor="Transparent">
                                         <Grid ColumnDefinitions="Auto,*,*,*,*">
+                                            <Image IsVisible="{Binding isFolder}" IsEnabled="False">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="FAS" Glyph="&#xf07b;" Color="#690E90" Size="24"/>
+                                                </Image.Source>
+                                            </Image>
+                                            <Image IsVisible="{Binding isFolder, Converter={StaticResource InvertedBoolConverter}}" IsEnabled="False">
+                                                <Image.Source>
+                                                    <FontImageSource FontFamily="FAS" Glyph="&#xf15b;" Color="#928B95" Size="24"/>
+                                                </Image.Source>
+                                            </Image>
                                             <Label TextColor="DarkGray" Text="{Binding fileName}" Grid.Column="1" HorizontalTextAlignment="Center" FontSize="20"/>
                                             <Label TextColor="DarkGray" Text="{Binding uploadDate}" Grid.Column="2" HorizontalTextAlignment="Center" FontSize="20"/>
                                             <Label TextColor="DarkGray" Text="{Binding fileSizeStr}" Grid.Column="3" HorizontalTextAlignment="Center" FontSize="20">

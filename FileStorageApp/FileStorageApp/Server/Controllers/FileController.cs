@@ -591,6 +591,21 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpPost("saveFileInfoRecievedFromAnotherUser")]
+        [Authorize(Roles = "proxy")]
+        public async Task<IActionResult> DeleteFileInfoFromServer([FromBody] AcceptFileTransferDto aft)
+        {
+            try
+            {
+                await _fileService.SaveFileInfoRecievedFromAnotherUser(aft);
+                return Ok("File Info saved");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 
 }

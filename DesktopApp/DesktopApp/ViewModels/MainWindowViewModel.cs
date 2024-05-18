@@ -40,34 +40,6 @@ namespace DesktopApp.ViewModels
             _labeledFiles = new ObservableCollection<Models.File>();
             _foldersList = new List<Folder>();
             _selectedItem = new SimpleFileHierarchyModel();
-            //Nodes.Add(new MyItem("A")
-            //{
-            //    Children =
-            //{
-            //    new MyItem("A.1"),
-            //    new MyItem("A.2"),
-            //}
-            //});
-            //Nodes.Add(new MyItem("B")
-            //{
-            //    Children =
-            //{
-            //    new MyItem("B.1")
-            //    {
-            //        Children =
-            //        {
-            //            new MyItem("B.1.a"),
-            //            new MyItem("B.1.b"),
-            //            new MyItem("B.1.c"),
-            //            new MyItem("B.1.d"),
-
-            //        }
-            //    },
-            //    new MyItem("B.2"),
-            //}
-            //});
-            //Nodes.Add(new MyItem("C"));
-            //Nodes.Add(new MyItem("D"));
 
         }
 
@@ -81,9 +53,11 @@ namespace DesktopApp.ViewModels
                 {
                     _selectedItem = value;
                     OnPropertyChanged(nameof(SelectedItem));
+                    GoToFolder(_selectedItem);
                 }
             }
         }
+
 
         private string _searchText;
         public string SearchText
@@ -264,52 +238,23 @@ namespace DesktopApp.ViewModels
 
         }
 
-        public string GetParentFolderFormPath(string path)
+        public async void GoToFolder(SimpleFileHierarchyModel selectedItem)
         {
-            string[] segments = path.Split('/');
-            string folderPath = string.Join("/", segments.Take(segments.Length - 1));
-            if (folderPath == "") folderPath = "/";
-            return folderPath;
+            if (selectedItem != null)
+            {
+                _selectedItem = selectedItem;
+                if (_selectedItem.IsFolder == false)
+                    return;
+               await GetFolderFiles(selectedItem.FullPathName);
+            }
+            
         }
-        public async Task RenewAllFolders()
+
+        private async Task getFilesFolderFromServer(string path)
         {
             try
             {
                 _foldersList.Clear();
-                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
-                var httpClient = HttpServiceCustom.GetApiClient(jwt);
-                string path = "%2F";
-                Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
-                if (f != null)
-                {
-                    _files.Clear();
-                    foreach (var file in f.folderFiles)
-                    {
-                        Models.File fileModel = new Models.File
-                        {
-                            fileName = file.fileName,
-                            fileSize = file.fileSize,
-                            fileSizeStr = getHumanSize(file.fileSize),
-                            uploadDate = file.uploadDate,
-                            fullPath = file.fullPath,
-                            isFolder = file.isFolder
-                        };
-                        _files.Add(fileModel);
-                    }
-                    _foldersList.Add(f);
-                }
-                PrevFolder = "";
-
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-        public async Task RenewFolder(string path)
-        {
-            try
-            {
                 string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
                 var httpClient = HttpServiceCustom.GetApiClient(jwt);
                 string aux = path;
@@ -332,19 +277,45 @@ namespace DesktopApp.ViewModels
                         _files.Add(fileModel);
                     }
                     _foldersList.Add(f);
-
-                    if (aux == "/")
-                        PrevFolder = "";
-                    else
-                    {
-                        string[] segments = aux.Split('/');
-                        string folderPath = string.Join("/", segments.Take(segments.Length - 1));
-                        if (folderPath == "")
-                            PrevFolder = "/";
-                        else
-                            PrevFolder = folderPath;
-                    }
                 }
+                string[] segments = aux.Split('/');
+                string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+                if (folderPath == "")
+                    PrevFolder = "/";
+                else
+                    PrevFolder = folderPath;
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public string GetParentFolderFormPath(string path)
+        {
+            string[] segments = path.Split('/');
+            string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+            if (folderPath == "") folderPath = "/";
+            return folderPath;
+        }
+        public async Task RenewAllFolders()
+        {
+            try
+            {
+                await getFilesFolderFromServer("/");
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public async Task RenewFolder(string path)
+        {
+            try
+            {
+               
+                await getFilesFolderFromServer(path);
 
             }
             catch (Exception e)
@@ -392,52 +363,11 @@ namespace DesktopApp.ViewModels
             }
             else
             {
-
-                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
-                if (jwt == null)
-                {
-                    throw new Exception("Your session expired!");
-                }
-                var httpClient = HttpServiceCustom.GetApiClient();
-                httpClient.DefaultRequestHeaders.Remove("Authorization");
-                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
                 try
                 {
-                    string aux = path;
-                    path = path.Replace("/", "%2F");
-                    Folder? f = await httpClient.GetFromJsonAsync<Folder?>("/api/FileFolder/getFolderWithFiles?path=" + path);
-                    if (f != null)
-                    {
-                        _files.Clear();
-                        foreach (var file in f.folderFiles)
-                        {
-                            Models.File fileModel = new Models.File
-                            {
-                                fileName = file.fileName,
-                                fileSize = file.fileSize,
-                                fileSizeStr = getHumanSize(file.fileSize),
-                                uploadDate = file.uploadDate,
-                                fullPath = file.fullPath,
-                                isFolder = file.isFolder
-                            };
-                            _files.Add(fileModel);
-                        }
-                        _foldersList.Add(f);
-
-                        if (aux == "/")
-                            PrevFolder = "";
-                        else
-                        {
-                            string[] segments = aux.Split('/');
-                            string folderPath = string.Join("/", segments.Take(segments.Length - 1));
-                            if (folderPath == "")
-                                PrevFolder = "/";
-                            else
-                                PrevFolder = folderPath;
-                        }
-                    }
-
-                }
+                    await getFilesFolderFromServer(path);
+                }  
+                
                 catch (Exception e)
                 {
                     throw e;
@@ -594,14 +524,14 @@ def generateKfrag(base64PrivKey, base64PubKey):
                 throw new Exception("Could not get kfrag");
             }
         }
-        public async Task SendFile(string fileName, string destEmail)
+        public async Task SendFile(string fullPath ,string fileName, string destEmail)
         {
             string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
             var httpClient = HttpServiceCustom.GetProxyClient();
             httpClient.DefaultRequestHeaders.Remove("Authorization");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
-            FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName);
+            FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fullPath);
 
             if(keyAndIvDto == null)
             {
@@ -638,7 +568,10 @@ def generateKfrag(base64PrivKey, base64PubKey):
                 base64KeyCapsule = base64KeyCapsule,
                 base64IvCapsule = base64IvCapsule,
                 fileName = fileName,
-                destEmail = destEmail
+                fullPath = fullPath,
+                destEmail = destEmail,
+                base64Tag = keyAndIvDto.base64Tag,
+
             };
 
             httpClient.DefaultRequestHeaders.Remove("Authorization");
@@ -714,7 +647,7 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             }
         }
 
-        public async Task AcceptReceivedFile(RecievedFilesDto fileInf)
+        public async Task AcceptReceivedFile(RecievedFilesDto fileInf, string fullPath)
         {
             string email = await SecureStorage.GetAsync(Enums.Symbol.Email.ToString());
             string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
@@ -737,13 +670,17 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
                 byte[] fileKey = Convert.FromBase64String(base64key);
                 byte[] fileIv = Convert.FromBase64String(base64iv);
 
+                if (fullPath == "/") fullPath = "";
+
                 AcceptFileTransferDto dto = new AcceptFileTransferDto
                 {
                     senderEmail = fileInf.senderEmail,
                     receiverEmail = email,
                     fileName = fileInf.fileName,
+                    fullPath = fullPath+"/"+fileInf.fileName,
                     base64FileKey = Convert.ToBase64String(RSAKeyService.rsaPublicKey.Encrypt(fileKey, RSAEncryptionPadding.OaepSHA256)),
-                    base64FileIv = Convert.ToBase64String(RSAKeyService.rsaPublicKey.Encrypt(fileIv, RSAEncryptionPadding.OaepSHA256))
+                    base64FileIv = Convert.ToBase64String(RSAKeyService.rsaPublicKey.Encrypt(fileIv, RSAEncryptionPadding.OaepSHA256)),
+                    base64Tag = fileInf.base64Tag
                 };
 
                 var httpClient2 = HttpServiceCustom.GetProxyClient();
@@ -1027,6 +964,51 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             {
                 _files = new ObservableCollection<Models.File>(_files.OrderByDescending(f => f.fileSize));
                 sizeSort = 0;
+            }
+        }
+
+        public async Task CreateFolder(string parentFolderPath, string newFolderName)
+        {
+            try 
+            {
+                string newFolder;
+                if (parentFolderPath == "/")
+                    newFolder = parentFolderPath + newFolderName;
+                else
+                    newFolder = parentFolderPath+"/" + newFolderName;
+
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetApiClient(jwt);
+                var response = await httpClient.PostAsJsonAsync("/api/FileFolder/createFolder", newFolder);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception("Could not create folder");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+        public async Task DeleteFolder(SimpleFileHierarchyModel folder)
+        {
+            try
+            {
+                string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+                var httpClient = HttpServiceCustom.GetApiClient(jwt);
+                var response = await httpClient.PostAsJsonAsync("/api/FileFolder/deleteFolder", folder.FullPathName);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string exception = await response.Content.ReadAsStringAsync();
+                    throw new Exception(exception);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }

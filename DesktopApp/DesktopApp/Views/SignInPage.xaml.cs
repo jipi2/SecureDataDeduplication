@@ -25,11 +25,11 @@ namespace DesktopApp
             SecureStorage.Default.RemoveAll();
 
             //stergem asta dupa testare
-            if (BindingContext is SignInViewModel viewModel)
-            {
-                await viewModel.Login();
-                await Shell.Current.GoToAsync("//MainPage");
-            }
+            //if (BindingContext is SignInViewModel viewModel)
+            //{
+            //    await viewModel.Login();
+            //    await Shell.Current.GoToAsync("//MainPage");
+            //}
             //atat stergem
         }
         private async void OnRegisterClicked(object sender, EventArgs e)

@@ -41,6 +41,11 @@
                                     </Image>
                                     <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="18" />
                                     <Label Text="{Binding Children.Count, StringFormat='({0})'}" FontSize="18" />
+                                    <FlyoutBase.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="New Folder" x:Name="newFolder" Clicked="newFolder_Clicked" CommandParameter="{Binding .}" />
+                                        </MenuFlyout>
+                                    </FlyoutBase.ContextFlyout>
                                 </HorizontalStackLayout>
                             </DataTemplate>
                         </material:TreeView.ItemTemplate>

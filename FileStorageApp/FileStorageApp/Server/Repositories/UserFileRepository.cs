@@ -28,7 +28,7 @@ namespace FileStorageApp.Server.Repositories
 
         public async Task<UserFile?> GetUserFileByUserIdAndFileName(int id, string fileName)
         {
-            UserFile? userFile = await _context.UserFiles.Include(f => f.FileMetadata).Where(f => f.UserId == id && f.FileName == fileName).FirstOrDefaultAsync();
+            UserFile? userFile = await _context.UserFiles.Include(f => f.FileMetadata).Where(f => f.UserId == id && f.FileName == fileName).Include(f => f.FileMetadata).FirstOrDefaultAsync();
             if (userFile == null)
             {
                 return null;

@@ -598,14 +598,15 @@ namespace FileStorageApp.Server.Services
             FileMetadata? fileMeta = await _fileRepo.GetFileMetaByTagIfExists(fileParams.base64Tag);
             if (fileMeta == null)
             {
-                fileMeta = new FileMetadata
-                {
-                    BlobLink = blobUrl,
-                    isDeleted = false,
-                    Tag = fileParams.base64Tag,
-                    Size = fileParams.fileSize,
-                };
-                await _fileRepo.SaveFile(fileMeta);
+                //fileMeta = new FileMetadata
+                //{
+                //    BlobLink = blobUrl,
+                //    isDeleted = false,
+                //    Tag = fileParams.base64Tag,
+                //    Size = fileParams.fileSize,
+                //};
+                //await _fileRepo.SaveFile(fileMeta);
+                return;
             }
             else
             {
@@ -630,16 +631,17 @@ namespace FileStorageApp.Server.Services
                 UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, pid.fileName);
                 if (uf == null)
                 {
-                    uf = new UserFile
-                    {
-                        FileName = pid.fileName,
-                        Key = pid.base64key,
-                        Iv = pid.base64iv,
-                        UploadDate = DateTime.Parse(pid.UploadDate),
-                        UserId = user.Id,
-                        FileId = fileMeta.Id
-                    };
-                    await _userFileRepo.SaveUserFile(uf);
+                    //uf = new UserFile
+                    //{
+                    //    FileName = pid.fileName,
+                    //    Key = pid.base64key,
+                    //    Iv = pid.base64iv,
+                    //    UploadDate = DateTime.Parse(pid.UploadDate),
+                    //    UserId = user.Id,
+                    //    FileId = fileMeta.Id
+                    //};
+                    //await _userFileRepo.SaveUserFile(uf);
+                    return;
                 }
                 else
                 {
@@ -731,7 +733,7 @@ namespace FileStorageApp.Server.Services
             bool isInCache = ftdto.isInCache;
 
             if(isInCache == false)
-                if (await CheckIfFileNameExists(sender, ftdto.fileName) == false)
+                if (await CheckIfFileNameExists(sender, ftdto.fullPath) == false)
                     throw new Exception("The sender does not have that file!");
 
             //UserFile? ufrec = await _userFileRepo.GetUserFileByUserIdAndFileName(reciever.Id, ftdto.fileName);
@@ -750,6 +752,7 @@ namespace FileStorageApp.Server.Services
                 base64EncKey = ftdto.base64EncKey,
                 base64EncIv = ftdto.base64EncIv,
                 isDeleted = false,
+                Tag = ftdto.base64Tag,
                 isInCache = isInCache
             };
             await _fileTransferRepo.SaveFileTransfer(ft);
@@ -791,7 +794,8 @@ namespace FileStorageApp.Server.Services
                     senderEmail =  sender.Email,
                     fileName = ft.FileName,
                     base64EncKey = ft.base64EncKey,
-                    base64EncIv = ft.base64EncIv
+                    base64EncIv = ft.base64EncIv,
+                    base64Tag = ft.Tag
                 });
             }
 
@@ -824,8 +828,12 @@ namespace FileStorageApp.Server.Services
             if (sender == null)
                 throw new Exception("Sender does not exist!");
 
-            UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(sender.Id, aft.fileName);
-            if (uf == null)
+            //UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(sender.Id, aft.fileName);
+            //if (uf == null)
+            //    throw new Exception("Error file");
+
+            FileMetadata? fm = await _fileRepo.GetFileMetaWithResp(aft.base64Tag);
+            if(fm == null)
                 throw new Exception("Error file");
 
             FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, user.Id, aft.fileName);
@@ -835,14 +843,15 @@ namespace FileStorageApp.Server.Services
 
             UserFile userFile = new UserFile
             {
-                FileName = aft.fileName,
+                FileName = aft.fullPath,
                 Key = aft.base64FileKey,
                 Iv = aft.base64FileIv,
                 UploadDate = DateTime.UtcNow,
                 UserId = user.Id,
-                FileId = uf.FileId
+                FileId = fm.Id
             };
             await _userFileRepo.SaveUserFile(userFile);
+            await _fileFolderService.SaveFileToFolder(user, userFile);
         }
 
         public async Task<BlobFileParamsDto> GetUrlFileFromStorage(string userId, string fileName)
@@ -871,7 +880,8 @@ namespace FileStorageApp.Server.Services
             FileKeyAndIvDto dto = new FileKeyAndIvDto
             {
                 base64key = userFile.Key,
-                base64iv = userFile.Iv
+                base64iv = userFile.Iv,
+                base64Tag = userFile.FileMetadata.Tag
             };
             return dto;
         }
@@ -958,6 +968,40 @@ namespace FileStorageApp.Server.Services
                 await _userFileRepo.DeleteUserFile(userFile);
                 await _fileRepo.DeleteFile(fileMeta);
             }
+        }
+
+        public async Task SaveFileInfoRecievedFromAnotherUser(AcceptFileTransferDto aft)
+        {
+            User? user = await _userRepo.GetUserByEmail(aft.receiverEmail);
+            if (user == null)
+                throw new Exception("User does not exist!");
+
+            User? sender = await _userRepo.GetUserByEmail(aft.senderEmail);
+            if (sender == null)
+                throw new Exception("Sender does not exist!");
+
+            //UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(sender.Id, aft.fileName);
+            //if (uf == null)
+            //    throw new Exception("Error file");
+
+            FileMetadata? fm = await _fileRepo.GetFileMetaWithResp(aft.base64Tag);
+            if (fm == null)
+                throw new Exception("Error file");
+
+            FileTransfer? ft = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, user.Id, aft.fileName);
+            if (ft == null)
+                throw new Exception("Error file transfer");
+            await _fileTransferRepo.DeleteFileTransfer(ft);
+
+            UserFile userFile = new UserFile
+            {
+                FileName = aft.fullPath,
+                UploadDate = DateTime.UtcNow,
+                UserId = user.Id,
+                FileId = fm.Id
+            };
+            await _userFileRepo.SaveUserFile(userFile);
+            await _fileFolderService.SaveFileToFolder(user, userFile);
         }
     }
 }

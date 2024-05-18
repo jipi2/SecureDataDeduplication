@@ -12,12 +12,17 @@ namespace FileStorageApp.Server.Services
         public FileFolderRepo _fileFolderRepo { get; set; }
         public UserService _userService { get; set; }
         public UserRepository _userRepository { get; set; }
-
-        public FileFolderService(FileFolderRepo fileFolderRepo, UserService userService, UserRepository userRepository) 
+        public UserFileRepository _userFileRepo { get; set; }
+        public FileRepository _fileRepo { get; set; }
+        public AzureBlobService _azureBlobService { get; set; }
+        public FileFolderService(FileFolderRepo fileFolderRepo, UserService userService, UserRepository userRepository, UserFileRepository userFileRepository, FileRepository fileRepository, AzureBlobService azureBlobService) 
         {
             _fileFolderRepo = fileFolderRepo;
             _userService = userService;
             _userRepository = userRepository;
+            _userFileRepo = userFileRepository;
+            _fileRepo = fileRepository;
+            _azureBlobService = azureBlobService;
         }
         public async Task CreateFolder(string userId ,string fullFolderPath)
         {
@@ -139,6 +144,93 @@ namespace FileStorageApp.Server.Services
 
             SimpleFileModelDto? folders = await _fileFolderRepo.GetFolderWithFilesHierarchyForUser(user);
             return folders;
+        }
+
+        private async Task DeleteUserFile(User user, string fileName)
+        {
+            UserFile? userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fileName);
+            if (userFile == null)
+                throw new Exception("File does not exist!");
+            List<UserFile>? luf = await _userFileRepo.GetUserFilesByFileId(userFile.FileId);
+            if (luf == null)
+                throw new Exception("File does not exist!");
+            if (luf.Count > 1)
+            {
+                await _fileFolderRepo.DeleteFile(user, fileName);
+                await _userFileRepo.DeleteUserFile(userFile);
+            }
+            else
+            {
+                //aici trebuie sa stergem de pe peste tot
+                FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(userFile.FileId);
+                bool res = await _azureBlobService.DeleteFileFromCloud(fileMeta.Tag);
+                if (res == false)
+                {
+                    throw new Exception("Could not delete from cloud");
+                }
+                await _fileFolderRepo.DeleteFile(user, fileName);
+                await _userFileRepo.DeleteUserFile(userFile);
+                await _fileRepo.DeleteFile(fileMeta);
+            }
+        }
+
+        public async Task DeleteFileFolderChildren(FileFolder f, User user)
+        {
+            f.ChildFileFolders = await _fileFolderRepo.GetChildren(f);
+
+            if (f.ChildFileFolders == null || f.ChildFileFolders.Count() == 0)
+            {
+                if(f.UserFileId != null)
+                {
+                    await this.DeleteUserFile(user, f.FullPathName);
+                }
+                else
+                {
+                    await _fileFolderRepo.DeleteFile(user, f.FullPathName);
+                }
+            }
+            else
+            {
+                while(f.ChildFileFolders != null && f.ChildFileFolders.Count() > 0)
+                {
+                    var ff = f.ChildFileFolders.First();
+                    await DeleteFileFolderChildren(ff, user);
+                    f.ChildFileFolders = await _fileFolderRepo.GetChildren(f);
+                }
+                if (f.UserFile != null)
+                {
+                    await this.DeleteUserFile(user, f.FullPathName);
+                }
+                else
+                {
+                    await _fileFolderRepo.DeleteFile(user, f.FullPathName);
+                }
+            }
+
+        }
+        public async Task DeleteFolder(string userId, string path)
+        {
+            User? user = await _userRepository.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found");
+
+            if (path == "/") throw new Exception("You cannot delete the root folder!");
+
+            FileFolder? folder = await _fileFolderRepo.GetFileFolderByUserAndName(user, path);
+            //foreach (var f in folder.ChildFileFolders)
+            //{
+            //    if (f.UserFile != null)
+            //    {
+            //       await this.DeleteUserFile(user, f.FullPathName);
+            //    }
+            //    else
+            //    {
+            //        await _fileFolderRepo.DeleteFile(user, f.FullPathName);
+            //    }
+            //}
+
+            //await _fileFolderRepo.DeleteFile(user, path);
+            if(folder != null)
+                await DeleteFileFolderChildren(folder, user);
         }
     }
 }

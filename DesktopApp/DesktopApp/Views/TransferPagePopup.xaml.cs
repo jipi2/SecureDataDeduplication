@@ -1,6 +1,8 @@
 using CommunityToolkit.Maui.Views;
 using DesktopApp.Dto;
 using DesktopApp.ViewModels;
+using DesktopApp.Views;
+using Mopups.Services;
 using System.Diagnostics;
 
 namespace DesktopApp
@@ -18,7 +20,15 @@ namespace DesktopApp
                 try
                 {
                     loadingFrame.IsVisible = true;
-                    await viewModel.AcceptReceivedFile(item);
+                    var popup = new FolderViewPopup();
+                    await MopupService.Instance.PushAsync(popup);
+                    var fullpath = await popup.PopupDismissedTask;
+                    if (fullpath == "")
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Info", "You need to select a folder to upload the file", "OK");
+                        return;
+                    }
+                    await viewModel.AcceptReceivedFile(item, fullpath);
                     loadingFrame.IsVisible = false;
                     filesCollectionView.ItemsSource = viewModel.RecFiles;
                 }

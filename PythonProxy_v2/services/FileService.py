@@ -289,10 +289,13 @@ class FileService():
         try:
             basedb = Base()
             session = basedb.getSession() 
-            result = session.query(UserFile.iv, UserFile.key).join(User, User.id == UserFile.user_id).filter(UserFile.fileName == filename, User.email == self.userEmail).first()  
+            result = session.query(UserFile.iv, UserFile.key, File.tag).join(User, User.id == UserFile.user_id).join(File, File.id == UserFile.file_id).filter(UserFile.fileName == filename, User.email == self.userEmail).first()  
+            print('----------------------')
+            print(filename)
+            print(result)
             
             if result is not None:
-                return FileKeyAndIvDto(base64key=result.key, base64iv=result.iv)
+                return FileKeyAndIvDto(base64key=result.key, base64iv=result.iv, base64Tag=result.tag)
             
             result = await self.gateWay.callBackendPostMethodDto("/api/File/getKeyAndIvForFile", self.authService.token, EmailFilenameDto(userEmail=self.userEmail, fileName=filename))
             return FileKeyAndIvDto(**result.json())
@@ -440,7 +443,7 @@ class FileService():
             base64KeyCFrag = base64.b64encode(cfragKey.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleKey.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encKey).decode('utf-8')
             base64IvCFrag = base64.b64encode(cfragIv.__bytes__()).decode('utf-8')+"#"+ base64.b64encode(capsuleIv.__bytes__()).decode('utf-8')+"#"+base64.b64encode(encIv).decode('utf-8')
             
-            if self.__checkIfUserHasFile(filename=self.filename) == True:
+            if self.__checkIfUserHasFile(filename=dto.fullPath) == True:
                 # aici va trebui ori sa facem la nivel de proxy send=ul, ori sa trimitem care backend
                 # verificam si daca persoana careia ii trimitem are deja fisierul
                 # aux = self.userEmail
@@ -449,12 +452,12 @@ class FileService():
                 #     raise Exception("User already has this file")
                 # self.userEmail = aux
                 # return True, self.userEmail
-                response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag, isInCache=True))
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag, isInCache=True, base64Tag=dto.base64Tag, fullPath=dto.fullPath))
                 if response.status_code != 200:
                     raise Exception(response.text)
             else:
                 #aici trebuie modificat ce trimit pt cheie si iv
-                response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag, isInCache=False))
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/sendFile", self.authService.token, FileTransferDto(senderToken=self.userToken, recieverEmail=self.recieverEmail, fileName=self.filename, base64EncKey=base64KeyCFrag, base64EncIv=base64IvCFrag, isInCache=False, base64Tag=dto.base64Tag, fullPath=dto.fullPath))
                 if response.status_code != 200:
                     raise Exception(response.text)
                 #return False, self.userEmail
@@ -463,7 +466,7 @@ class FileService():
             raise e
     
     
-    async def acceptReceivedFile(self, afdto:AcceptFileTransferDto):
+    async def acceptReceivedFile(self, afdto:AcceptFileTransferDto): #aici am ramas si trebuie modificat si testat, am facut pentru atunci cand fisierul nu este in cache, dar nu am testat si trebuie sa fac pentru atunci cand fisierul este in cache
         try:
             
             await self.authService.getProxyToken()
@@ -486,7 +489,7 @@ class FileService():
                
                 basedb = Base()
                 session = basedb.getSession()
-                userFile = session.query(UserFile).join(User, User.id == UserFile.user_id).filter(User.email == afdto.senderEmail, UserFile.fileName == afdto.fileName).first()
+                userFile = session.query(UserFile).join(User, User.id == UserFile.user_id).join(File, File.id == UserFile.file_id).filter(User.email == afdto.senderEmail, File.tag == afdto.base64Tag).first()
               
                 if not userFile:
                     raise Exception("This file transfer does not exists")
@@ -496,11 +499,11 @@ class FileService():
                     user = User(email=self.userEmail)
                     session.add(user)
                     session.commit()
-                new_user_file = UserFile(user_id=user.id, file_id=userFile.file_id, key=afdto.base64FileKey, iv=afdto.base64FileIv, fileName=afdto.fileName, date=datetime.datetime.utcnow())
+                new_user_file = UserFile(user_id=user.id, file_id=userFile.file_id, key=afdto.base64FileKey, iv=afdto.base64FileIv, fileName=afdto.fullPath, date=datetime.datetime.utcnow())
                 session.add(new_user_file)
                 session.commit()
                 
-                response = await self.gateWay.callBackendPostMethodDto("/api/File/deleteFileTransfer", self.authService.token, TransferVerificationDto(senderEmail=afdto.senderEmail, receiverEmail=self.userEmail, fileName=afdto.fileName))
+                response = await self.gateWay.callBackendPostMethodDto("/api/File/saveFileInfoRecievedFromAnotherUser", self.authService.token, afdto)
                 if response.status_code != 200:
                     raise Exception(response.text)
                 

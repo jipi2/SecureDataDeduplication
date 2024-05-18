@@ -18,12 +18,12 @@ namespace DesktopApp
         protected override async void OnStart()
         {
             // Navigate to SignUpPage
-            //Shell.Current.GoToAsync("//SignInPage");
+            Shell.Current.GoToAsync("//SignInPage");
 
 
             if (MainPage is AppShell shell)
             {
-                await shell.SetRootPageSignIn();
+                //await shell.SetRootPageSignIn();
                 //await shell.SetRootPageMainPage();
 
                 //string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());

@@ -12,5 +12,6 @@ namespace FileStorageApp.Shared.Dto
         public string base64key { get; set; }
 
         public string base64iv { get; set; }
+        public string base64Tag { get; set; }
     }
 }

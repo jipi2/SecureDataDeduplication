@@ -113,5 +113,26 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("deleteFolder")]
+        [Authorize]
+        public async Task<IActionResult> DeleteFolder([FromBody] string path)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _fileFolderService.DeleteFolder(id, path);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
