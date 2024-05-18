@@ -30,8 +30,9 @@ namespace DesktopApp
 					mainFrame.IsVisible = false;
 					loadingFrame.IsVisible = true;
 					await viewModel.SendFile(_fullPath ,_fileName, destEmail);
+                    await Application.Current.MainPage.DisplayAlert("Info", "Your file has been sent!", "OK");
 
-					this.Close();
+                    this.Close();
                 }
                 catch (Exception ex)
 				{

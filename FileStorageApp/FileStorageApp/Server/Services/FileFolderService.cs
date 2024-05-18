@@ -96,6 +96,8 @@ namespace FileStorageApp.Server.Services
             };
             if (folder.ChildFileFolders != null)
             {
+                folder.ChildFileFolders = folder.ChildFileFolders.OrderBy(f => f.UserFileId != null)
+                                            .ThenBy(f => f.FullPathName).ToList();          
                 folderDto.folderFiles = new List<FileModelDto>();
                 foreach (var f in folder.ChildFileFolders)
                 {

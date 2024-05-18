@@ -606,6 +606,29 @@ namespace FileStorageApp.Server.Controllers
             }
         }
 
+        [HttpPost("verifyNameDuplicate")]
+        [Authorize]
+        public async Task<IActionResult> VerifyNameDuplicate([FromBody] string fullPathName)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return null;
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                bool result = await _fileService.VerifyNameDuplicate(id, fullPathName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
     }
 
 }

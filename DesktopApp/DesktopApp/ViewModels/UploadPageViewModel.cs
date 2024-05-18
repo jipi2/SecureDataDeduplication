@@ -6,6 +6,7 @@ using DesktopApp.Models;
 using FileStorageApp.Client;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -115,6 +116,8 @@ namespace DesktopApp.ViewModels
 
         public async Task UploadFile(string path)
         {
+            if (path != "/") path += "/";
+
             if (_fileModel.key == null || _fileModel.iv == null || _fileModel.base64Tag == null 
                 || _fileModel.fileName == null || _fileModel.encFileName == null)
                 throw new Exception("An error has occured, please try again!");
@@ -132,6 +135,44 @@ namespace DesktopApp.ViewModels
                 fileName = _fileModel.fileName
             };
 
+            bool isNameDuplicate = true;
+            int i = 0;
+            var httpApiClient = HttpServiceCustom.GetApiClient(jwt);
+            while (isNameDuplicate)
+            {
+                try
+                {
+                    var apiReponse = await httpApiClient.PostAsJsonAsync("/api/File/verifyNameDuplicate", path+fileDto.fileName);
+                    if (apiReponse.IsSuccessStatusCode)
+                    {
+                        var resultString = await apiReponse.Content.ReadAsStringAsync();
+                        bool.TryParse(resultString, out isNameDuplicate);
+                        if (isNameDuplicate)
+                        {
+                            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(_fileModel.fileName);
+                            var extension = Path.GetExtension(_fileModel.fileName);
+                            string newName;
+
+                            if (i > 0)
+                                newName = fileNameWithoutExtension + "_Copy"+$"({i})"+extension;
+                            else
+                                newName = fileNameWithoutExtension + "_Copy"+extension;
+                            i++;
+                            fileDto.fileName = newName;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("An error has occured, while sending the file, please try again!");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                    throw e;
+                }
+            }
+
             string encFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _fileModel.encFileName);
 
             var progressableContent = new ProgressableStreamContent(new StreamContent(System.IO.File.OpenRead(encFilePath)), (uploaded, total) =>
@@ -144,8 +185,6 @@ namespace DesktopApp.ViewModels
             });
 
             var multipartContent = new MultipartFormDataContent();
-
-            if (path != "/") path += "/";
 
             var fileStream = System.IO.File.OpenRead(encFilePath);
             multipartContent.Add(new StringContent(path+fileDto.fileName), "fileName");

@@ -1,6 +1,7 @@
 using DesktopApp.HttpFolder;
 using DesktopApp.ViewModels;
 using FileStorageApp.Shared.Dto;
+using Mopups.Services;
 using System.Diagnostics;
 using System.Net.Http.Json;
 
@@ -31,9 +32,14 @@ namespace DesktopApp
             }
 
         }
-        private async void signOutButton_Clicked_1(object sender, EventArgs e)
+        private async void signOutButton_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("test");
+            bool result = await DisplayAlert("Sign out", "Are you sure you want to sign out?", "Yes", "No");
+            if(result)
+            {
+                await MopupService.Instance.PopAsync();
+                await Shell.Current.GoToAsync("//SignInPage");
+            }
         }
         private void initialsButton_Clicked(object sender, EventArgs e)
         {
@@ -45,5 +51,6 @@ namespace DesktopApp
             this.IsVisible = false;
             await Navigation.PushAsync(new ResetPasswordPage());
         }
+
     }
 }

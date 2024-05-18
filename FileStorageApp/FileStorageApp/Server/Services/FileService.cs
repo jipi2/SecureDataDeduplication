@@ -699,7 +699,17 @@ namespace FileStorageApp.Server.Services
             List<UserFile>? luf = await _userFileRepo.GetUserFilesByFileId(userFile.FileId);
             if(luf == null)
                 throw new Exception("File does not exist!");
-            if(luf.Count > 1)
+
+            List<FileTransfer>? ft_list = await _fileTransferRepo.GetFileTransferBySenderAndTag(user, userFile.FileMetadata.Tag);
+            if (ft_list != null)
+            {
+                foreach (FileTransfer ft in ft_list)
+                {
+                    await _fileTransferRepo.DeleteFileTransfer(ft);
+                }
+            }
+
+            if (luf.Count > 1)
             {
                 await _fileFolderRepo.DeleteFile(user, fileName);
                 await _userFileRepo.DeleteUserFile(userFile);
@@ -742,7 +752,7 @@ namespace FileStorageApp.Server.Services
 
             FileTransfer fte = await _fileTransferRepo.GetFileTransferBySendIdRecIdFilename(sender.Id, reciever.Id, ftdto.fileName);
             if (fte != null)
-                throw new Exception("You already sent this file to this uer");
+                throw new Exception("You already sent this file to this user!");
 
             FileTransfer ft = new FileTransfer()
             {
@@ -955,6 +965,16 @@ namespace FileStorageApp.Server.Services
             List<UserFile>? luf = await _userFileRepo.GetUserFilesByFileId(userFile.FileId);
             if (luf == null)
                 throw new Exception("File does not exist!");
+
+            List<FileTransfer>? ft_list = await _fileTransferRepo.GetFileTransferBySenderAndTag(user, userFile.FileMetadata.Tag);
+            if (ft_list != null)
+            {
+                foreach (FileTransfer ft in ft_list)
+                {
+                    await _fileTransferRepo.DeleteFileTransfer(ft);
+                }
+            }
+
             if (luf.Count > 1)
             {
                 await _fileFolderRepo.DeleteFile(user, dto.fileName);
@@ -1002,6 +1022,18 @@ namespace FileStorageApp.Server.Services
             };
             await _userFileRepo.SaveUserFile(userFile);
             await _fileFolderService.SaveFileToFolder(user, userFile);
+        }
+
+        public async Task<bool> VerifyNameDuplicate(string userId, string fullPathName)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (user == null)
+                throw new Exception("User does not exist!");
+
+            UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fullPathName);
+            if(uf != null)
+                return true;
+            return false;
         }
     }
 }

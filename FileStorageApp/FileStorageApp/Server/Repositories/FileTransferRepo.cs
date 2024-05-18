@@ -92,5 +92,11 @@ namespace FileStorageApp.Server.Repositories
                 throw new Exception("Error updating file transfer");
             }
         }
+
+        public async Task<List<FileTransfer>?> GetFileTransferBySenderAndTag(User user, string base64tag)
+        {
+            List<FileTransfer>? ft = await _context.FileTransfers.Where(x => x.SenderId == user.Id && x.Tag == base64tag).ToListAsync();
+            return ft;
+        }
     }
 }

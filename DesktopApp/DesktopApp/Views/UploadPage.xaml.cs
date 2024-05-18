@@ -92,7 +92,9 @@ namespace DesktopApp
             }
 		}
 
-
-
+        private async void mainPageButtonArrow_Clicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("//MainPage");
+        }
     }
 }

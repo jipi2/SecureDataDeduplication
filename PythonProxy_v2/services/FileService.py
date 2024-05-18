@@ -237,12 +237,12 @@ class FileService():
     async def computeFileVerification_v2(self, file:UploadFile, tag):        
         await self.authService.getProxyToken()
         await self.__getUserEmail()
-        print('here')
+
         if self.__checkIfUserHasFile(self.filename) == True:
-            print('here2')
+
             raise Exception("User already has this file")
         if await self.__verifyTag(tag) == False:
-            print('here2')
+       
             await self.__writeFileOnDisk(file, tag)
 
         else:

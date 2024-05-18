@@ -6,7 +6,7 @@
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
              CanBeDismissedByTappingOutsideOfPopup="True"
              Color="Transparent"
-          
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
              >
 
    
@@ -27,8 +27,8 @@
             </Frame.Background>
 
             <StackLayout Orientation="Horizontal" WidthRequest="500" HeightRequest="150" x:Name="mainStackLayout">
-                <Entry Placeholder="Receiver Email" FontSize="18" Margin="0,0,100,0" x:Name="destEmailTxt" 
-                    HeightRequest="40" WidthRequest="250" TextColor="White" PlaceholderColor="White"/>
+                <material:TextField Title="Receiver Email" FontSize="18" Margin="0,0,100,20" x:Name="destEmailTxt" 
+                    HeightRequest="40" WidthRequest="250" TextColor="White"/>
 
                 <Button Text="Send" FontSize="18" Margin="0,0,0,0" x:Name="sendBtn" WidthRequest="100" HeightRequest="40"
                     Clicked="OnSendButtonClicked"/>

@@ -145,15 +145,6 @@ async def upload_file(file: UploadFile = UploadFile(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
-# @app.post("/uploadFile_v2", tags = ['file'])
-# async def uploadFile_v2(request: Request,file: UploadFile = File(...)):
-#     try:
-#         mt = await Utils.get_merkle_tree(file)
-#         print(len(mt._HashTree))
-#     except Exception as e:
-#         print(str(e))
-#         raise HTTPException(status_code=400, detail=str(e))
-
 @app.get ("/getFileNamesAndDates", tags=['file'])
 async def getFilesNamesAndDates(request:Request):
     authorization_header = request.headers.get("Authorization")

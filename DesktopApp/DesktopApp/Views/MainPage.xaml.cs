@@ -158,14 +158,6 @@ namespace DesktopApp
                 {
 
                     var sendPopup = new SendPopup(f.fileName, f.fullPath);
-
-                    // Attach an event handler to the Closed event
-                    sendPopup.Closed += async (s, args) =>
-                    {
-                        // Show the DisplayAlert after the popup is closed
-                        await DisplayAlert("Info", "Your file has been sent", "OK");
-                    };
-
                     this.ShowPopup(sendPopup);
                 }
             }
@@ -179,14 +171,6 @@ namespace DesktopApp
                 if (sender is Button button && button.CommandParameter is Models.File f)
                 {
                     var sendPopup = new SendPopup(f.fileName, f.fullPath);
-
-
-                    sendPopup.Closed += async (s, args) =>
-                    {
-
-                        await DisplayAlert("Info", "Your file has been sent", "OK");
-                    };
-
                     this.ShowPopup(sendPopup);
                 }
             }

@@ -5,6 +5,7 @@ using DesktopApp.HttpFolder;
 using DesktopApp.KeysService;
 using DesktopApp.Models;
 using FileStorageApp.Shared.Dto;
+using Microsoft.Extensions.Configuration;
 using Python.Runtime;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -28,7 +29,9 @@ namespace DesktopApp.ViewModels
         private bool isFirst = true;
         public string PrevFolder = "";
         public ObservableCollection<SimpleFileHierarchyModel> Nodes { get; set; } = new();
-        public MainWindowViewModel()
+
+        public IConfiguration _config { get; set; }
+        public MainWindowViewModel() 
         {
             dateSort = 0;
             _files = new ObservableCollection<Models.File>();
@@ -40,7 +43,7 @@ namespace DesktopApp.ViewModels
             _labeledFiles = new ObservableCollection<Models.File>();
             _foldersList = new List<Folder>();
             _selectedItem = new SimpleFileHierarchyModel();
-
+            _config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         }
 
         private SimpleFileHierarchyModel _selectedItem;

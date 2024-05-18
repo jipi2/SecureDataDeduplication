@@ -3,6 +3,7 @@ using DesktopApp.KeysService;
 using DesktopApp.ViewModels;
 using FileStorageApp.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Mopups.Hosting;
 using Python.Runtime;
@@ -18,7 +19,7 @@ namespace DesktopApp
         public static MauiApp CreateMauiApp()
         {
  
-            Runtime.PythonDLL = "C:\\Users\\Jipi\\AppData\\Local\\Programs\\Python\\Python311\\python311.dll";
+            //Runtime.PythonDLL = "C:\\Users\\Jipi\\AppData\\Local\\Programs\\Python\\Python311\\python311.dll";
             var builder = MauiApp.CreateBuilder();
 
             var getAssembly = Assembly.GetExecutingAssembly();
@@ -29,6 +30,9 @@ namespace DesktopApp
               .Build();
 
             builder.Configuration.AddConfiguration(config);
+
+            var pythonPath = config.GetSection("PythonDllPath");
+            Runtime.PythonDLL = pythonPath.Value;
 
             builder
                 .UseMauiApp<App>()
@@ -48,6 +52,7 @@ namespace DesktopApp
 
                 });
 
+            builder.Services.AddTransient<MainWindowViewModel>();
 
             builder.Services.AddScoped<CryptoService>();
             builder.Services.AddScoped<SignUpViewModel>();

@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:DesktopApp"
              x:Class="DesktopApp.UploadPage"
              xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="True">
 
 
     <Shell.BackButtonBehavior>
@@ -28,7 +28,14 @@
                                Offset="1.0" />
                 </LinearGradientBrush>
             </Grid.Background>
+            <ImageButton BackgroundColor="Transparent" Margin="0,0,0,10" Grid.Column="0" HorizontalOptions="Start" x:Name="mainPageButtonArrow" Clicked="mainPageButtonArrow_Clicked"> 
+                <ImageButton.Source>
+                    <FontImageSource FontFamily="FAS" Glyph="&#xf060;" Color="White" Size="24"/>
+                </ImageButton.Source>
+            </ImageButton>
+
         </Grid>
+
     </Shell.TitleView>
 
     <Grid BackgroundColor="Transparent">
@@ -43,7 +50,6 @@
                          Offset="1.0" />
             </LinearGradientBrush>
         </Grid.Background>
-
         <Border
             x:Name="mainBorder"
            BackgroundColor="#392849"
