@@ -114,44 +114,6 @@ namespace FileStorageApp.Server.Repositories
             }
         }
 
-        //public async Task<FileFolder?> GetFolderHierarchyForUser(User user)
-        //{
-        //    try
-        //    {
-        //        // Fetch the root folder for the user ("/")
-        //        var rootFolder = await _context.FileFolders
-        //            .Include(f => f.ChildFileFolders) // Include child folders
-        //            .FirstOrDefaultAsync(f => f.UserId == user.Id && f.FullPathName == "/" && f.UserFileId == null); // Exclude files
-
-        //        // Populate child folders recursively
-        //        await PopulateChildFolders(rootFolder);
-
-        //        // Return the root folder with populated child folders
-        //        return rootFolder;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw e;
-        //    }
-        //}
-
-        //private async Task PopulateChildFolders(FileFolder parentFolder)
-        //{
-        //    if (parentFolder != null)
-        //    {
-        //        // Fetch child folders for the parent folder
-        //        parentFolder.ChildFileFolders = await _context.FileFolders
-        //            .Where(f => f.ParentId == parentFolder.Id && f.UserFileId == null) // Exclude files
-        //            .ToListAsync();
-
-        //        // Recursively populate child folders
-        //        foreach (var childFolder in parentFolder.ChildFileFolders)
-        //        {
-        //            await PopulateChildFolders(childFolder);
-        //        }
-        //    }
-        //}
-
         public async Task<FolderHierarchy?> GetFolderHierarchyForUser(User user)
         {
             try
@@ -290,6 +252,44 @@ namespace FileStorageApp.Server.Repositories
                 return childFolders;
             }
             return null;
+        }
+
+        public async Task UpdateFileFolder(FileFolder ff)
+        {
+            try
+            {
+                _context.FileFolders.Update(ff);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<FileFolder?> GetFolderByName(User user, string path)
+        {
+            FileFolder? fileFolder = await _context.FileFolders
+                  .Include(f => f.ChildFileFolders)
+                      .ThenInclude(child => child.UserFile)
+                          .ThenInclude(userFile => userFile.FileMetadata)
+                  .Include(f => f.UserFile)
+                      .ThenInclude(userFile => userFile.FileMetadata)
+                  .Where(f => f.UserId == user.Id && f.FullPathName == path && f.UserFileId == null).FirstOrDefaultAsync();
+            if (fileFolder == null) return null;
+            return fileFolder;
+        }
+
+        public async Task<List<FileFolder>>? GetFileFolderALike(User user, string pathLike)
+        {
+            List<FileFolder>? list = await _context.FileFolders
+                  .Include(f => f.ChildFileFolders)
+                      .ThenInclude(child => child.UserFile)
+                          .ThenInclude(userFile => userFile.FileMetadata)
+                  .Include(f => f.UserFile)
+                      .ThenInclude(userFile => userFile.FileMetadata)
+                  .Where(f => f.UserId == user.Id && f.FullPathName.Contains(pathLike)).ToListAsync();
+            return list;
         }
     }
 }

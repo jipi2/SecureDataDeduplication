@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Crypto;
+using System.Diagnostics;
 
 namespace FileStorageApp.Server.Services
 {
@@ -38,13 +39,48 @@ namespace FileStorageApp.Server.Services
             string body = "Your verification code is: " + verificationCode;
             _emailService.SendEmail(email, subject, body);
         }
+        private bool verifyPassword(string password)
+        {
+            if (password.Length < 8)
+            {
+                return false;
+            }
+
+            bool hasNumber = false;
+            bool hasUppercase = false;
+            bool hasSpecialChar = false;
+
+            foreach (char c in password)
+            {
+
+                if (char.IsDigit(c))
+                {
+                    hasNumber = true;
+                }
+
+                else if (char.IsUpper(c))
+                {
+                    hasUppercase = true;
+                }
+
+                else if (!char.IsLetterOrDigit(c))
+                {
+                    hasSpecialChar = true;
+                }
+            }
+
+            return hasNumber && hasUppercase && hasSpecialChar;
+        }
         public async Task<Response> Register(RegisterUser regUser)
         {
             var user = _userRepo.GetUserbyEmail(regUser.Email).Result;
             if (user != null)
                 throw new ExceptionModel("Email already exists", 1);
-            if (!regUser.Password.Equals(regUser.Password))
+            if (!regUser.Password.Equals(regUser.ConfirmPassword))
                 throw new ExceptionModel("Confirm passowrd field is different from password field", 1);
+
+            if (!verifyPassword(regUser.Password))
+                throw new ExceptionModel("Password must contain at least 8 characters, one number, one uppercase letter and one special character.", 1);
 
             byte[] salt = Utils.GenerateRandomBytes(16);
 
@@ -66,11 +102,21 @@ namespace FileStorageApp.Server.Services
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
 
+            try
+            {
+                sendVerificatoinCodeViaEmail(newUser);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                throw new Exception("The email address is not valid");
+            }
+
             await _userRepo.SaveUser(newUser);
             await _fileFolderRepo.CreateRootFolderForUser(newUser);
-            //sendVerificatoinCodeViaEmail(newUser);
+           
 
-            return (new Response { Succes = true, Message = "User registered successfully", AccessToken = _secManager.GetNewJwt(newUser) }); ;
+            return (new Response { Succes = true, Message = "User registered successfully", AccessToken = _secManager.GetNewJwt(newUser) }); 
         }
 
 

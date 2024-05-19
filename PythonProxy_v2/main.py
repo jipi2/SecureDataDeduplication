@@ -29,6 +29,7 @@ from Dto.FileTransferDto import FileTransferDto
 from Dto.EmailFilenameDto import *
 from Dto.CapsuleDto import CapsuleDto
 from Dto.AcceptFileTransferDto import AcceptFileTransferDto
+from Dto.RenameFileDto import RenameFileDto
 
 #Services
 from services.FileService import FileService
@@ -126,6 +127,19 @@ async def crazy_cloud(request: Request):
         print('in controller')
         fs = FileService("asdasda")
         await fs.sendFilesToServer_v2()
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/renameFile", tags=['file'])
+async def renameFile(request: Request, dto:RenameFileDto):
+    try:
+        authorization_header = request.headers.get("Authorization")
+        token=""
+        if authorization_header is not None:
+            token = authorization_header.split(" ")[1]
+        _fileService = FileService(userToken=token, filename=dto.oldFullPath)
+        await _fileService.renameFile(dto)
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))

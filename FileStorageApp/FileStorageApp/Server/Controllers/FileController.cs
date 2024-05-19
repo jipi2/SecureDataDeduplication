@@ -629,6 +629,50 @@ namespace FileStorageApp.Server.Controllers
 
         }
 
+        [HttpPost("renameFile")]
+        [Authorize]
+        public async Task<IActionResult> RenameFile([FromBody] RenameFileDto rfd)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return null;
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _fileService.RenameFile(id, rfd);
+                return Ok("File renamed");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("renameFolder")]
+        [Authorize]
+        public async Task<IActionResult> RenameFolder([FromBody] RenameFileDto rfd)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return null;
+                }
+
+                string id = await _userService.GetUserIdFromJWT(token);
+                await _fileService.RenameFolder(id, rfd);
+                return Ok("Folder renamed");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 
 }

@@ -189,7 +189,7 @@ namespace DesktopApp
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
-                    bool result = await DisplayAlert("Info", "Are you sure do you want to delete this file", "YES", "NO");
+                    bool result = await DisplayAlert("Info", "Are you sure do you want to delete this file? The process can not be reverted.", "YES", "NO");
                     if (result)
                     {
                         try
@@ -220,7 +220,7 @@ namespace DesktopApp
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
-                    bool result = await DisplayAlert("Info", "Are you sure do you want to delete this file", "YES", "NO");
+                    bool result = await DisplayAlert("Info", "Are you sure do you want to delete this file? The process can not be reverted.", "YES", "NO");
                     if (result)
                     {
                         try
@@ -543,6 +543,41 @@ namespace DesktopApp
                 }
             }
 
+        }
+
+        private async void renameFlayoutItem_Clicked(object sender, EventArgs e)
+        {
+            if (sender is MenuFlyoutItem mf && mf.CommandParameter is Models.File f)
+            {
+                var viewModel = BindingContext as MainWindowViewModel;
+                try
+                {
+
+                    string newFolderName = await DisplayPromptAsync("File Name", "Enter your new file name", "Ok", "Cancel", "File Name", maxLength: 100, keyboard: Keyboard.Text, initialValue: "");
+                    if (newFolderName != null)
+                    {
+                        var invalidCharsPattern = @"\/~!@#$%^&*{}\\?;,\""]";
+                        var regex = new Regex(invalidCharsPattern);
+                        if (!regex.IsMatch(newFolderName))
+                        {
+                            await viewModel.RenameFileFolder(f, newFolderName);
+                            await viewModel.GetFolderWithFilesHierarchy();
+                            await viewModel.RenewAllFolders();
+                            await DisplayAlert("Succes", "The file has been renamed!", "Ok");
+                        }
+                        else
+                        {
+                            // Show an alert if the input is invalid
+                            await DisplayAlert("Invalid Input", "The file name contains invalid characters. Please avoid using /~!@#$%^&*(){}?;.,\".", "Ok");
+                        }
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    await DisplayAlert("Error", ex.Message, "Ok");
+                }
+            }
         }
     }
 }

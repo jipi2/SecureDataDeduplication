@@ -163,11 +163,47 @@ def generatePubKey(base64key):
             Pkcs12Dto? pkDto = await _cryptoService.GetPkcsDto(_password);
             return pkDto;
         }
+        private bool verifyPassword(string password)
+        {
+            if (password.Length < 8)
+            {
+                return false;
+            }
+
+            bool hasNumber = false;
+            bool hasUppercase = false;
+            bool hasSpecialChar = false;
+
+            foreach (char c in password)
+            {
+
+                if (char.IsDigit(c))
+                {
+                    hasNumber = true;
+                }
+  
+                else if (char.IsUpper(c))
+                {
+                    hasUppercase = true;
+                }
+
+                else if (!char.IsLetterOrDigit(c))
+                {
+                    hasSpecialChar = true;
+                }
+            }
+
+            return hasNumber && hasUppercase && hasSpecialChar;
+        }
         public async Task<bool> Register()
         {
             if(_password != _confirmPassword)
             {
                 throw new Exception("Passwords do not match");
+            }
+            if (!verifyPassword(_password))
+            {
+                throw new Exception("Password must contain at least 8 characters, one number, one uppercase letter and one special character!");
             }
             Pkcs12Dto? pkDto = await ComputeRSAKeysForUser();
             if (pkDto == null)

@@ -233,6 +233,8 @@
                                                     <MenuFlyoutItem Text="Add Label" Clicked="OnMenuItemAddLabelClicked" CommandParameter="{Binding .}"/>
                                                     <MenuFlyoutSeparator/>
                                                     <MenuFlyoutItem Text="Remove Label" Clicked="OnMenuItemRemoveLabelClicked" CommandParameter="{Binding .}"/>
+                                                    <MenuFlyoutSeparator/>
+                                                    <MenuFlyoutItem Text="Rename" x:Name="renameFlayoutItem" Clicked="renameFlayoutItem_Clicked" CommandParameter="{Binding .}"/>
                                                 </MenuFlyout>
                                             </FlyoutBase.ContextFlyout>
                                         </Grid>

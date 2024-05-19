@@ -234,5 +234,15 @@ namespace FileStorageApp.Server.Services
             if(folder != null)
                 await DeleteFileFolderChildren(folder, user);
         }
+
+        public async Task<bool> CheckFolderNameDuplicate(string userId, string fullPath)
+        {
+            User? user = await _userRepository.GetUserById(Convert.ToInt32(userId));
+            if (user == null) throw new Exception("User not found");
+
+            FileFolder? folder = await _fileFolderRepo.GetFileFolderByUserAndName(user, fullPath);
+            if (folder != null) return true;
+            return false;
+        }
     }
 }

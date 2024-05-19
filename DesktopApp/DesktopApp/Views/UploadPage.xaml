@@ -28,7 +28,7 @@
                                Offset="1.0" />
                 </LinearGradientBrush>
             </Grid.Background>
-            <ImageButton BackgroundColor="Transparent" Margin="0,0,0,10" Grid.Column="0" HorizontalOptions="Start" x:Name="mainPageButtonArrow" Clicked="mainPageButtonArrow_Clicked"> 
+            <ImageButton BackgroundColor="Transparent" Margin="0,0,0,0" Grid.Column="0" HorizontalOptions="Start" x:Name="mainPageButtonArrow" Clicked="mainPageButtonArrow_Clicked"> 
                 <ImageButton.Source>
                     <FontImageSource FontFamily="FAS" Glyph="&#xf060;" Color="White" Size="24"/>
                 </ImageButton.Source>

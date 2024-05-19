@@ -46,7 +46,7 @@ namespace FileStorageApp.Server.Controllers
             {
                 return Ok(await _userService.Register(regUser));
             }
-            catch (ExceptionModel e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

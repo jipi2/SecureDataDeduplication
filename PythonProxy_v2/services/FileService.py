@@ -22,6 +22,7 @@ from Dto.AcceptFileTransferDto import AcceptFileTransferDto
 from Dto.TransferVerificationDto import TransferVerificationDto
 from Dto.FileInfoFromCache import FileInfoFromCache
 from Dto.DeleteFileInfoDto import DeleteFileInfoDto
+from Dto.RenameFileDto import RenameFileDto
 import asyncio
 from sqlalchemy.orm.exc import NoResultFound
 import base64
@@ -511,24 +512,58 @@ class FileService():
             print(str(e))
             raise e
         
+    async def __renameFolder(self, dto:RenameFileDto):
+        try:
+            basedb = Base()
+            session = basedb.getSession()
+            print('inainte')
+            uf = session.query(UserFile).join(User, UserFile.user_id == User.id).filter(and_(UserFile.fileName.contains(dto.oldFullPath), User.email == self.userEmail)).all()       
+            if uf is not None:
+                for u in uf:
+                    u.fileName = u.fileName.replace(dto.oldFullPath, dto.newFullPath)
+                session.commit()
+            await self.gateWay.callBackendPostMethodDto("/api/File/renameFolder", self.userToken, dto)
+        except Exception as e:
+            print(str(e))
+            raise e        
     
+    async def renameFile(self, dto:RenameFileDto):
+        try:
+            await self.authService.getProxyToken()
+            await self.__getUserEmail()
+            
+            if dto.isFolder == True:
+                await self.__renameFolder(dto)
+                
+            else:
+            
+                if self.__checkIfUserHasFile(filename=dto.oldFullPath) == True:
+                    basedb = Base()
+                    session = basedb.getSession()
+                    uf = session.query(UserFile).join(User, UserFile.user_id == User.id).filter(and_(UserFile.fileName == dto.oldFullPath, User.email == self.userEmail)).first()
+                    uf.fileName = dto.newFullPath
+                    session.commit()
+                    await self.gateWay.callBackendPostMethodDto("/api/File/renameFile", self.userToken, dto)
+                else:
+                    await self.gateWay.callBackendPostMethodDto("/api/File/renameFile", self.userToken, dto)
+            
+        except Exception as e:
+            print(str(e))
+            raise e
     
     async def sendFilesToServer_v2(self):
         try:
-            print('begining')
             gateWay = ApiCall(os.environ.get("backendBaseUrl"))
-            print(gateWay.api_url)
-            print('after gateway')
+
             pc = ProxyClass()
-            print('after proxy class')
+
             # pc.getProxyTokenSYNC()
             await pc.getProxyToken()
-            print('afster proxy sync')
+
             basedb = Base()
-            print('here')
+
             session = basedb.getSession()
-            print('after here')
-            print('---------------------------------------')
+
             blobs = session.query(BlobFile).all()
             if len(blobs) == 0:
                 return

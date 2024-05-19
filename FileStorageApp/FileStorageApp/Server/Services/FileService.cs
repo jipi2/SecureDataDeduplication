@@ -1035,5 +1035,47 @@ namespace FileStorageApp.Server.Services
                 return true;
             return false;
         }
-    }
+
+        public async Task RenameFile(string userId, RenameFileDto rfd)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (user == null)
+                throw new Exception("User does not exist!");
+
+            UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, rfd.oldFullPath);
+            if (uf == null)
+                throw new Exception("File does not exist!");
+            uf.FileName = rfd.newFullPath;
+
+            FileFolder? ff = await _fileFolderRepo.GetFileFolderByUserAndName(user, rfd.oldFullPath);
+            if(ff == null)
+                throw new Exception("File does not exist in folder!");
+
+            ff.FullPathName = rfd.newFullPath;
+            await _userFileRepo.UpdateUserFile(uf);
+            await _fileFolderRepo.UpdateFileFolder(ff);
+        }
+
+        public async Task RenameFolder(string userId, RenameFileDto rfd)
+        {
+            User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+            if (user == null)
+                throw new Exception("User does not exist!");
+
+            List<FileFolder>? list = await _fileFolderRepo.GetFileFolderALike(user, rfd.oldFullPath);
+            if (list != null)
+            {
+                foreach (FileFolder ff in list)
+                {
+                    ff.FullPathName = ff.FullPathName.Replace(rfd.oldFullPath, rfd.newFullPath);
+                    if (ff.UserFile != null)
+                    {
+                        ff.UserFile.FileName =  ff.UserFile.FileName.Replace(rfd.oldFullPath, rfd.newFullPath);
+                        await _userFileRepo.UpdateUserFile(ff.UserFile);
+                    }
+                    await _fileFolderRepo.UpdateFileFolder(ff);
+                }
+            }
+        }
+        }
 }

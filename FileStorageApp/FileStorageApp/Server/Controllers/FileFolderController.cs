@@ -134,5 +134,26 @@ namespace FileStorageApp.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("verifyFolderNameDuplicate")]
+        [Authorize]
+        public async Task<IActionResult> CheckFolderNameDuplicate([FromBody] string fullPath)
+        {
+            try
+            {
+                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+                if (token.IsNullOrEmpty())
+                {
+                    return BadRequest("Token invalid");
+                }
+                string id = await _userService.GetUserIdFromJWT(token);
+                bool result = await _fileFolderService.CheckFolderNameDuplicate(id, fullPath);
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

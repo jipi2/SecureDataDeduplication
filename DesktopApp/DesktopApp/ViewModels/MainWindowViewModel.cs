@@ -1014,5 +1014,64 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
                 throw ex;
             }
         }
+
+        private string extractPath(string fullPath)
+        {
+            string[] segments = fullPath.Split('/');
+            string folderPath = string.Join("/", segments.Take(segments.Length - 1));
+            return folderPath;
+        }
+        private async Task renameFileName(Models.File f, string newName)
+        {
+            string jwt = await SecureStorage.GetAsync(Enums.Symbol.token.ToString());
+            var httpClient = HttpServiceCustom.GetApiClient(jwt);
+            bool isNameDuplicate = true;
+
+            string newFullPath = extractPath(f.fullPath) + "/" + newName;
+
+            HttpResponseMessage apiReponse;
+
+            if (f.isFolder == true)
+                apiReponse = await httpClient.PostAsJsonAsync("/api/FileFolder/verifyFolderNameDuplicate", newFullPath);
+            else
+                apiReponse = await httpClient.PostAsJsonAsync("/api/File/verifyNameDuplicate", newFullPath);
+
+            if (apiReponse.IsSuccessStatusCode)
+            {
+                var resultString = await apiReponse.Content.ReadAsStringAsync();
+                bool.TryParse(resultString, out isNameDuplicate);
+                if(isNameDuplicate == true)
+                    throw new Exception("File with this name already exists!");
+
+                RenameFileDto dto = new RenameFileDto()
+                {
+                    oldFullPath = f.fullPath,
+                    newFullPath = newFullPath,
+                    isFolder = f.isFolder
+                };
+
+                var httpclient2 = HttpServiceCustom.GetProxyClient(jwt);
+                var response = await httpclient2.PostAsJsonAsync("renameFile", dto);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception("An error has occured!");
+                }
+
+            }
+            else
+                throw new Exception("An error has occured!");
+        }
+
+        public async Task RenameFileFolder(Models.File f, string newName)
+        {
+            try
+            {
+                await renameFileName(f, newName);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
