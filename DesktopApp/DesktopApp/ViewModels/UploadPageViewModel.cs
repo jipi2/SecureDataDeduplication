@@ -7,6 +7,7 @@ using FileStorageApp.Client;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -15,23 +16,23 @@ namespace DesktopApp.ViewModels
 {
     public class UploadPageViewModel : INotifyPropertyChanged
     {
-        private Task<byte[]> _computeHashTask;
+        private List<Task<byte[]>> _computeHashTaskList;
 
-        private FileModel _fileModel = new FileModel();
+        private List<FileModel> _fileModelList = new List<FileModel>();
 
         private CryptoService _cryptoService = new CryptoService();
 
-        private string _fileNamePicked = "No file selected";
         public ObservableCollection<FileType> FileTypes { get; set; }
+        private ObservableCollection<string> _fileNamePickedList = new ObservableCollection<string>();
 
-        public string FileNamePicked
+        public ObservableCollection<string> FileNamePickedList
         {
-            get { return _fileNamePicked; }
+            get { return _fileNamePickedList; }
             set
             {
-                if (_fileNamePicked != value)
+                if (_fileNamePickedList != value)
                 {
-                    _fileNamePicked = value;
+                    _fileNamePickedList = value;
                     OnPropertyChanged();
                 }
             }
@@ -53,7 +54,10 @@ namespace DesktopApp.ViewModels
 
         public UploadPageViewModel()
         {
-            FileNamePicked = "";
+            //FileNamePicked = "";
+            FileNamePickedList = new ObservableCollection<string>();
+            _fileNamePickedList = new ObservableCollection<string>();
+            _computeHashTaskList = new List<Task<byte[]>>();
             _uploadProgress = 0;
 
             FileTypes = new ObservableCollection<FileType>
@@ -89,28 +93,32 @@ namespace DesktopApp.ViewModels
 
         public async Task SelectFile()
         {
-
-            var result = await FilePicker.PickAsync(new PickOptions
+            var result = await FilePicker.PickMultipleAsync(new PickOptions
             {
-                PickerTitle = "Please select a file"
+                PickerTitle = "Please select file or more"
             });
 
             if (result == null)
                 throw new Exception("You canceled the uploading process");
 
-            FileNamePicked = result.FileName;
-            Debug.WriteLine($"File name: {_fileNamePicked}");
-            _fileModel.filePath = result.FullPath;
-            _fileModel.fileName = result.FileName;
-            _fileModel.encFileName = result.FileName + "_enc_";
+            foreach(var file in result)
+            {
+                FileModel fileModel = new FileModel();
 
-            _fileModel.fileStream = new FileStream(result.FullPath, FileMode.Open);
+                fileModel.filePath = file.FullPath;
+                fileModel.fileName = file.FileName;
+                fileModel.encFileName = file.FileName + "_enc_";
+                fileModel.fileStream = new FileStream(file.FullPath, FileMode.Open);
+                _fileModelList.Add(fileModel);
 
-            _computeHashTask = Task.Run(async () => await _cryptoService.GetHashOfFile(_fileModel.fileStream));
-            //_computeHashTask.Start();
+                _fileNamePickedList.Add(file.FileName);
+
+                Task<byte[]> computeHashTask = Task.Run(async () => await _cryptoService.GetHashOfFile(fileModel.fileStream));
+                _computeHashTaskList.Add(computeHashTask);
+            }
         }
 
-        public async Task EncryptFile()
+        public async Task EncryptFile(FileModel _fileModel, Task<byte[]> _computeHashTask)
         {
             Stopwatch encryptTime = new Stopwatch();
             encryptTime.Start();
@@ -138,7 +146,7 @@ namespace DesktopApp.ViewModels
         }
 
 
-        public async Task UploadFile(string path)
+        public async Task UploadFile(string path, FileModel _fileModel)
         {
             if (path != "/") path += "/";
 
@@ -239,12 +247,41 @@ namespace DesktopApp.ViewModels
 
         public async Task CancelBeforeUploading()
         {
-            if (_fileModel.fileStream != null)
+            //if (_fileModel.fileStream != null)
+            //{
+            //    _fileModel.fileStream.Close();
+            //    _fileModel.fileStream = null;
+            //}
+
+            foreach (var fileModel in _fileModelList)
             {
-                _fileModel.fileStream.Close();
-                _fileModel.fileStream = null;
+                if (fileModel.fileStream != null)
+                {
+                    fileModel.fileStream.Close();
+                    fileModel.fileStream = null;
+                }
             }
         }
 
+        public FileModel GetFileModelAt(int pos)
+        {
+            return _fileModelList[pos];
+        }
+
+        public Task<byte[]> GetHashTaskAt(int pos)
+        {
+            return _computeHashTaskList[pos];
+        }
+        public int GetNumberOfFilesSelected()
+        {
+            return _fileModelList.Count;
+        }
+
+        public void ClearFiles()
+        {
+            _fileModelList.Clear();
+            _fileNamePickedList.Clear();
+            _computeHashTaskList.Clear();
+        }
     }
 }

@@ -47,6 +47,7 @@ namespace DesktopApp
 				//uploadButton.IsVisible = true;
 				//uploadText.IsVisible = true;
 				plusButton.IsVisible = false;
+                
             }
 			catch (Exception ex) 
 			{
@@ -58,29 +59,37 @@ namespace DesktopApp
         {
 			try
 			{
+                int numberOfFiles = _viewModel.GetNumberOfFilesSelected();
+                for(int i=0;i<numberOfFiles; i++)
+                { 
+                    //uploadFileName.Text = _viewModel.GetFileModelAt(i).fileName;
+                    uploadButton.IsEnabled = false;
+                    //await DisplayAlert("Info", "Your file is being encrypted", "OK");
+                    uploadGrid.IsVisible = false;
+                    fileNameFrame.IsVisible = false;
 
-                uploadButton.IsEnabled = false;
-				//await DisplayAlert("Info", "Your file is being encrypted", "OK");
-                uploadGrid.IsVisible = false;
-                fileNameFrame.IsVisible = false;
+                    mainBorder.IsVisible = false;
+                    loadingBorder.IsVisible = true;
+                    await _viewModel.EncryptFile(_viewModel.GetFileModelAt(i), _viewModel.GetHashTaskAt(i));
 
-                mainBorder.IsVisible = false;
-				loadingBorder.IsVisible = true;
-                await _viewModel.EncryptFile();
+                    loadingBorder.IsVisible = false;
+                    progressBarBorder.IsVisible = true;
+                    await _viewModel.UploadFile(path, _viewModel.GetFileModelAt(i));
 
-				loadingBorder.IsVisible = false;
-				progressBarBorder.IsVisible = true;
-                await _viewModel.UploadFile(path);
+                    progressBarBorder.IsVisible = false;
+                    mainBorder.IsVisible = true;
+                    uploadButton.IsEnabled = true;
 
-                progressBarBorder.IsVisible = false;
-                mainBorder.IsVisible = true;
+                    //uploadButton.IsVisible = false;
+                    //uploadText.IsVisible = false;
+                    plusButton.IsVisible = true;
+                }
+                if(numberOfFiles > 1)
+                    await DisplayAlert("Info", "Your files has been uploaded", "Ok");
+                else
+                    await DisplayAlert("Info", "Your file has been uploaded", "Ok");
 
-                await DisplayAlert("Info", "Your file has been uploaded", "OK");
-                uploadButton.IsEnabled = true;
-               
-                //uploadButton.IsVisible = false;
-                //uploadText.IsVisible = false;
-                plusButton.IsVisible = true;
+                _viewModel.ClearFiles();
 
             }
 			catch (Exception ex)
@@ -94,6 +103,7 @@ namespace DesktopApp
                 //uploadText.IsVisible = false;
                 plusButton.IsVisible = true;
                 progressBarBorder.IsVisible = false;
+                _viewModel.ClearFiles();
             }
 		}
 
@@ -108,6 +118,7 @@ namespace DesktopApp
             fileNameFrame.IsVisible = false;
             plusButton.IsVisible = true;
             await _viewModel.CancelBeforeUploading();
+            _viewModel.ClearFiles();
         }
     }
 }
