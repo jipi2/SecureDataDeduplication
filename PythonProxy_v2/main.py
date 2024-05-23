@@ -69,21 +69,21 @@ load_dotenv()
 #     sendFilesToServer.delay()
 
 
-# celery = Celery(
-#     "tasks",
-#     broker="redis://redis:6379/0",
-#     backend="redis://redis:6379/0",
-#     include=["tasks_"]
-# )
+celery = Celery(
+    "tasks",
+    broker="redis://redis:6379/0",
+    backend="redis://redis:6379/0",
+    include=["tasks_"]
+)
 
-# @app.on_event("startup")
-# @repeat_every(seconds=60*60)
-# def send_files_task():
-#     print('hehe')
-#     print('sending files to server')
-#     result = celery.send_task("tasks_.sendFilesToServer_v2")
-#     print('gege')
-#     return {"message": "Task enqueued", "task_id": result.id}
+@app.on_event("startup")
+@repeat_every(seconds=60*60)
+def send_files_task():
+    print('hehe')
+    print('sending files to server')
+    result = celery.send_task("tasks_.sendFilesToServer_v2")
+    print('gege')
+    return {"message": "Task enqueued", "task_id": result.id}
 
 @app.get("/")
 def root():

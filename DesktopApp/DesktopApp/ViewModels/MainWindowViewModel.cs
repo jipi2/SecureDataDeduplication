@@ -140,9 +140,6 @@ namespace DesktopApp.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
-
         public void Test()
         {
  
@@ -183,6 +180,7 @@ namespace DesktopApp.ViewModels
                 Nodes.Clear();
                 var httpClient = HttpServiceCustom.GetApiClient(jwt);
                 SimpleFileHierarchyModel? node = await httpClient.GetFromJsonAsync<SimpleFileHierarchyModel>("/api/FileFolder/getAllFolderWithFilesForUser");
+                
                 if (node != null)
                 {
                     Nodes.Add(node);
@@ -275,7 +273,9 @@ namespace DesktopApp.ViewModels
                             fileSizeStr = getHumanSize(file.fileSize),
                             uploadDate = file.uploadDate,
                             fullPath = file.fullPath,
-                            isFolder = file.isFolder
+                            isFolder = file.isFolder,
+                            icon = file.icon,
+                            iconColor = file.iconColor
                         };
                         _files.Add(fileModel);
                     }
@@ -379,8 +379,17 @@ namespace DesktopApp.ViewModels
             
         }
 
+        private string getDownloadFolder(bool view)
+        {
+            if (view == true)
+            {
+                return Environment.GetEnvironmentVariable("USERPROFILE") + @"\" + "Downloads";
+            }
+            else
+                return AppDomain.CurrentDomain.BaseDirectory; ;
+        }
 
-        public async Task<string> DownloadFile(string fileName, string acutalFileNameWithoutPath) 
+        public async Task<string> DownloadFile(string fileName, string acutalFileNameWithoutPath, bool view, CancellationToken cancellationToken)
         {
             try
             {
@@ -389,7 +398,7 @@ namespace DesktopApp.ViewModels
                 httpClient.DefaultRequestHeaders.Remove("Authorization");
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
-                var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName);
+                var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName, cancellationToken);
                 //var response = await httpClient.GetStreamAsync("testBACK");
                 string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, acutalFileNameWithoutPath + "_enc");
                 Debug.WriteLine(saveFilePath);
@@ -397,7 +406,7 @@ namespace DesktopApp.ViewModels
                 {
                     using (FileStream fs = new FileStream(saveFilePath, FileMode.OpenOrCreate))
                     {
-                        await response.CopyToAsync(fs);
+                        await response.CopyToAsync(fs, cancellationToken);
                     }
 
                     Debug.WriteLine("File downloaded successfully");
@@ -407,12 +416,12 @@ namespace DesktopApp.ViewModels
                 httpClient = HttpServiceCustom.GetProxyClient();
                 httpClient.DefaultRequestHeaders.Remove("Authorization");
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
-                FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName);
+                FileKeyAndIvDto? keyAndIvDto = await httpClient.GetFromJsonAsync<FileKeyAndIvDto>("getKeyAndIvForFile/?filename=" + fileName, cancellationToken);
 
                 Debug.WriteLine(keyAndIvDto.base64key);
                 Debug.WriteLine(keyAndIvDto.base64iv);
 
-                string downloadFolder = Environment.GetEnvironmentVariable("USERPROFILE") + @"\" + "Downloads";
+                string downloadFolder = getDownloadFolder(view);
                 string filePath = Path.Combine(downloadFolder, acutalFileNameWithoutPath);
                 var encFileStream = System.IO.File.OpenRead(saveFilePath);
 
@@ -422,6 +431,32 @@ namespace DesktopApp.ViewModels
                 encFileStream.Close();
                 System.IO.File.Delete(saveFilePath);
                 return downloadFolder;
+            }
+            catch (OperationCanceledException e)
+            {
+             
+                Debug.WriteLine("Operation was canceled");
+                if (System.IO.File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, acutalFileNameWithoutPath + "_enc")))
+                {
+                    FileStream? f = System.IO.File.OpenRead(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, acutalFileNameWithoutPath + "_enc"));
+                    if (f != null)
+                    {
+                        f.Close();
+                        System.IO.File.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, acutalFileNameWithoutPath + "_enc"));
+                    }
+                }
+                string decFilePath = Path.Combine(getDownloadFolder(view), acutalFileNameWithoutPath);
+                if (System.IO.File.Exists(decFilePath))
+                {
+                    FileStream? f2 = System.IO.File.OpenRead(decFilePath);
+                    if (f2 != null)
+                    {
+                        f2.Close();
+                        System.IO.File.Delete(decFilePath);
+                    }
+                }
+
+                return "";
             }
             catch (Exception ex)
             {
@@ -902,7 +937,7 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             var lf = _labelFileNames.FirstOrDefault(lf => lf.labelName == labelName);
             foreach (var file in _files)
             {
-                if (lf.fileNames.Contains(file.fileName))
+                if (lf.fileNames.Contains(file.fullPath))
                     _labeledFiles.Add(file);
             }
             FilteredFiles = _labeledFiles;
@@ -913,7 +948,7 @@ def decryptCapsule(base64PrivKey, base64PubKey, base64CFrag):
             var lf = _labelFileNames.FirstOrDefault(lf => lf.labelName == labelName);
             foreach (var file in _files)
             {
-                if (lf.fileNames.Contains(file.fileName))
+                if (lf.fileNames.Contains(file.fullPath))
                     _labeledFiles.Remove(file);
             }
             if (_labeledFiles.Count() == 0)

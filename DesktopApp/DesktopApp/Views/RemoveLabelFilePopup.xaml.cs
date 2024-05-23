@@ -28,7 +28,7 @@ namespace DesktopApp
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error while adding label");
+                    await Application.Current.MainPage.DisplayAlert("Error", "An error has occured, please try later!", "OK");
                 }
             }
         }

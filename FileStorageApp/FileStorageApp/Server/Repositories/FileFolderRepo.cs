@@ -200,7 +200,58 @@ namespace FileStorageApp.Server.Repositories
                 throw e;
             }
         }
+        private static readonly Dictionary<string, (string Icon, string IconColor)> fileTypeDictionary = new Dictionary<string, (string Icon, string IconColor)>
+        {
+            { ".pdf", ("\uf1c1", "#753B3B") },
+            { ".xlsx", ("\uf1c3", "#548335") },
+            { ".xls", ("\uf1c3", "#548335") },
+            { ".docx", ("\uf1c2", "#6243DF") },
+            { ".doc", ("\uf1c2", "#6243DF") },
+            { ".jpg", ("\uf1c5", "#6243DF") },
+            { ".jpeg", ("\uf1c5", "#6243DF") },
+            { ".png", ("\uf1c5", "#6243DF") },
+            { ".csv", ("\uf1c3", "#548335") },
+            { ".mp3", ("\uf1c7", "#BD7800") },
+            { ".mp4", ("\uf1c7", "#BD7800") },
+            { ".iso", ("\uf15b", "#494D58") },
+            { ".txt", ("\uf15b", "#494D58") },
+            { ".ppt", ("\uf1c4", "#BD7800") },
+            { ".pptx", ("\uf1c4", "#BD7800") },
+            { ".zip", ("\uf1c6", "#5200BD") },
+            { ".rar", ("\uf1c3", "#5200BD") },
+            { ".apk", ("\uf3ce", "#028749") },
+            { ".html", ("\uf1c9", "#3150B7") },
+            { ".htm", ("\uf1c9", "#3150B7") },
+            { ".js", ("\uf1c9", "#3150B7") },
+            { ".css", ("\uf1c9", "#3150B7") },
+            { ".cs", ("\uf1c9", "#3150B7") },
+            { ".java", ("\uf1c9", "#3150B7") },
+            { ".py", ("\uf1c9", "#3150B7") },
+            { ".svg", ("\uf1c5", "#6243DF") },
+            { ".c", ("\uf1c9", "#3150B7") },
+            { ".cpp", ("\uf1c9", "#3150B7") }
+        };
 
+        public void GetIconAndIconColor(string filename, out string icon, out string iconColor)
+        {
+            string ext = System.IO.Path.GetExtension(filename).ToLower();
+            if (string.IsNullOrEmpty(ext))
+            {
+                icon = "\uf15b";
+                iconColor = "#494D58";
+            }
+            else if (fileTypeDictionary.TryGetValue(ext, out var fileType))
+            {
+                icon = fileType.Icon;
+                iconColor = fileType.IconColor;
+            }
+            else
+            {
+                icon = "\uf15b";
+                iconColor = "#494D58";
+            }
+
+        }
         private async Task<SimpleFileModelDto?> PopulateJustChildFoldersAndFiles(FileFolder parentFolder)
         {
             if (parentFolder != null)
@@ -209,11 +260,19 @@ namespace FileStorageApp.Server.Repositories
                 string name = parentFolder.FullPathName.Split('/').Last();
                 if (name == "") name = "/";
                 bool isFolder = parentFolder.UserFileId == null;
+                string icon = "";
+                string iconColor = "";
+                if (isFolder == false)
+                {
+                    GetIconAndIconColor(name, out icon, out iconColor);
+                }
                 var parentFolderDTO = new SimpleFileModelDto
                 {
                     FullPathName = parentFolder.FullPathName,
                     Name = name,
                     IsFolder = isFolder,
+                    Icon = icon ,
+                    IconColor = iconColor,
                     Children = new List<SimpleFileModelDto>()
                 };
 

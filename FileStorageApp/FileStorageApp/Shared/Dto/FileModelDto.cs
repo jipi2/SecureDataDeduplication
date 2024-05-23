@@ -13,6 +13,8 @@ namespace FileStorageApp.Shared.Dto
         public float fileSize { get; set; }
         public string fileSizeStr { get; set; }
         public string uploadDate { get; set; }
+        public string icon { get; set; }
+        public string iconColor { get; set; }
         public bool isFolder { get; set; }
     }
 }

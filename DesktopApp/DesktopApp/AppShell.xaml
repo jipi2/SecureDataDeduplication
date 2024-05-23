@@ -58,11 +58,14 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Log out"
-                Icon="door_open.png">
+                Icon="door_open.png"
+                >
         <Tab>
             <ShellContent Title="SignIn" ContentTemplate="{DataTemplate local:SignInPage}" Route="SignInPage"/>
         </Tab>
+        
     </FlyoutItem>
+
 
     <!--<ShellContent
           Title="SignIn"

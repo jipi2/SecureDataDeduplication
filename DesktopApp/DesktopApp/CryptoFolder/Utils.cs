@@ -1103,22 +1103,22 @@ namespace CryptoLib
                 X509Certificate2Collection certificates = new X509Certificate2Collection();
                 certificates.Import(pkcs12file, oldPassword, X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet);
 
-                X509Certificate2 rsaCertificate = certificates[0];
-                RSA rsaPrivateKey = rsaCertificate.GetRSAPrivateKey();
+                //X509Certificate2 rsaCertificate = certificates[0];
+                //RSA rsaPrivateKey = rsaCertificate.GetRSAPrivateKey();
 
-                X509Certificate2 ecCertificate = certificates[1];
-                ECDsa ecPrivateKey = ecCertificate.GetECDsaPrivateKey();
+                //X509Certificate2 ecCertificate = certificates[1];
+                //ECDsa ecPrivateKey = ecCertificate.GetECDsaPrivateKey();
 
-                certificates.Clear();
+                //certificates.Clear();
 
-                System.Security.Cryptography.X509Certificates.CertificateRequest certRequestRsa = new System.Security.Cryptography.X509Certificates.CertificateRequest("CN=RsaCert", rsaPrivateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                X509Certificate2 certificateRsa = certRequestRsa.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+                //System.Security.Cryptography.X509Certificates.CertificateRequest certRequestRsa = new System.Security.Cryptography.X509Certificates.CertificateRequest("CN=RsaCert", rsaPrivateKey, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                //X509Certificate2 certificateRsa = certRequestRsa.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
 
-                System.Security.Cryptography.X509Certificates.CertificateRequest certRequestEC = new System.Security.Cryptography.X509Certificates.CertificateRequest("CN=EcCert", ecPrivateKey, HashAlgorithmName.SHA256);
-                X509Certificate2 certificateEC = certRequestEC.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+                //System.Security.Cryptography.X509Certificates.CertificateRequest certRequestEC = new System.Security.Cryptography.X509Certificates.CertificateRequest("CN=EcCert", ecPrivateKey, HashAlgorithmName.SHA256);
+                //X509Certificate2 certificateEC = certRequestEC.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
 
-                certificates.Add(certificateRsa);
-                certificates.Add(certificateEC);
+                //certificates.Add(certificateRsa);
+                //certificates.Add(certificateEC);
 
                 newPkcs12File = certificates.Export(X509ContentType.Pkcs12, newPassword);
             }

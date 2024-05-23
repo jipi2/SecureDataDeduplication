@@ -44,6 +44,7 @@ namespace DesktopApp
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("Merriweather-Black.ttf", "FontText1");
 
                     //Font Awesome
                     fonts.AddFont("Brands-Regular-400.otf", "FAB");

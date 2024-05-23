@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Views;
 using DesktopApp.Models;
 using DesktopApp.ViewModels;
+using DesktopApp.Views;
 using Mopups.Services;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -10,6 +11,7 @@ namespace DesktopApp
     public partial class MainPage : ContentPage
     {
         private bool isFirst = true;
+        private CancellationTokenSource _cancellationTokenSourceDownloadFile;
         public MainPage()
         {
             InitializeComponent();
@@ -37,13 +39,16 @@ namespace DesktopApp
                         backArrow.IsVisible = true;
                     }
                 }
+                else
+                {
+                    await MopupService.Instance.PushAsync(new FileViewPopup(selectedFile));
+                }
             }
             
         }
         protected async override void OnAppearing()
         {
             base.OnAppearing();
-
             //if (isFirst == true)
             //{
             //    await Shell.Current.GoToAsync("//SignInPage");
@@ -107,11 +112,12 @@ namespace DesktopApp
         {
             if (sender is Button button && button.CommandParameter is Models.File f)
             {
+                _cancellationTokenSourceDownloadFile = new CancellationTokenSource();
                 var viewModel = BindingContext as MainWindowViewModel;
                 if (viewModel != null)
                 {
                     DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
-                    string dnFolder = await viewModel.DownloadFile(f.fullPath, f.fileName);
+                    string dnFolder = await viewModel.DownloadFile(f.fullPath, f.fileName, true, _cancellationTokenSourceDownloadFile.Token);
                     await DisplayAlert("Info", f.fileName+" has downloaded in folder: "+dnFolder, "OK");
                 }
             }
@@ -132,13 +138,13 @@ namespace DesktopApp
 
                 else
                 {
-
+                    _cancellationTokenSourceDownloadFile = new CancellationTokenSource();
                     var viewModel = BindingContext as MainWindowViewModel;
                     if (viewModel != null)
                     {
 
                         DisplayAlert("Info", "Your download has started. You will be notified upon completion.", "OK");
-                        string dnFolder = await viewModel.DownloadFile(f.fullPath, f.fileName);
+                        string dnFolder = await viewModel.DownloadFile(f.fullPath, f.fileName, true, _cancellationTokenSourceDownloadFile.Token);
                         await DisplayAlert("Info", f.fileName + " has been downloaded in folder: " + dnFolder, "OK");
                     }
                 }
@@ -359,8 +365,8 @@ namespace DesktopApp
                     var viewModel = BindingContext as MainWindowViewModel;
                     if (viewModel != null)
                     {
-                        List<string> candidateLabels = await viewModel.GetCandidateLabels(f.fileName);
-                        await this.ShowPopupAsync(new AddLabelToFilePopup(f.fileName, candidateLabels));
+                        List<string> candidateLabels = await viewModel.GetCandidateLabels(f.fullPath);
+                        await this.ShowPopupAsync(new AddLabelToFilePopup(f.fullPath, candidateLabels));
                         int numberOfLables = await viewModel.GetLabelFileNames();
                         if (numberOfLables <= 0)
                             labelCollectionView.WidthRequest = 650;
@@ -384,8 +390,8 @@ namespace DesktopApp
                     var viewModel = BindingContext as MainWindowViewModel;
                     if (viewModel != null)
                     {
-                        List<string> candidateLabels = await viewModel.GetCandidateLabelsForRemoving(f.fileName);
-                        await this.ShowPopupAsync(new RemoveLabelFilePopup(f.fileName, candidateLabels));
+                        List<string> candidateLabels = await viewModel.GetCandidateLabelsForRemoving(f.fullPath);
+                        await this.ShowPopupAsync(new RemoveLabelFilePopup(f.fullPath, candidateLabels));
                         int numberOfLables = await viewModel.GetLabelFileNames();
                         if (numberOfLables <= 0)
                             labelCollectionView.WidthRequest = 650;

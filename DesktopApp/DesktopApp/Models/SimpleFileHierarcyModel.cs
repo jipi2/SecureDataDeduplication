@@ -21,6 +21,8 @@ namespace DesktopApp.Models
         public virtual string FullPathName { get; set; }
         public virtual string Name { get; set; }
         public virtual bool IsFolder { get; set; }
+        public virtual string Icon { get; set; }
+        public virtual string IconColor { get; set; }
         public virtual IList<SimpleFileHierarchyModel> Children { get; set; } = new ObservableCollection<SimpleFileHierarchyModel>();
     }
 }

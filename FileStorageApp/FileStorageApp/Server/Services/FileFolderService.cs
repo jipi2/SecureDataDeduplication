@@ -101,6 +101,8 @@ namespace FileStorageApp.Server.Services
                 folderDto.folderFiles = new List<FileModelDto>();
                 foreach (var f in folder.ChildFileFolders)
                 {
+                    string icon = "";
+                    string iconColor = "";
                     FileModelDto fileModelDto = new FileModelDto
                     {
                         fileName = f.FullPathName.Split('/').Last(),
@@ -113,6 +115,8 @@ namespace FileStorageApp.Server.Services
                         fileModelDto.fileSize = 0;
                         fileModelDto.fileSizeStr = "";
                         fileModelDto.isFolder = true;
+                        fileModelDto.icon = "";
+                        fileModelDto.iconColor = "";
                     }
                     else
                     {
@@ -120,6 +124,9 @@ namespace FileStorageApp.Server.Services
                         fileModelDto.fileSize = (float)f.UserFile.FileMetadata.Size;
                         fileModelDto.fileSizeStr = String.Format("{0}", fileModelDto.fileSize);
                         fileModelDto.isFolder = false;
+                        _fileFolderRepo.GetIconAndIconColor(fileModelDto.fileName, out icon, out iconColor);
+                        fileModelDto.icon = icon;
+                        fileModelDto.iconColor = iconColor;
 
                     }
 

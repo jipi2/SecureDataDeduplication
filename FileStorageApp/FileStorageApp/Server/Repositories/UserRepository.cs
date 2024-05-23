@@ -5,10 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using CryptoLib;
 using FileStorageApp.Server.Services;
 using FileStorageApp.Server.Entity;
-using Azure.Core;
 using FileStorageApp.Server.SecurityFolder;
-using FileStorageApp.Client.Pages;
-using Microsoft.Extensions.Logging;
 
 namespace FileStorageApp.Server.Repositories
 {

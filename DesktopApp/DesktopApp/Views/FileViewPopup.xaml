@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DesktopApp.Views.FileViewPopup"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"
+             xmlns:mopupsanim="clr-namespace:Mopups.Animations;assembly=Mopups"
+             xmlns:viewModels="clr-namespace:DesktopApp.ViewModels"
+             CloseWhenBackgroundIsClicked="False"
+             Background="#80000000"
+             >
+
+
+    <mopups:PopupPage.BindingContext>
+        <viewModels:MainWindowViewModel />
+    </mopups:PopupPage.BindingContext>
+
+    <mopups:PopupPage.Animation>
+        <mopupsanim:ScaleAnimation
+            DurationIn="700"
+            EasingIn="BounceOut"
+            PositionIn="Bottom"
+            PositionOut="Center"
+            ScaleIn="1"
+            ScaleOut="0.7" />
+    </mopups:PopupPage.Animation>
+
+
+    <Frame MaximumWidthRequest="1400" MaximumHeightRequest="1000" Margin="0,40,0,0">
+        <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Margin="0,0,0,0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <HorizontalStackLayout HorizontalOptions="FillAndExpand">
+                <ImageButton x:Name="exitButton" Grid.Column="0" WidthRequest="30" HeightRequest="30" HorizontalOptions="Start" Margin="0,-10,0,10" Clicked="exitButton_Clicked">
+                <ImageButton.Source>
+                    <FontImageSource FontFamily="FAS" Glyph="&#xf410;" Color="#8D0909" Size="24"/>
+                </ImageButton.Source>
+            </ImageButton>
+             <Label x:Name="fileNameText" Text="" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="EndAndExpand" VerticalOptions="Start" Margin="30,0,0,25"/>
+            </HorizontalStackLayout>
+
+           
+            <ImageButton ZIndex="2" StyleClass="FilledButton" Grid.Row="1" WidthRequest="60" HeightRequest="60" x:Name="fileBtn" IsVisible="True" HorizontalOptions="Center" VerticalOptions="Center" Clicked="fileBtn_Clicked">
+                <ImageButton.Source>
+                    <FontImageSource FontFamily="FAS" Glyph="&#xf06e;" Color="#C9A8E6" Size="30" />
+                </ImageButton.Source>
+            </ImageButton>
+            <ActivityIndicator IsVisible="False" Grid.Row="1" x:Name="loadingBar" Margin="0,0,0,0" WidthRequest="50" HeightRequest="50" IsRunning="True" Color="Red" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <WebView x:Name="fileView" Grid.Row="1" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+        </Grid>
+    </Frame>
+
+</mopups:PopupPage>

@@ -4,6 +4,7 @@ using DesktopApp.HttpFolder;
 using DesktopApp.KeysService;
 using DesktopApp.Models;
 using FileStorageApp.Client;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net.Http.Json;
@@ -21,6 +22,7 @@ namespace DesktopApp.ViewModels
         private CryptoService _cryptoService = new CryptoService();
 
         private string _fileNamePicked = "No file selected";
+        public ObservableCollection<FileType> FileTypes { get; set; }
 
         public string FileNamePicked
         {
@@ -53,6 +55,29 @@ namespace DesktopApp.ViewModels
         {
             FileNamePicked = "";
             _uploadProgress = 0;
+
+            FileTypes = new ObservableCollection<FileType>
+            {
+                new FileType { Name = "Pdf files", Icon = "\uf1c1" , IconColor = "#753B3B"},
+                new FileType { Name = "Excel files", Icon = "\uf1c3", IconColor = "#548335" },
+                new FileType { Name = "Word files", Icon = "\uf1c2", IconColor = "#6243DF" },
+                new FileType { Name = "Jpg files", Icon = "\uf1c5", IconColor = "#6243DF" },
+                new FileType { Name = "Png files", Icon = "\uf1c5", IconColor = "#6243DF" },
+                new FileType { Name = "Csv files", Icon = "\uf1c3", IconColor = "#548335" },
+                new FileType { Name = "Mp3 files", Icon = "\uf1c7", IconColor = "#BD7800" },
+                new FileType { Name = "Mp4 files", Icon = "\uf1c7", IconColor = "#BD7800" },
+                new FileType { Name = "Iso files", Icon = "\uf15b", IconColor = "White" },
+                new FileType { Name = "Txt files", Icon = "\uf6dd", IconColor = "#548335" },
+                new FileType { Name = "Ppt files", Icon = "\uf1c4", IconColor = "#BD7800" },
+                new FileType { Name = "Zip files", Icon = "\uf1c6", IconColor = "#5200BD" },
+                new FileType { Name = "Rar files", Icon = "\uf1c3", IconColor = "#5200BD" },
+                new FileType { Name = "Apk files", Icon = "\uf3ce", IconColor = "#028749" },
+                new FileType { Name = "Html files", Icon = "\uf1c9", IconColor = "#3150B7" },
+                new FileType { Name = "Code files", Icon = "\uf1c9", IconColor = "#3150B7" },
+                //new FileType { Name = "Excel files", Icon = "\uf1c3", IconColor = "#548335" },
+                //new FileType { Name = "Excel files", Icon = "\uf1c3", IconColor = "#548335" },
+
+            };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -64,6 +89,7 @@ namespace DesktopApp.ViewModels
 
         public async Task SelectFile()
         {
+
             var result = await FilePicker.PickAsync(new PickOptions
             {
                 PickerTitle = "Please select a file"
@@ -77,8 +103,6 @@ namespace DesktopApp.ViewModels
             _fileModel.filePath = result.FullPath;
             _fileModel.fileName = result.FileName;
             _fileModel.encFileName = result.FileName + "_enc_";
-
-/*            liniile astea trebuie decomentate dupa ce terminam interfata*/
 
             _fileModel.fileStream = new FileStream(result.FullPath, FileMode.Open);
 
@@ -97,16 +121,16 @@ namespace DesktopApp.ViewModels
             _fileModel.hash = hash;
 
             byte[] fileKey = await _cryptoService.ExtractKey(_fileModel.hash, Defines.CryptoDefines.AES_GCM_KEY_SIZE);
-            byte[] fileIv = await _cryptoService.ExtractIv(_fileModel.hash,Defines.CryptoDefines.AES_GCM_KEY_SIZE, Defines.CryptoDefines.AES_GCM_IV_SIZE);
-                        
+            byte[] fileIv = await _cryptoService.ExtractIv(_fileModel.hash, Defines.CryptoDefines.AES_GCM_KEY_SIZE, Defines.CryptoDefines.AES_GCM_IV_SIZE);
+
             _fileModel.key = fileKey;
             _fileModel.iv = fileIv;
 
             Debug.WriteLine(Utils.ByteToHex(_fileModel.key));
 
             _fileModel.fileStream = new FileStream(_fileModel.filePath, FileMode.Open);
-        
-            _fileModel.base64Tag = Convert.ToBase64String( await _cryptoService.EncryptFileStream(_fileModel.fileStream, _fileModel.key, _fileModel.iv, _fileModel.encFileName));
+
+            _fileModel.base64Tag = Convert.ToBase64String(await _cryptoService.EncryptFileStream(_fileModel.fileStream, _fileModel.key, _fileModel.iv, _fileModel.encFileName));
             _fileModel.fileStream.Close();
 
             encryptTime.Stop();
@@ -118,7 +142,7 @@ namespace DesktopApp.ViewModels
         {
             if (path != "/") path += "/";
 
-            if (_fileModel.key == null || _fileModel.iv == null || _fileModel.base64Tag == null 
+            if (_fileModel.key == null || _fileModel.iv == null || _fileModel.base64Tag == null
                 || _fileModel.fileName == null || _fileModel.encFileName == null)
                 throw new Exception("An error has occured, please try again!");
 
@@ -142,7 +166,7 @@ namespace DesktopApp.ViewModels
             {
                 try
                 {
-                    var apiReponse = await httpApiClient.PostAsJsonAsync("/api/File/verifyNameDuplicate", path+fileDto.fileName);
+                    var apiReponse = await httpApiClient.PostAsJsonAsync("/api/File/verifyNameDuplicate", path + fileDto.fileName);
                     if (apiReponse.IsSuccessStatusCode)
                     {
                         var resultString = await apiReponse.Content.ReadAsStringAsync();
@@ -154,9 +178,9 @@ namespace DesktopApp.ViewModels
                             string newName;
 
                             if (i > 0)
-                                newName = fileNameWithoutExtension + "_Copy"+$"({i})"+extension;
+                                newName = fileNameWithoutExtension + "_Copy" + $"({i})" + extension;
                             else
-                                newName = fileNameWithoutExtension + "_Copy"+extension;
+                                newName = fileNameWithoutExtension + "_Copy" + extension;
                             i++;
                             fileDto.fileName = newName;
                         }
@@ -187,7 +211,7 @@ namespace DesktopApp.ViewModels
             var multipartContent = new MultipartFormDataContent();
 
             var fileStream = System.IO.File.OpenRead(encFilePath);
-            multipartContent.Add(new StringContent(path+fileDto.fileName), "fileName");
+            multipartContent.Add(new StringContent(path + fileDto.fileName), "fileName");
             multipartContent.Add(new StringContent(fileDto.base64Key), "base64Key");
             multipartContent.Add(new StringContent(fileDto.base64Iv), "base64Iv");
             multipartContent.Add(new StringContent(fileDto.base64Tag), "base64Tag");
@@ -211,6 +235,15 @@ namespace DesktopApp.ViewModels
             System.IO.File.Delete(encFilePath);
 
             UploadProgress = 0;
+        }
+
+        public async Task CancelBeforeUploading()
+        {
+            if (_fileModel.fileStream != null)
+            {
+                _fileModel.fileStream.Close();
+                _fileModel.fileStream = null;
+            }
         }
 
     }

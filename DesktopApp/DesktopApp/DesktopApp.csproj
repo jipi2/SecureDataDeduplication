@@ -115,6 +115,9 @@
 	  <MauiXaml Update="Views\CustomNavBar.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\FileViewPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\FolderViewPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

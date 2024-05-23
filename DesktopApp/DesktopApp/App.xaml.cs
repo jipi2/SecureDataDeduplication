@@ -18,7 +18,7 @@ namespace DesktopApp
         protected override async void OnStart()
         {
             // Navigate to SignUpPage
-            Shell.Current.GoToAsync("//SignInPage");
+            Shell.Current.GoToAsync("SignInPage");
 
 
             if (MainPage is AppShell shell)
@@ -44,7 +44,7 @@ namespace DesktopApp
                 //}
                 //catch (Exception e)
                 //{
-                //   Debug.WriteLine(e.Message);
+                //    Debug.WriteLine(e.Message);
                 //}
             }
         }
