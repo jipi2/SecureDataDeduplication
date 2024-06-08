@@ -1,4 +1,4 @@
-﻿using CryptoLib;
+﻿using FileStorageApp.Server.Utils;
 using FileStorageApp.Server.Entity;
 using FileStorageApp.Server.Repositories;
 using FileStorageApp.Server.SecurityFolder;
@@ -27,6 +27,7 @@ namespace FileStorageApp.Server.Services
             _roleRepo = roleRepository;
             _emailService = emailService;
             _fileFolderRepo = fileFolderRepo;
+           
         }
 
         private void sendVerificatoinCodeViaEmail(User user)
@@ -82,15 +83,15 @@ namespace FileStorageApp.Server.Services
             if (!verifyPassword(regUser.Password))
                 throw new ExceptionModel("Password must contain at least 8 characters, one number, one uppercase letter and one special character.", 1);
 
-            byte[] salt = Utils.GenerateRandomBytes(16);
+            byte[] salt = Utils.Utils.GenerateRandomBytes(16);
 
             var newUser = new Entity.User
             {
                 FirstName = regUser.FirstName,
                 LastName = regUser.LastName,
                 Email = regUser.Email,
-                Password = Utils.HashTextWithSalt(regUser.Password, salt),
-                Salt = Utils.ByteToHex(salt),
+                Password = Utils.Utils.HashTextWithSalt(regUser.Password, salt),
+                Salt = Utils.Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
                 Pkcs12File = Convert.FromBase64String(regUser.rsaKeys.base64EncPrivKey),
@@ -98,7 +99,7 @@ namespace FileStorageApp.Server.Services
                 //Files = new List<Entity.FileMetadata>()
                 Base64PublicKey = regUser.base64PubKey,
                 IsVerified = false,
-                VerificationCode = Utils.GenerateRandomNumberAsString(9)
+                VerificationCode = Utils.Utils.GenerateRandomNumberAsString(9)
             };
             newUser.Roles.Add(await _roleRepo.getRoleByName("client"));
 
@@ -126,15 +127,15 @@ namespace FileStorageApp.Server.Services
             if(user != null)
                 throw new ExceptionModel("Email already exists for this proxy", 1);
 
-            byte[] salt = Utils.GenerateRandomBytes(16);
+            byte[] salt = Utils.Utils.GenerateRandomBytes(16);
 
             var newProxy = new Entity.User
             {
                 FirstName = regProxy.ProxyName,
                 LastName = regProxy.ProxyName,
                 Email = regProxy.ProxyMail,
-                Password = Utils.HashTextWithSalt(regProxy.ProxyPassword, salt),
-                Salt = Utils.ByteToHex(salt),
+                Password = Utils.Utils.HashTextWithSalt(regProxy.ProxyPassword, salt),
+                Salt = Utils.Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
                 //Files = new List<Entity.FileMetadata>()
@@ -149,7 +150,7 @@ namespace FileStorageApp.Server.Services
             var user = _userRepo.GetUserByEmail(logUser.Email).Result;
             if (user == null)
                 throw new ExceptionModel("Login faild!", 1);
-            if (!user.Password.Equals(Utils.HashTextWithSalt(logUser.password, Utils.HexToByte(user.Salt))))
+            if (!user.Password.Equals(Utils.Utils.HashTextWithSalt(logUser.password, Utils.Utils.HexToByte(user.Salt))))
                 throw new ExceptionModel("Login faild!", 1);
             if (user.IsVerified == false)
             {
@@ -172,7 +173,7 @@ namespace FileStorageApp.Server.Services
             var user = _userRepo.GetUserByEmail(dto.email).Result;
             if (user == null)
                 throw new ExceptionModel("Verifying faild!", 1);
-            if (!user.Password.Equals(Utils.HashTextWithSalt(dto.password, Utils.HexToByte(user.Salt))))
+            if (!user.Password.Equals(Utils.Utils.HashTextWithSalt(dto.password, Utils.Utils.HexToByte(user.Salt))))
                 throw new ExceptionModel("Verifying faild!", 1);
             if (!user.VerificationCode.Equals(dto.code))
             {
@@ -192,7 +193,7 @@ namespace FileStorageApp.Server.Services
             User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
             if (user == null)
                 throw new Exception("User does not exist!");
-            if (!user.Password.Equals(Utils.HashTextWithSalt(dto.oldPass, Utils.HexToByte(user.Salt))))
+            if (!user.Password.Equals(Utils.Utils.HashTextWithSalt(dto.oldPass, Utils.Utils.HexToByte(user.Salt))))
             {
                 throw new Exception("Old password is not correct!");
             }
@@ -204,7 +205,7 @@ namespace FileStorageApp.Server.Services
             {
                 throw new Exception("The passwords do not match!");
             }
-            string newHashedPass = Utils.HashTextWithSalt(dto.newPass, Utils.HexToByte(user.Salt));
+            string newHashedPass = Utils.Utils.HashTextWithSalt(dto.newPass, Utils.Utils.HexToByte(user.Salt));
             user.Password = newHashedPass;
 
             user.Pkcs12File = Convert.FromBase64String(dto.base64pkcs12);
@@ -243,8 +244,8 @@ namespace FileStorageApp.Server.Services
         public async Task SaveServerDFKeysForUser(User user, AsymmetricCipherKeyPair serverKeys, string P, string G)
         {
 
-            string serverPubKey = Utils.GetPemAsString(serverKeys.Public);
-            string serverPrivKey = Utils.GetPemAsString(serverKeys.Private);
+            string serverPubKey = Utils.Utils.GetPemAsString(serverKeys.Public);
+            string serverPrivKey = Utils.Utils.GetPemAsString(serverKeys.Private);
 
             await _userRepo.SaveServerDFKeysForUser(user, serverPubKey, serverPrivKey, P, G);
             

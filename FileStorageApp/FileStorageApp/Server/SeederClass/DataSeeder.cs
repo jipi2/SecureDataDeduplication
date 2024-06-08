@@ -1,4 +1,4 @@
-﻿using CryptoLib;
+﻿
 using FileStorageApp.Server.Database;
 using FileStorageApp.Server.Entity;
 using FileStorageApp.Server.Repositories;
@@ -43,14 +43,14 @@ namespace FileStorageApp.Server.SeederClass
             if (!_context.Users.Where(u => u.Roles.Any(r => r.RoleName == "admin")).Any())
             {
                 var pass = "admin";
-                byte[] salt = Utils.GenerateRandomBytes(16);
+                byte[] salt = Utils.Utils.GenerateRandomBytes(16);
                 var admin = new User
                 {
                     LastName = "admin",
                     FirstName = "admin",
-                    Password = Utils.HashTextWithSalt(pass, salt),
+                    Password = Utils.Utils.HashTextWithSalt(pass, salt),
                     Email = "admin",
-                    Salt = Utils.ByteToHex(salt),
+                    Salt = Utils.Utils.ByteToHex(salt),
                     Roles = new List<Entity.Role>()
                 };
                 admin.Roles.Add(await _context.Roles.Where(r => r.RoleName == "admin").FirstOrDefaultAsync());
@@ -64,14 +64,14 @@ namespace FileStorageApp.Server.SeederClass
             if (!_context.Users.Where(u => u.Roles.Any(r => r.RoleName == "proxy")).Any())
             {
                 var pass = "proxy";
-                byte[] salt = Utils.GenerateRandomBytes(16);
+                byte[] salt = Utils.Utils.GenerateRandomBytes(16);
                 var proxy = new User
                 {
                     LastName = "pythonProxy",
                     FirstName = "pythonProxy",
-                    Password = Utils.HashTextWithSalt(pass, salt),
+                    Password = Utils.Utils.HashTextWithSalt(pass, salt),
                     Email = "pythonProxy",
-                    Salt = Utils.ByteToHex(salt),
+                    Salt = Utils.Utils.ByteToHex(salt),
                     Roles = new List<Entity.Role>()
                 };
                 proxy.Roles.Add(await _context.Roles.Where(r => r.RoleName == "proxy").FirstOrDefaultAsync());

@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+  labels:
+    app: mysql-database
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    targetPort: 3306
+    nodePort: 32000
+  selector:
+    app: mysql-database
+    tier: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    app: mysql-database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-database
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-database
+        tier: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        env:
+          - name: MYSQL_ROOT_USER
+            value: "root"
+          - name: MYSQL_ROOT_PASSWORD
+            value: "root"
+          - name: MYSQL_DATABASE
+            value: "cache_v2"  # Specify the database name here
+        ports:
+        - containerPort: 3306
+          name: mysql
+      # volumes:
+      # - name: mysql-pv
+      #   persistentVolumeClaim:
+      #     claimName: mysql-pvc

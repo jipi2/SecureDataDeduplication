@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dotnet-server
+  template:
+    metadata:
+      labels:
+        app: dotnet-server
+    spec:
+      containers:
+      - name: dotnet-server-container
+        image: jipi2/licenta:dotnet-server
+        imagePullPolicy: Always
+        ports:
+        # - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
+        - mountPath: /app/uploads
+          name: backend-storage
+      imagePullSecrets:
+      - name: dockerhub-secret
+      volumes:
+      - name: backend-storage
+        persistentVolumeClaim:
+          claimName: backend-claim
+      

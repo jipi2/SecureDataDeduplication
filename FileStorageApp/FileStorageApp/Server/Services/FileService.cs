@@ -1,5 +1,4 @@
-﻿using CryptoLib;
-using FileStorageApp.Server.Entity;
+﻿using FileStorageApp.Server.Entity;
 using FileStorageApp.Server.Repositories;
 using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
@@ -15,6 +14,7 @@ using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
+
 
 namespace FileStorageApp.Server.Services
 {
@@ -52,19 +52,19 @@ namespace FileStorageApp.Server.Services
             {
                 User user = await _userService.GetUserById(Userid);
 
-                DHParameters parameters = Utils.GenerateParameters();
-                AsymmetricCipherKeyPair serverKeys = Utils.GenerateDFKeys(parameters);
+                DHParameters parameters = Utils.Utils.GenerateParameters();
+                AsymmetricCipherKeyPair serverKeys = Utils.Utils.GenerateDFKeys(parameters);
 
-                user.ServerDHPrivate = Utils.GetPemAsString(serverKeys.Private);
-                user.ServerDHPublic = Utils.GetPemAsString(serverKeys.Public);
+                user.ServerDHPrivate = Utils.Utils.GetPemAsString(serverKeys.Private);
+                user.ServerDHPublic = Utils.Utils.GetPemAsString(serverKeys.Public);
 
-                await _userService.SaveServerDFKeysForUser(user, serverKeys, Utils.GetP(parameters), Utils.GetG(parameters));
+                await _userService.SaveServerDFKeysForUser(user, serverKeys, Utils.Utils.GetP(parameters), Utils.Utils.GetG(parameters));
 
                 DFparametersDto dFparams = new DFparametersDto
                 {
-                    G = Utils.GetG(parameters),
-                    P = Utils.GetP(parameters),
-                    ServerPubKey = Utils.GetPublicKey(serverKeys)
+                    G = Utils.Utils.GetG(parameters),
+                    P = Utils.Utils.GetP(parameters),
+                    ServerPubKey = Utils.Utils.GetPublicKey(serverKeys)
                 };
 
                 return dFparams;
@@ -82,15 +82,15 @@ namespace FileStorageApp.Server.Services
             {
                 string stringPrivKey = await _userService.GetPrivateKeyOfServerForUser(userId);
               
-                AsymmetricKeyParameter privKey = (AsymmetricKeyParameter)Utils.ReadPrivateKeyFromPemString(stringPrivKey);
+                AsymmetricKeyParameter privKey = (AsymmetricKeyParameter)Utils.Utils.ReadPrivateKeyFromPemString(stringPrivKey);
 
                 Dictionary<string, string> stringParams = await _userService.GetParametersForDF(userId);
-                DHParameters parameters = Utils.GenerateParameters(stringParams["G"], stringParams["P"]);
+                DHParameters parameters = Utils.Utils.GenerateParameters(stringParams["G"], stringParams["P"]);
 
                 //calculam secretul in continuare
-                Org.BouncyCastle.Math.BigInteger serverSecret = Utils.ComputeSharedSecret(pubKey, privKey, parameters);
+                Org.BouncyCastle.Math.BigInteger serverSecret = Utils.Utils.ComputeSharedSecret(pubKey, privKey, parameters);
                 byte[] byteSecret = serverSecret.ToByteArray();
-                byte[] symKey = Utils.ComputeHash(byteSecret);
+                byte[] symKey = Utils.Utils.ComputeHash(byteSecret);
                 await _userService.SaveSymKeyForUser(userId, symKey);
                 return true;
 
@@ -114,9 +114,9 @@ namespace FileStorageApp.Server.Services
 
             ServerBlobFIle serverFile = new ServerBlobFIle
             {
-                FileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(user.SymKey)),
-                FileKey = Utils.EncryptAes(Convert.FromBase64String(userFile.Key), Convert.FromBase64String(user.SymKey)),
-                FileIv = Utils.EncryptAes(Convert.FromBase64String(userFile.Iv), Convert.FromBase64String(user.SymKey)),
+                FileName = Utils.Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(user.SymKey)),
+                FileKey = Utils.Utils.EncryptAes(Convert.FromBase64String(userFile.Key), Convert.FromBase64String(user.SymKey)),
+                FileIv = Utils.Utils.EncryptAes(Convert.FromBase64String(userFile.Iv), Convert.FromBase64String(user.SymKey)),
                 EncBase64File = base64file
             };
 
@@ -129,7 +129,7 @@ namespace FileStorageApp.Server.Services
             return base64file;
         }
 
-        private async Task GenerateMerkleTreeChallenges(int fileMetadataId, MerkleTree mt)
+        private async Task GenerateMerkleTreeChallenges(int fileMetadataId, Utils.MerkleTree mt)
         {
             int J = Convert.ToInt32(_configuration["J"]);
             List<Resp> respList = new List<Resp>(J);
@@ -138,7 +138,7 @@ namespace FileStorageApp.Server.Services
 
             for (int i = 0; i < J; i++)
             {
-                answ = Utils.GenerateResp(mt, ref pos1, ref pos2, ref pos3);
+                answ = Utils.Utils.GenerateResp(mt, ref pos1, ref pos2, ref pos3);
                 respList.Add(new Resp
                 {
                     Position_1 = pos1,
@@ -153,18 +153,18 @@ namespace FileStorageApp.Server.Services
             
         }
 
-        private async Task<MerkleTree> GetMerkleTree(string base64EncFile)
+        private async Task<Utils.MerkleTree> GetMerkleTree(string base64EncFile)
         {
             byte[] bytesEncFile = Convert.FromBase64String(base64EncFile);
             Stream stream = new MemoryStream(bytesEncFile);
-            MerkleTree mt = Utils.GetMerkleTree(stream);
+            Utils.MerkleTree mt = Utils.Utils.GetMerkleTree(stream);
             Console.WriteLine(mt.HashTree.Count);
             return mt;
         }
 
-        private async Task<MerkleTree> GetMerkleTree_v2(string filePath)
+        private async Task<Utils.MerkleTree> GetMerkleTree_v2(string filePath)
         {
-            MerkleTree mt = Utils.GetMerkleTreeFromFilePath(filePath);
+            Utils.MerkleTree mt = Utils.Utils.GetMerkleTreeFromFilePath(filePath);
             Console.WriteLine(mt.HashTree.Count);
             return mt;
         }
@@ -219,7 +219,7 @@ namespace FileStorageApp.Server.Services
             //gata cu adaugatul
             
 /*            await _userService.AddFile(userId, fileMeta);*/
-            MerkleTree mt = await GetMerkleTree(base64EncFile);
+            Utils.MerkleTree mt = await GetMerkleTree(base64EncFile);
             await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
         }
 
@@ -254,10 +254,10 @@ namespace FileStorageApp.Server.Services
                 else
                     return null;
 
-                string base64Tag = Utils.DecryptAes(Convert.FromBase64String(fileParams.base64TagEnc), Convert.FromBase64String(base64SymKey));
-                string base64Key = Utils.DecryptAes(Convert.FromBase64String(fileParams.base64KeyEnc), Convert.FromBase64String(base64SymKey));
-                string base64Iv = Utils.DecryptAes(Convert.FromBase64String(fileParams.base64IvEnc), Convert.FromBase64String(base64SymKey));
-                string fileName = Encoding.UTF8.GetString( Convert.FromBase64String( Utils.DecryptAes(Convert.FromBase64String(fileParams.encFileName), Convert.FromBase64String(base64SymKey))));
+                string base64Tag = Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.base64TagEnc), Convert.FromBase64String(base64SymKey));
+                string base64Key = Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.base64KeyEnc), Convert.FromBase64String(base64SymKey));
+                string base64Iv = Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.base64IvEnc), Convert.FromBase64String(base64SymKey));
+                string fileName = Encoding.UTF8.GetString( Convert.FromBase64String( Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.encFileName), Convert.FromBase64String(base64SymKey))));
 
                 FileMetaChallenge fmc = new FileMetaChallenge();
                 fmc.id = "";
@@ -296,14 +296,14 @@ namespace FileStorageApp.Server.Services
                 {
                     //reload the challenges
                     ServerBlobFIle blobFile = await GetFileFromBlob(userId, fileName);
-                    MerkleTree mt = await GetMerkleTree(blobFile.EncBase64File);
+                    Utils.MerkleTree mt = await GetMerkleTree(blobFile.EncBase64File);
                     await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
                     resp = fileMeta.Resps.Where(r => r.wasUsed == false).FirstOrDefault();
                 }
-                fmc.id = Utils.EncryptAes(BitConverter.GetBytes(resp.Id), Convert.FromBase64String(base64SymKey));
-                fmc.n1 = Utils.EncryptAes(BitConverter.GetBytes(resp.Position_1), Convert.FromBase64String(base64SymKey));
-                fmc.n2 = Utils.EncryptAes(BitConverter.GetBytes(resp.Position_2), Convert.FromBase64String(base64SymKey));
-                fmc.n3 = Utils.EncryptAes(BitConverter.GetBytes(resp.Position_3), Convert.FromBase64String(base64SymKey));
+                fmc.id = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Id), Convert.FromBase64String(base64SymKey));
+                fmc.n1 = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Position_1), Convert.FromBase64String(base64SymKey));
+                fmc.n2 = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Position_2), Convert.FromBase64String(base64SymKey));
+                fmc.n3 = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Position_3), Convert.FromBase64String(base64SymKey));
                 resp.wasUsed = true;
                 await _respRepo.UpdateResp(resp);
                 return fmc;            
@@ -324,7 +324,7 @@ namespace FileStorageApp.Server.Services
                 base64SymKey = user.SymKey;
             else
                 throw new Exception("Problems with Crypto params!");
-            string base64Tag = Utils.DecryptAes(Convert.FromBase64String(encTag), Convert.FromBase64String(base64SymKey));
+            string base64Tag = Utils.Utils.DecryptAes(Convert.FromBase64String(encTag), Convert.FromBase64String(base64SymKey));
             if(await _fileRepo.GetFileMetaByTag(base64Tag) == false)
             {
                 return false;
@@ -345,11 +345,11 @@ namespace FileStorageApp.Server.Services
 
                 byte[] symKey = Convert.FromBase64String(base64SymKey);
 
-                int respId = BitConverter.ToInt32(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(userResp.Id), symKey)));
+                int respId = BitConverter.ToInt32(Convert.FromBase64String(Utils.Utils.DecryptAes(Convert.FromBase64String(userResp.Id), symKey)));
                 Resp? resp = await _respRepo.GetRespById(Convert.ToInt32(respId));
 
-                string userFilename = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(userResp.FileName), symKey)));
-                string userAnsw = Utils.DecryptAes(Convert.FromBase64String(userResp.Answer), symKey);
+                string userFilename = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.Utils.DecryptAes(Convert.FromBase64String(userResp.FileName), symKey)));
+                string userAnsw = Utils.Utils.DecryptAes(Convert.FromBase64String(userResp.Answer), symKey);
 
                 if (resp == null) return false;
                 if (resp.Answer.Equals(userAnsw))
@@ -501,10 +501,10 @@ namespace FileStorageApp.Server.Services
             if (user == null)
                 throw new Exception("User does not exist!");
 
-            fileDecData.tag = Utils.DecryptAes(Convert.FromBase64String(fileEncData.encBase64Tag), Convert.FromBase64String(user.SymKey));
-            fileDecData.base64key = Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64KeyEnc), Convert.FromBase64String(user.SymKey));
-            fileDecData.base64iv = Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64IvEnc), Convert.FromBase64String(user.SymKey));
-            fileDecData.fileName = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.DecryptAes(Convert.FromBase64String(fileEncData.encFileName), Convert.FromBase64String(user.SymKey))));
+            fileDecData.tag = Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.encBase64Tag), Convert.FromBase64String(user.SymKey));
+            fileDecData.base64key = Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64KeyEnc), Convert.FromBase64String(user.SymKey));
+            fileDecData.base64iv = Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64IvEnc), Convert.FromBase64String(user.SymKey));
+            fileDecData.fileName = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.encFileName), Convert.FromBase64String(user.SymKey))));
             
    
             if (await CheckIfFileNameExists(user, fileDecData.fileName) == true)
@@ -555,7 +555,7 @@ namespace FileStorageApp.Server.Services
                 Tag = cacheFile.base64Tag
             };
             await _fileRepo.SaveFile(fileMeta);
-            MerkleTree mt = await GetMerkleTree(cacheFile.base64EncFile);
+            Utils.MerkleTree mt = await GetMerkleTree(cacheFile.base64EncFile);
             await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
 
             foreach (PersonalisedInfoDto pid in cacheFile.personalisedList)
@@ -616,8 +616,12 @@ namespace FileStorageApp.Server.Services
             }
 
             string filePath = GetFilePathByTag(fileParams.base64Tag);
-            MerkleTree mt = await GetMerkleTree_v2(filePath);
+            Utils.MerkleTree mt = await GetMerkleTree_v2(filePath);
             await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
+
+            //aici stergem fisierul din folder pentru ca am terminat de generat mekrle tree-ul
+            File.Delete(filePath);
+            //gata stergerea
 
             List<FileTransfer> ftList = await _fileTransferRepo.GetAllFileTransfer();
 
@@ -677,15 +681,14 @@ namespace FileStorageApp.Server.Services
             {
                 await file.CopyToAsync(stream);
             }
-
         }
 
         public async Task<EncryptParamsDto> encryptParams(string userId, EncryptParamsDto paramsDto)
         {
             User? user = await _userRepo.GetUserById(Convert.ToInt32(userId));
-            paramsDto.fileName = Utils.EncryptAes(Encoding.UTF8.GetBytes(paramsDto.fileName), Convert.FromBase64String(user.SymKey));
-            paramsDto.fileKey = Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileKey), Convert.FromBase64String(user.SymKey));
-            paramsDto.fileIv = Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileIv), Convert.FromBase64String(user.SymKey));
+            paramsDto.fileName = Utils.Utils.EncryptAes(Encoding.UTF8.GetBytes(paramsDto.fileName), Convert.FromBase64String(user.SymKey));
+            paramsDto.fileKey = Utils.Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileKey), Convert.FromBase64String(user.SymKey));
+            paramsDto.fileIv = Utils.Utils.EncryptAes(Convert.FromBase64String(paramsDto.fileIv), Convert.FromBase64String(user.SymKey));
 
             return paramsDto;
         }

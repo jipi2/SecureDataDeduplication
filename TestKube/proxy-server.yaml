@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: proxy-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: proxy-service
+    spec:
+      containers:
+      - image: jipi2/licenta:proxy_httpS
+        imagePullPolicy: Always
+        name: fastapi
+        env:
+        - name: DB_URL
+          value: "mysql+mysqlconnector://root:root@mysql-svc:3306/cache_v2" 
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - mountPath: /app/uploadedFiles
+          name: proxy-files
+          readOnly: false
+      imagePullSecrets:
+      - name: dockerhub-secret
+      volumes:
+      - name: proxy-files
+        persistentVolumeClaim:
+          claimName: proxy-claim

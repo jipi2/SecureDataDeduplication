@@ -59,10 +59,10 @@ builder.Services.AddScoped<LabelService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<FileFolderService>();
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.Limits.MaxRequestBodySize = int.MaxValue;
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.Limits.MaxRequestBodySize = int.MaxValue;
+//});
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -129,6 +129,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Limits.MaxRequestBodySize = 1000 * 1024 * 1024; // 1000 MB
+});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Listen(IPAddress.Any, 80); // Listen for HTTP
+    serverOptions.Listen(IPAddress.Any, 443, listenOptions => // Listen for HTTPS
+    {
+        listenOptions.UseHttps("/etc/ssl/certs/certificate.pfx", "parola");
+        //listenOptions.UseHttps("./../../certificate.pfx", "parola");
+    });
+    serverOptions.Limits.MaxRequestBodySize = 1000 * 1024 * 1024; // 1000 MB
 });
 
 builder.Services.Configure<FormOptions>(options =>

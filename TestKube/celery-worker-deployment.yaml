@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\LicentaProiect\TestKube\kompose.exe convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: celery-worker
+  name: celery-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: celery-worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\LicentaProiect\TestKube\kompose.exe convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/proxy-net: "true"
+        io.kompose.service: celery-worker
+    spec:
+      containers:
+        - image: celery
+          name: celery
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/uploadedFiles
+              name: celery-worker-claim0
+      restartPolicy: Always
+      volumes:
+        - name: celery-worker-claim0
+          persistentVolumeClaim:
+            claimName: celery-worker-claim0
+status: {}

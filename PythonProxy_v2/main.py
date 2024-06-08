@@ -206,13 +206,13 @@ async def getKeyAndIvFromStorage(request:Request, filename:str):
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/download/{filename}")
-async def download_file():
-    file_path = './uploadedFiles/mihnea@mta/craiului.jpg'
-    try:
-        return FileResponse(file_path, media_type='application/octet-stream', filename='craiului.jpg')
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="File not found")
+# @app.get("/download/{filename}")
+# async def download_file():
+#     file_path = './uploadedFiles/mihnea@mta/craiului.jpg'
+#     try:
+#         return FileResponse(file_path, media_type='application/octet-stream', filename='craiului.jpg')
+#     except FileNotFoundError:
+#         raise HTTPException(status_code=404, detail="File not found")
 
 
 @app.post("/deleteFile", tags=['file'])
@@ -274,6 +274,8 @@ async def acceptReceivedFile(request:Request, afdto:AcceptFileTransferDto):
     except Exception as e:
         print(str(e))
         raise HTTPException(status_code=400, detail=str(e))
+
+#aici am mai adaugat cateva comentarii doamne, poate se schimba imahinea
 
 if __name__== "__main__":
     uvicorn.run("main:app",

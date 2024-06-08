@@ -2,7 +2,6 @@
 using FileStorageApp.Shared;
 using FileStorageApp.Shared.Dto;
 using Microsoft.EntityFrameworkCore;
-using CryptoLib;
 using FileStorageApp.Server.Services;
 using FileStorageApp.Server.Entity;
 using FileStorageApp.Server.SecurityFolder;
@@ -31,15 +30,15 @@ namespace FileStorageApp.Server.Repositories
             if (!regUser.Password.Equals(regUser.Password))
                 return (new Response { Succes = false, Message = "Confirm passowrd field is different from password field" });
 
-            byte[] salt = Utils.GenerateRandomBytes(16);
+            byte[] salt = Utils.Utils.GenerateRandomBytes(16);
 
             var newUser = new Entity.User
             {
                 FirstName = regUser.FirstName,
                 LastName = regUser.LastName,
                 Email = regUser.Email,
-                Password = Utils.HashTextWithSalt(regUser.Password, salt),
-                Salt = Utils.ByteToHex(salt),
+                Password = Utils.Utils.HashTextWithSalt(regUser.Password, salt),
+                Salt = Utils.Utils.ByteToHex(salt),
                 isDeleted = false,
                 Roles = new List<Entity.Role>(),
             };
@@ -56,7 +55,7 @@ namespace FileStorageApp.Server.Repositories
             var user = await _context.Users.Include(u => u.Roles).Where(u => u.Email.ToLower().Equals(logUser.Email)).FirstOrDefaultAsync();
             if (user == null)
                 return (new Response { Succes = false, Message = "Login faild" });
-            if (!user.Password.Equals(Utils.HashTextWithSalt(logUser.password, Utils.HexToByte(user.Salt))))
+            if (!user.Password.Equals(Utils.Utils.HashTextWithSalt(logUser.password, Utils.Utils.HexToByte(user.Salt))))
                 return (new Response { Succes = false, Message = "Login faild" });
 
             return (new Response { Succes = true, Message = "Login successfully", AccessToken = _securityManager.GetNewJwt(user)});

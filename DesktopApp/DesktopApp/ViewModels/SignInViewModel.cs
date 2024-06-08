@@ -66,8 +66,8 @@ namespace DesktopApp.ViewModels
         }
         public async Task<int> Login()
         {
-            _email = "dreizenpaco@yahoo.com";
-            _password = "dreizen";
+            //_email = "dreizenpaco@yahoo.com";
+            //_password = "dreizen";
 
             SecureStorage.Default.RemoveAll();
 

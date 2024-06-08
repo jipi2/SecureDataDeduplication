@@ -1,11 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
-using CryptoLib;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
-using Microsoft.Extensions.Azure;
-using System.Text;
-
 namespace FileStorageApp.Server.Services
 {
     public class AzureBlobService
@@ -32,7 +27,7 @@ namespace FileStorageApp.Server.Services
                 BlobClient bclient = _blobContainerClient.GetBlobClient(tag);
 
                 //generam un strem din string-ul "encFileBase64"
-                Stream stream = Utils.GenerateStreamFromString(encFileBase64);
+                Stream stream = Utils.Utils.GenerateStreamFromString(encFileBase64);
 
                 await bclient.UploadAsync(stream, true);
           
