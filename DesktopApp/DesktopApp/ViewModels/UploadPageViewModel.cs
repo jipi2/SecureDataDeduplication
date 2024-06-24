@@ -237,8 +237,10 @@ namespace DesktopApp.ViewModels
                     throw new Exception("You already have this file in your storage");
                 throw new Exception("An error has occured, while sending the file, please try again");
             }
+
             stopwatch.Stop();
             Debug.WriteLine("Challenge time: " + stopwatch.Elapsed);
+
             fileStream.Close();
             System.IO.File.Delete(encFilePath);
 

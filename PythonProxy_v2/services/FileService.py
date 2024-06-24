@@ -30,6 +30,7 @@ import os
 from dotenv import load_dotenv  
 import datetime
 from sqlalchemy import and_
+import hashlib
 
 from fastapi import UploadFile
 from services.AzureBlobService import download_blob
@@ -195,27 +196,49 @@ class FileService():
                 self.__saveUser(session)
                 user = session.query(User).filter(User.email==self.userEmail).first()
             file = session.query(File).filter(File.tag == base64tag).first()
-            print('here')
+            notFile = False
             if not file:
-                print('aici nu trebuie sa intre')
+                notFile = True
                 user_path = os.getcwd()+'/uploadedFiles/'+self.userEmail
                 await self.__createPathForUserIfItDoesntExist(user_path)
                 file_path = os.getcwd()+'/uploadedFiles/'+self.userEmail+'/'+fileToSave.filename
                 
+                sha3_256 = hashlib.sha3_256()
                 with open(file_path, "wb") as buffer:
                     while True:
                         chunk = await fileToSave.read(1048576)
                         if not chunk:
-                            break
+                            break                 
+                        sha3_256.update(chunk)
                         buffer.write(chunk)
-                print('here_aproape')
+                        
+                h = sha3_256.digest()
+                if h != base64.b64decode(base64tag):
+                    print(h)
+                    print(base64.b64decode(base64tag))
+                    os.remove(file_path)
+                    raise Exception("File not verified")
+                
                 blob_file = BlobFile(filePath=file_path)
                 new_file = File(tag=base64tag, blob_file=blob_file, size=fileToSave.size)
                 session.add(new_file)
                 session.commit()
                 file = session.query(File).filter(File.tag == base64tag).first()
             
-            print('am ajuns aici')     
+            if notFile == False:
+                sha3_256 = hashlib.sha3_256()
+                while True:
+                    chunk = await fileToSave.read(1048576)
+                    print(fileToSave.size)
+                    if not chunk:
+                        break
+                    sha3_256.update(chunk)
+                    
+                h = sha3_256.digest()
+                if h != base64.b64decode(base64tag):
+                    print(h)
+                    print(base64.b64decode(base64tag))
+                    raise Exception("File not verified")
             size = file.size    
             new_user_file = UserFile(user_id=user.id, file_id=file.id, key=self.base64Key, iv=self.base64Iv, fileName=self.filename, date=datetime.datetime.utcnow())
             session.add(new_user_file)

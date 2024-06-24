@@ -617,6 +617,7 @@ namespace CryptoLib
                 }
                 byte[] finalBlock = cipher.DoFinal(); // Generate authentication tag
                 encryptedFileStream.Write(finalBlock, 0, finalBlock.Length); // Append authentication tag to the ciphertext
+                sha3_256.BlockUpdate(finalBlock, 0, finalBlock.Length);
                 sha3_256.DoFinal(h, 0);
 
             }

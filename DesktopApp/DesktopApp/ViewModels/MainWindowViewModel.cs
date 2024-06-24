@@ -398,6 +398,9 @@ namespace DesktopApp.ViewModels
                 httpClient.DefaultRequestHeaders.Remove("Authorization");
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwt);
 
+                Stopwatch downloadTime = new Stopwatch();
+                downloadTime.Start();
+
                 var response = await httpClient.GetStreamAsync("getFileFromStorage/?filename=" + fileName, cancellationToken);
                 //var response = await httpClient.GetStreamAsync("testBACK");
                 string saveFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, acutalFileNameWithoutPath + "_enc");
@@ -410,6 +413,8 @@ namespace DesktopApp.ViewModels
                     }
 
                     Debug.WriteLine("File downloaded successfully");
+                    downloadTime.Stop();
+                    Debug.WriteLine("Download time: " + downloadTime.Elapsed);
                 }
 
 
