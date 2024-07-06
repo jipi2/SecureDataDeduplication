@@ -49,93 +49,93 @@ namespace FileStorageApp.Server.Controllers
             return Ok(id);
         }
 
-        [HttpGet("dfParameters")]
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> GetDFParameters()
-        {
-            try
-            {
-                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-                if (token.IsNullOrEmpty())
-                {
-                    return null;
-                }
-                string id = await _userService.GetUserIdFromJWT(token);
-                DFparametersDto parameters = await _fileService.GetDFParameters(id);
+        //[HttpGet("dfParameters")]
+        //[Authorize(Roles = "client")]
+        //public async Task<IActionResult> GetDFParameters()
+        //{
+        //    try
+        //    {
+        //        string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //        if (token.IsNullOrEmpty())
+        //        {
+        //            return null;
+        //        }
+        //        string id = await _userService.GetUserIdFromJWT(token);
+        //        DFparametersDto parameters = await _fileService.GetDFParameters(id);
 
-                return Ok(parameters);
-            }
-            catch (Exception e)
-            {
-                return BadRequest("Server Error");
-            }
-        }
+        //        return Ok(parameters);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest("Server Error");
+        //    }
+        //}
 
-        [HttpPost("DFexchange")]
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> DFkeyExchange([FromBody] string pubKey)
-        {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
-            {
-                return BadRequest("Invalid toke");
-            }
-            string id = await _userService.GetUserIdFromJWT(token);
-            if (await _fileService.DFkeyExchange(pubKey, id))
-                return Ok("Succes");
-            else
-                return BadRequest("Fail");
-        }
+        //[HttpPost("DFexchange")]
+        //[Authorize(Roles = "client")]
+        //public async Task<IActionResult> DFkeyExchange([FromBody] string pubKey)
+        //{
+        //    string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //    if (token.IsNullOrEmpty())
+        //    {
+        //        return BadRequest("Invalid toke");
+        //    }
+        //    string id = await _userService.GetUserIdFromJWT(token);
+        //    if (await _fileService.DFkeyExchange(pubKey, id))
+        //        return Ok("Succes");
+        //    else
+        //        return BadRequest("Fail");
+        //}
 
-        [HttpPost("checkEncTag")]
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> CheckEncTag([FromBody] TagDto encTag)
-        {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
-            {
-                return BadRequest("Invalid toke");
-            }
-            string id = await _userService.GetUserIdFromJWT(token);
-            bool tagExists = false;
-            try
-            {
-                tagExists = await _fileService.CheckEncTag(id, encTag.encTag);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-            return Ok(tagExists);
-        }
+        //[HttpPost("checkEncTag")]
+        //[Authorize(Roles = "client")]
+        //public async Task<IActionResult> CheckEncTag([FromBody] TagDto encTag)
+        //{
+        //    string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //    if (token.IsNullOrEmpty())
+        //    {
+        //        return BadRequest("Invalid toke");
+        //    }
+        //    string id = await _userService.GetUserIdFromJWT(token);
+        //    bool tagExists = false;
+        //    try
+        //    {
+        //        tagExists = await _fileService.CheckEncTag(id, encTag.encTag);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //    return Ok(tagExists);
+        //}
 
-        [HttpPost("uploadFile")]
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> GetTagAndEncFile([FromBody] FileParamsDto fileParams)
-        {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
-            {
-                return BadRequest("Invalid toke");
-            }
-            string id = await _userService.GetUserIdFromJWT(token);
-            FileMetaChallenge result = await _fileService.ComputeFileMetadata(fileParams, id);
+        //[HttpPost("uploadFile")]
+        //[Authorize(Roles = "client")]
+        //public async Task<IActionResult> GetTagAndEncFile([FromBody] FileParamsDto fileParams)
+        //{
+        //    string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //    if (token.IsNullOrEmpty())
+        //    {
+        //        return BadRequest("Invalid toke");
+        //    }
+        //    string id = await _userService.GetUserIdFromJWT(token);
+        //    FileMetaChallenge result = await _fileService.ComputeFileMetadata(fileParams, id);
             
-            if(result == null)
-            {
-                return BadRequest("Error");
-            }
+        //    if(result == null)
+        //    {
+        //        return BadRequest("Error");
+        //    }
 
-            if(result.id == "")
-                return Ok(result);
-            if(result.id == "File name already exists!")
-                return BadRequest("A file with this name already exists!");
-            else if (result.id != "")
-            {   
-                return Ok(result);
-            }
-            return BadRequest("Error");
-        }
+        //    if(result.id == "")
+        //        return Ok(result);
+        //    if(result.id == "File name already exists!")
+        //        return BadRequest("A file with this name already exists!");
+        //    else if (result.id != "")
+        //    {   
+        //        return Ok(result);
+        //    }
+        //    return BadRequest("Error");
+        //}
 
         [HttpGet("getUploadedFileNamesAndDates")]
         [Authorize(Roles = "client")]
@@ -152,35 +152,35 @@ namespace FileStorageApp.Server.Controllers
             return result;
         }
 
-        [HttpPost("getFileFromStorage")]
-        [Authorize(Roles = "client")]
-        public async Task<ServerBlobFIle> GetFileFromStorage([FromBody] string fileName)
-        {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
-            {
-                return null;
-            }
-            string id = await _userService.GetUserIdFromJWT(token);
-            ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, fileName);
-            return severFile;
-        }
+        //[HttpPost("getFileFromStorage")]
+        //[Authorize(Roles = "client")]
+        //public async Task<ServerBlobFIle> GetFileFromStorage([FromBody] string fileName)
+        //{
+        //    string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //    if (token.IsNullOrEmpty())
+        //    {
+        //        return null;
+        //    }
+        //    string id = await _userService.GetUserIdFromJWT(token);
+        //    ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, fileName);
+        //    return severFile;
+        //}
 
-        [HttpPost("verifyFileChallenge")]
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> GetChallengeResponse([FromBody] FileResp fr)
-        {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
-            {
-                return BadRequest("Invalid toke");
-            }
-            string id = await _userService.GetUserIdFromJWT(token);
-            bool result = await _fileService.SaveFileToUser(id, fr);
-            if (result == false)
-                return BadRequest("The answer for challenge was wrong!");
-            return Ok("You're file has been uploaded");
-        }
+        //[HttpPost("verifyFileChallenge")]
+        //[Authorize(Roles = "client")]
+        //public async Task<IActionResult> GetChallengeResponse([FromBody] FileResp fr)
+        //{
+        //    string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //    if (token.IsNullOrEmpty())
+        //    {
+        //        return BadRequest("Invalid toke");
+        //    }
+        //    string id = await _userService.GetUserIdFromJWT(token);
+        //    bool result = await _fileService.SaveFileToUser(id, fr);
+        //    if (result == false)
+        //        return BadRequest("The answer for challenge was wrong!");
+        //    return Ok("You're file has been uploaded");
+        //}
 
 
         //proxy endpoints
@@ -214,20 +214,20 @@ namespace FileStorageApp.Server.Controllers
             return Ok(result);
         }
 
-        [HttpPost("getDecryptedFileParams")]
-        [Authorize(Roles = "proxy")]
-        public async Task<IActionResult> GetDecryptedFileParams([FromBody] FileEncDataDto filEncData)
-        {
-            try
-            {
-                FileDecDataDto fileDecData = await _fileService.GetDecryptedFileParams(filEncData);
-                return Ok(fileDecData);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //[HttpPost("getDecryptedFileParams")]
+        //[Authorize(Roles = "proxy")]
+        //public async Task<IActionResult> GetDecryptedFileParams([FromBody] FileEncDataDto filEncData)
+        //{
+        //    try
+        //    {
+        //        FileDecDataDto fileDecData = await _fileService.GetDecryptedFileParams(filEncData);
+        //        return Ok(fileDecData);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
         [HttpPost("saveDeduplicateFileForUser")]
         [Authorize(Roles = "proxy")]
@@ -280,42 +280,42 @@ namespace FileStorageApp.Server.Controllers
             return Ok(result);
         }
 
-        [HttpPost("encryptFileParamsForSendingToUser")]
-        [Authorize(Roles = "proxy")]
-        public async Task<IActionResult> GetFileNamesAndDates([FromBody] EncryptParamsDto decParams)
-        {
-            try
-            {
-                string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-                if (token.IsNullOrEmpty())
-                {
-                    return BadRequest("Authorization Problems!");
-                }
-                string userId = await _userService.GetUserIdByEmail(decParams.userEmail);
-                EncryptParamsDto? result = await _fileService.encryptParams(userId, decParams);
+        //[HttpPost("encryptFileParamsForSendingToUser")]
+        //[Authorize(Roles = "proxy")]
+        //public async Task<IActionResult> GetFileNamesAndDates([FromBody] EncryptParamsDto decParams)
+        //{
+        //    try
+        //    {
+        //        string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //        if (token.IsNullOrEmpty())
+        //        {
+        //            return BadRequest("Authorization Problems!");
+        //        }
+        //        string userId = await _userService.GetUserIdByEmail(decParams.userEmail);
+        //        EncryptParamsDto? result = await _fileService.encryptParams(userId, decParams);
 
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //        return Ok(result);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
-        [HttpPost("proxyGetFileFromStorage")]
-        [Authorize(Roles = "proxy")]
-        public async Task<ServerBlobFIle> GetFileFromStorage([FromBody] EmailFilenameDto paramsDto)
-        {
-            string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
-            if (token.IsNullOrEmpty())
-            {
-                return null;
-            }
+        //[HttpPost("proxyGetFileFromStorage")]
+        //[Authorize(Roles = "proxy")]
+        //public async Task<ServerBlobFIle> GetFileFromStorage([FromBody] EmailFilenameDto paramsDto)
+        //{
+        //    string? token = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]).Parameter;
+        //    if (token.IsNullOrEmpty())
+        //    {
+        //        return null;
+        //    }
 
-            string id = await _userService.GetUserIdByEmail(paramsDto.userEmail);
-            ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, paramsDto.fileName);
-            return severFile;
-        }
+        //    string id = await _userService.GetUserIdByEmail(paramsDto.userEmail);
+        //    ServerBlobFIle severFile = await _fileService.GetFileFromBlob(id, paramsDto.fileName);
+        //    return severFile;
+        //}
 
         [HttpPost("deleteFile")]
         [Authorize(Roles = "proxy")]

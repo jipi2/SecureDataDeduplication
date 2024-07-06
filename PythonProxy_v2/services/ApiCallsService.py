@@ -32,10 +32,11 @@ class ApiCall():
     
     async def callBackendGetMethod(self,endPointName:str, token:str):
         headers = {"Authorization": f"Bearer {token}"}
-        print(endPointName)
+        print(self.api_url+endPointName)
         print(token)
         async with httpx.AsyncClient(verify=False) as client:
             response = await client.get(self.api_url+endPointName, headers=headers)
+            
             return response
     
     async def callBackendPostMethodWithSimpleParams(self, endPointName:str, token:str, param:str):

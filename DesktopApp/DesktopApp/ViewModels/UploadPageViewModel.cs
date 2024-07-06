@@ -226,25 +226,36 @@ namespace DesktopApp.ViewModels
             //    multipartContent.Add(new StreamContent(fileStream), "file", fileDto.fileName);
             multipartContent.Add(progressableContent, "file", fileDto.fileName);
 
-            Stopwatch stopwatch = new Stopwatch();
-
-            stopwatch.Start();
-            var response = await httpClient.PostAsync("uploadFile", multipartContent);
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                string errorPhrase = await response.Content.ReadAsStringAsync();
-                if (errorPhrase.Equals("{\"detail\":\"User already has this file\"}"))
-                    throw new Exception("You already have this file in your storage");
-                throw new Exception("An error has occured, while sending the file, please try again");
+                Stopwatch stopwatch = new Stopwatch();
+
+                stopwatch.Start();
+                var response = await httpClient.PostAsync("uploadFile", multipartContent);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorPhrase = await response.Content.ReadAsStringAsync();
+                    if (errorPhrase.Equals("{\"detail\":\"User already has this file\"}"))
+                        throw new Exception("You already have this file in your storage");
+                    throw new Exception("An error has occured, while sending the file, please try again");
+                }
+
+                stopwatch.Stop();
+                Debug.WriteLine("Challenge time: " + stopwatch.Elapsed);
+
+                fileStream.Close();
+                System.IO.File.Delete(encFilePath);
+
+                UploadProgress = 0;
             }
-
-            stopwatch.Stop();
-            Debug.WriteLine("Challenge time: " + stopwatch.Elapsed);
-
-            fileStream.Close();
-            System.IO.File.Delete(encFilePath);
-
-            UploadProgress = 0;
+            catch(Exception ex)
+            {
+                progressableContent.Dispose();
+                fileStream.Close();
+                System.IO.File.Delete(encFilePath);
+                UploadProgress = 0;
+                throw;
+            }
         }
 
         public async Task CancelBeforeUploading()

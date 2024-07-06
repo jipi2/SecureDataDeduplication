@@ -32,21 +32,24 @@ namespace DesktopApp
 			try
 			{
 				await _viewModel.SelectFile();
-
-                var popup = new FolderViewPopup();
-                await MopupService.Instance.PushAsync(popup);
-                var result = await popup.PopupDismissedTask;
-                if (result == "")
+                int numberOfFiles = _viewModel.GetNumberOfFilesSelected();
+                if (numberOfFiles > 0)
                 {
-                    await DisplayAlert("Info", "You need to select a folder to upload the file", "OK");
-                    return;
+                    var popup = new FolderViewPopup();
+                    await MopupService.Instance.PushAsync(popup);
+                    var result = await popup.PopupDismissedTask;
+                    if (result == "")
+                    {
+                        await DisplayAlert("Info", "You need to select a folder to upload the file", "OK");
+                        return;
+                    }
+                    path = result;
+                    uploadGrid.IsVisible = true;
+                    fileNameFrame.IsVisible = true;
+                    //uploadButton.IsVisible = true;
+                    //uploadText.IsVisible = true;
+                    plusButton.IsVisible = false;
                 }
-                path = result;
-                uploadGrid.IsVisible = true;
-                fileNameFrame.IsVisible = true;
-				//uploadButton.IsVisible = true;
-				//uploadText.IsVisible = true;
-				plusButton.IsVisible = false;
                 
             }
 			catch (Exception ex) 
@@ -94,13 +97,13 @@ namespace DesktopApp
             }
 			catch (Exception ex)
 			{
-				uploadButton.IsEnabled = true;
-				DisplayAlert("Error", ex.Message, "OK");
-                uploadButton.IsEnabled = true;
+				DisplayAlert("Error","Something went wrong, please try again later.", "OK");
+                uploadButton.IsEnabled = false;
                 fileNameFrame.IsVisible = false;
                 //uploadButton.IsVisible = false;
                 uploadGrid.IsVisible = false;
                 //uploadText.IsVisible = false;
+                mainBorder.IsVisible = true;
                 plusButton.IsVisible = true;
                 progressBarBorder.IsVisible = false;
                 _viewModel.ClearFiles();

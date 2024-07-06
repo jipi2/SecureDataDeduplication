@@ -11,6 +11,7 @@ namespace FileStorageApp.Server.Services
         private readonly string _containerName;
         private readonly IConfiguration _configuration;
         
+
         public AzureBlobService(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -20,6 +21,7 @@ namespace FileStorageApp.Server.Services
              
         }
 
+        public BlobContainerClient GetBlobContainerClient() { return _blobContainerClient; }
         public async Task<string?> UploadFileToCloud(string encFileBase64, string tag)
         {
             try

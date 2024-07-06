@@ -10,6 +10,7 @@ namespace DesktopApp.HttpFolder
     public class HttpServiceCustom
     {
         static private string _baseUrlForProxy = "https://98.66.191.100:443";
+        //static private string _baseUrlForProxy = "https://localhost:8000";
         static private string _baseUrlForApi = "https://98.66.191.100:443";
         static private HttpClient getClient()
         {

@@ -241,45 +241,45 @@ namespace FileStorageApp.Server.Services
             }
         }
 
-        public async Task SaveServerDFKeysForUser(User user, AsymmetricCipherKeyPair serverKeys, string P, string G)
-        {
+        //public async Task SaveServerDFKeysForUser(User user, AsymmetricCipherKeyPair serverKeys, string P, string G)
+        //{
 
-            string serverPubKey = Utils.Utils.GetPemAsString(serverKeys.Public);
-            string serverPrivKey = Utils.Utils.GetPemAsString(serverKeys.Private);
+        //    string serverPubKey = Utils.Utils.GetPemAsString(serverKeys.Public);
+        //    string serverPrivKey = Utils.Utils.GetPemAsString(serverKeys.Private);
 
-            await _userRepo.SaveServerDFKeysForUser(user, serverPubKey, serverPrivKey, P, G);
+        //    await _userRepo.SaveServerDFKeysForUser(user, serverPubKey, serverPrivKey, P, G);
             
-        }
+        //}
 
-        public async Task<string> GetPrivateKeyOfServerForUser(string userId)
-        {
-            User user = await _userRepo.GetUserById(Convert.ToInt32(userId));
-            return user.ServerDHPrivate == null ? null : user.ServerDHPrivate;
-        }
+        //public async Task<string> GetPrivateKeyOfServerForUser(string userId)
+        //{
+        //    User user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+        //    return user.ServerDHPrivate == null ? null : user.ServerDHPrivate;
+        //}
 
-        public async Task<Dictionary<string, string>> GetParametersForDF(string userId)
-        {
-            User user = await _userRepo.GetUserById(Convert.ToInt32(userId));
-            Dictionary<string, string> stringParams = new Dictionary<string, string>();
-            if (user.P == null || user.G == null)
-                return stringParams;
-            stringParams.Add("P", user.P);
-            stringParams.Add("G", user.G);
+        //public async Task<Dictionary<string, string>> GetParametersForDF(string userId)
+        //{
+        //    User user = await _userRepo.GetUserById(Convert.ToInt32(userId));
+        //    Dictionary<string, string> stringParams = new Dictionary<string, string>();
+        //    if (user.P == null || user.G == null)
+        //        return stringParams;
+        //    stringParams.Add("P", user.P);
+        //    stringParams.Add("G", user.G);
 
-            return stringParams;
-        }
+        //    return stringParams;
+        //}
 
-        public async Task SaveSymKeyForUser(string userId, byte[] key)
-        {
-            try
-            {
-                await _userRepo.SaveSymKey(Convert.ToInt32(userId), Convert.ToBase64String(key));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
+        //public async Task SaveSymKeyForUser(string userId, byte[] key)
+        //{
+        //    try
+        //    {
+        //        await _userRepo.SaveSymKey(Convert.ToInt32(userId), Convert.ToBase64String(key));
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //    }
+        //}
 
         //public async Task AddFile(string userId, FileMetadata fileMeta)
         //{

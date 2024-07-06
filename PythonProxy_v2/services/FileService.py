@@ -50,6 +50,7 @@ class FileService():
         self.base64EncIv = base64EncIv
         self.authService = ProxyClass()
         self.gateWay = ApiCall(os.environ.get("backendBaseUrl"))
+        # self.gateWay = ApiCall("https://localhost:7109")
         
         self.base64Key = base64Key
         self.base64Iv = base64Iv
@@ -160,6 +161,7 @@ class FileService():
         finally:
             session.close()
 
+
     async def computeFileVerification(self):
         await self.authService.getProxyToken()
         await self.__getUserEmail()
@@ -182,6 +184,7 @@ class FileService():
                 raise Exception("File not verified")
             # fileDecDto = await self.__getDecryptedFileParams()
             await self.__saveDeduplicateFileForUser(tag, fileDecDto.fileName, base64key=fileDecDto.base64Key, base64iv=fileDecDto.base64Iv)
+
 
     async def __createPathForUserIfItDoesntExist(self, path):
         if not os.path.exists(path):
@@ -258,9 +261,11 @@ class FileService():
         finally:
             session.close()
     
-    async def computeFileVerification_v2(self, file:UploadFile, tag):        
+    async def computeFileVerification_v2(self, file:UploadFile, tag):     
+        print('here')   
         await self.authService.getProxyToken()
         await self.__getUserEmail()
+        print('here2')
 
         if self.__checkIfUserHasFile(self.filename) == True:
 

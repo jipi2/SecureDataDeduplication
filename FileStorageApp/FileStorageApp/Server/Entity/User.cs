@@ -18,18 +18,12 @@ namespace FileStorageApp.Server.Entity
         [PasswordPropertyText]
         public string Password { get; set; }
         public string Salt { get; set; }
-        public string? ServerDHPrivate { get; set; }
-        public string? ServerDHPublic { get; set; }
-        public string? G { get; set; }
-        public string? P { get; set; }
-        public string? SymKey { get; set; }
         public bool isDeleted { get; set; }
         public string? Base64RSAPublicKey { get; set; }
         [Column(TypeName ="VARBINARY(MAX)")]
         public byte[]? Pkcs12File { get; set; }
         public string? Base64PublicKey { get; set; }
         public List<Role>? Roles { get; set; }
-
         public string? VerificationCode { get; set; }
         public bool? IsVerified { get; set; }
         public DateTime? VerifiedAt { get; set; }

@@ -72,7 +72,8 @@ namespace DesktopApp
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", ex.Message, "OK");
+                loadingFrame.IsVisible = false;
+                await DisplayAlert("Error", "Can't connect to the network, please verify your internet connection.", "OK");
             }
         }
     }

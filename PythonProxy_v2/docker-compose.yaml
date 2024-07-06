@@ -18,7 +18,7 @@ services:
       - proxy-net
     depends_on:
       - redis
-      - celery_worker
+      # - celery_worker
     volumes:
       - ./uploadedFiles:/app/uploadedFiles
 

@@ -97,21 +97,21 @@ namespace FileStorageApp.Server.Repositories
             return user;
         }
 
-        public async Task SaveServerDFKeysForUser(User user, string serverPublicKey, string serverPrivateKey, string P, string G)
-        {
-            user.ServerDHPublic = serverPublicKey;
-            user.ServerDHPrivate = serverPrivateKey;
-            user.P = P;
-            user.G = G;
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveServerDFKeysForUser(User user, string serverPublicKey, string serverPrivateKey, string P, string G)
+        //{
+        //    user.ServerDHPublic = serverPublicKey;
+        //    user.ServerDHPrivate = serverPrivateKey;
+        //    user.P = P;
+        //    user.G = G;
+        //    await _context.SaveChangesAsync();
+        //}
 
-        public async Task SaveSymKey(int userId, string symKey)
-        {
-            User user = await GetUserById(userId);
-            user.SymKey = symKey;
-            await _context.SaveChangesAsync();
-        }
+        //public async Task SaveSymKey(int userId, string symKey)
+        //{
+        //    User user = await GetUserById(userId);
+        //    user.SymKey = symKey;
+        //    await _context.SaveChangesAsync();
+        //}
 
         //public async Task AddFile(string userId,FileMetadata fileMeta)
         //{

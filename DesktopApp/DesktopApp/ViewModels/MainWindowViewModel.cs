@@ -246,7 +246,7 @@ namespace DesktopApp.ViewModels
                 _selectedItem = selectedItem;
                 if (_selectedItem.IsFolder == false)
                     return;
-               await GetFolderFiles(selectedItem.FullPathName);
+                await GetFolderFiles(selectedItem.FullPathName);
             }
             
         }
