@@ -44,4 +44,4 @@ performance and security in the deduplication process.
 
 ## System diagram
 
-![System_diagram](https://github.com/jipi2/Secure_Data_Deduplication/assets/100122693/53d8c0c0-78f8-4cba-af94-56af5005c828)
+![System_diagram](https://github.com/user-attachments/assets/80c746e7-0a36-4d3f-bf62-6eaae87b5038)
