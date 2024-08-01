@@ -1,4 +1,4 @@
-# A proposal for data deduplication on end-to-end encrypted documents
+# An implementation for secure data deduplication on end-to-end encrypted documents
 
 
 ## This project presents a solution for secure storage with the possibility of deduplication
