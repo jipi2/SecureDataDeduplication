@@ -46,6 +46,7 @@ metadata:
   name: ingress-service-proxy
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10g"
 spec:
   ingressClassName: nginx
   rules:

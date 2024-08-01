@@ -46,83 +46,6 @@ namespace FileStorageApp.Server.Services
             _fileFolderRepo = fileFolderRepo;
         }
 
-        //public async Task<DFparametersDto> GetDFParameters(string Userid)
-        //{
-        //    try
-        //    {
-        //        User user = await _userService.GetUserById(Userid);
-
-        //        DHParameters parameters = Utils.Utils.GenerateParameters();
-        //        AsymmetricCipherKeyPair serverKeys = Utils.Utils.GenerateDFKeys(parameters);
-
-        //        user.ServerDHPrivate = Utils.Utils.GetPemAsString(serverKeys.Private);
-        //        user.ServerDHPublic = Utils.Utils.GetPemAsString(serverKeys.Public);
-
-        //        await _userService.SaveServerDFKeysForUser(user, serverKeys, Utils.Utils.GetP(parameters), Utils.Utils.GetG(parameters));
-
-        //        DFparametersDto dFparams = new DFparametersDto
-        //        {
-        //            G = Utils.Utils.GetG(parameters),
-        //            P = Utils.Utils.GetP(parameters),
-        //            ServerPubKey = Utils.Utils.GetPublicKey(serverKeys)
-        //        };
-
-        //        return dFparams;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        return null;
-        //    }
-        //}
-
-        //public async Task<bool> DFkeyExchange(string pubKey, string userId)
-        //{
-        //    try
-        //    {
-        //        string stringPrivKey = await _userService.GetPrivateKeyOfServerForUser(userId);
-              
-        //        AsymmetricKeyParameter privKey = (AsymmetricKeyParameter)Utils.Utils.ReadPrivateKeyFromPemString(stringPrivKey);
-
-        //        Dictionary<string, string> stringParams = await _userService.GetParametersForDF(userId);
-        //        DHParameters parameters = Utils.Utils.GenerateParameters(stringParams["G"], stringParams["P"]);
-
-        //        //calculam secretul in continuare
-        //        Org.BouncyCastle.Math.BigInteger serverSecret = Utils.Utils.ComputeSharedSecret(pubKey, privKey, parameters);
-        //        byte[] byteSecret = serverSecret.ToByteArray();
-        //        byte[] symKey = Utils.Utils.ComputeHash(byteSecret);
-        //        await _userService.SaveSymKeyForUser(userId, symKey);
-        //        return true;
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        return false;
-        //    }
-
-        //}
-
-        //public async Task<ServerBlobFIle>? GetFileFromBlob(string userId, string fileName)
-        //{
-        //    User user = await _userService.GetUserById(userId);
-        //    UserFile userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fileName);
-        //    //FileMetadata file = user.Files.Where(f => f.Id == userFile.FileId).FirstOrDefault();
-        //    FileMetadata? file = await _fileRepo.GetFileMetaById(userFile.FileId);
-
-        //    string base64file = await _azureBlobService.GetContentFileFromBlob(file.Tag);
-
-        //    ServerBlobFIle serverFile = new ServerBlobFIle
-        //    {
-        //        FileName = Utils.Utils.EncryptAes(Encoding.UTF8.GetBytes(fileName), Convert.FromBase64String(user.SymKey)),
-        //        FileKey = Utils.Utils.EncryptAes(Convert.FromBase64String(userFile.Key), Convert.FromBase64String(user.SymKey)),
-        //        FileIv = Utils.Utils.EncryptAes(Convert.FromBase64String(userFile.Iv), Convert.FromBase64String(user.SymKey)),
-        //        EncBase64File = base64file
-        //    };
-
-        //    return serverFile;
-        //}
-
         public async Task<string> GetFileFromBlobWithoutEncryption(string base64tag)
         {
             string base64file = await _azureBlobService.GetContentFileFromBlob(base64tag);
@@ -178,18 +101,6 @@ namespace FileStorageApp.Server.Services
                 throw new Exception("Url for Azure Blob Stroage is null");
             }
 
-            //FileMetadata fileMeta = new FileMetadata
-            //{
-            //    FileName = fileName,
-            //    BlobLink = blobUrl,
-            //    isDeleted = false,
-            //    Key = base64Key,
-            //    Iv = base64Iv,
-            //    Tag = base64Tag,
-            //    UploadDate = DateTime.UtcNow
-            //};
-
-            //cod modificat
 
             FileMetadata fileMeta = new FileMetadata
             {
@@ -225,16 +136,6 @@ namespace FileStorageApp.Server.Services
 
         private async Task<bool> CheckIfFileNameExists(User user, string fileName)
         {
-            //if (user.Files == null)
-            //    return false;
-            //foreach (FileMetadata file in user.Files)
-            //{
-            //    if (file.FileName.Equals(fileName))
-            //        return true;
-            //}
-            //return false;
-
-            //cod modficat
             UserFile uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, fileName);
             if(uf == null)
                 return false;
@@ -243,144 +144,7 @@ namespace FileStorageApp.Server.Services
             //gata cod modificat
         
         }   
-        //public async Task<FileMetaChallenge?> ComputeFileMetadata(FileParamsDto fileParams, string userId)
-        //{
-        //    try
-        //    {
-        //        User user = await _userService.GetUserById(userId);
-        //        string base64SymKey;
-        //        if (user.SymKey != null)
-        //            base64SymKey = user.SymKey;
-        //        else
-        //            return null;
 
-        //        string base64Tag = Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.base64TagEnc), Convert.FromBase64String(base64SymKey));
-        //        string base64Key = Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.base64KeyEnc), Convert.FromBase64String(base64SymKey));
-        //        string base64Iv = Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.base64IvEnc), Convert.FromBase64String(base64SymKey));
-        //        string fileName = Encoding.UTF8.GetString( Convert.FromBase64String( Utils.Utils.DecryptAes(Convert.FromBase64String(fileParams.encFileName), Convert.FromBase64String(base64SymKey))));
-
-        //        FileMetaChallenge fmc = new FileMetaChallenge();
-        //        fmc.id = "";
-
-        //        if(await CheckIfFileNameExists(user, fileName) == true)
-        //        {
-        //            fmc.id = "File name already exists!";
-        //            return fmc;
-        //        }
-
-        //        if (await _fileRepo.GetFileMetaByTag(base64Tag) == false)
-        //        {
-
-        //            await SaveBlob(fileParams.base64EncFile, base64Tag, fileName, base64Key, base64Iv, userId);
-                   
-        //        }      
-                
-        //        FileMetadata? fileMeta = await _fileRepo.GetFileMetaWithResp(base64Tag);
-        //        if (fileMeta == null)
-        //            return null;
-
-        //        //aici am adaugat cod
-        //        UserFile uf = new UserFile
-        //        {
-        //            FileName = fileName,
-        //            Key = base64Key,
-        //            Iv = base64Iv,
-        //            UploadDate = DateTime.UtcNow,
-        //            UserId = Convert.ToInt32(userId)
-        //        };
-        //        await _userFileRepo.SaveUserFile(uf);
-        //        //aici gata codul
-
-        //        Resp? resp = fileMeta.Resps.Where(r => r.wasUsed == false).FirstOrDefault();
-        //        if(resp == null)
-        //        {
-        //            //reload the challenges
-        //            ServerBlobFIle blobFile = await GetFileFromBlob(userId, fileName);
-        //            Utils.MerkleTree mt = await GetMerkleTree(blobFile.EncBase64File);
-        //            await GenerateMerkleTreeChallenges(fileMeta.Id, mt);
-        //            resp = fileMeta.Resps.Where(r => r.wasUsed == false).FirstOrDefault();
-        //        }
-        //        fmc.id = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Id), Convert.FromBase64String(base64SymKey));
-        //        fmc.n1 = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Position_1), Convert.FromBase64String(base64SymKey));
-        //        fmc.n2 = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Position_2), Convert.FromBase64String(base64SymKey));
-        //        fmc.n3 = Utils.Utils.EncryptAes(BitConverter.GetBytes(resp.Position_3), Convert.FromBase64String(base64SymKey));
-        //        resp.wasUsed = true;
-        //        await _respRepo.UpdateResp(resp);
-        //        return fmc;            
-               
-        //    }
-        //    catch (Exception ex) 
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        return null;
-        //    }
-        //}
-
-        //public async Task<bool> CheckEncTag(string userId, string encTag)
-        //{
-        //    User user = await _userService.GetUserById(userId);
-        //    string base64SymKey;
-        //    if (user.SymKey != null)
-        //        base64SymKey = user.SymKey;
-        //    else
-        //        throw new Exception("Problems with Crypto params!");
-        //    string base64Tag = Utils.Utils.DecryptAes(Convert.FromBase64String(encTag), Convert.FromBase64String(base64SymKey));
-        //    if(await _fileRepo.GetFileMetaByTag(base64Tag) == false)
-        //    {
-        //        return false;
-        //    }
-        //    return true;
-
-        //}
-        //public async Task<bool> SaveFileToUser(string userId, FileResp userResp)
-        //{
-        //    try
-        //    {
-        //        User user = await _userService.GetUserById(userId);
-        //        string base64SymKey;
-        //        if (user.SymKey != null)
-        //            base64SymKey = user.SymKey;
-        //        else
-        //            return false;
-
-        //        byte[] symKey = Convert.FromBase64String(base64SymKey);
-
-        //        int respId = BitConverter.ToInt32(Convert.FromBase64String(Utils.Utils.DecryptAes(Convert.FromBase64String(userResp.Id), symKey)));
-        //        Resp? resp = await _respRepo.GetRespById(Convert.ToInt32(respId));
-
-        //        string userFilename = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.Utils.DecryptAes(Convert.FromBase64String(userResp.FileName), symKey)));
-        //        string userAnsw = Utils.Utils.DecryptAes(Convert.FromBase64String(userResp.Answer), symKey);
-
-        //        if (resp == null) return false;
-        //        if (resp.Answer.Equals(userAnsw))
-        //        {
-        //            FileMetadata? fileMeta = await _fileRepo.GetFileMetaById(resp.FileMetadataId);
-        //            if (fileMeta == null)
-        //                return false;
-
-        //            UserFile? uf = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, userFilename);
-        //            if (uf != null)
-        //            {
-        //                uf.FileId = fileMeta.Id;
-        //                await _userFileRepo.UpdateUserFile(uf);
-        //            }
-
-        //            return true;
-        //        }
-        //        else
-        //        {
-        //            UserFile userFile = await _userFileRepo.GetUserFileByUserIdAndFileName(user.Id, userFilename);
-        //            _userFileRepo.DeleteUserFile(userFile);
-
-        //            return false;
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e.Message);
-        //        return false;
-        //    }
-        //}
         public async Task<List<FilesNameDate>?> GetFileNamesAndDatesOfUser(string id)
         {
             User? user = await _userService.GetUserById(id);
@@ -499,26 +263,6 @@ namespace FileStorageApp.Server.Services
                 return false;
             }
         }
-
-        //public async Task<FileDecDataDto> GetDecryptedFileParams(FileEncDataDto fileEncData)
-        //{
-        //    FileDecDataDto fileDecData = new FileDecDataDto();
-
-        //    User? user = await _userRepo.GetUserByEmail(fileEncData.userEmail);
-        //    if (user == null)
-        //        throw new Exception("User does not exist!");
-
-        //    fileDecData.tag = Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.encBase64Tag), Convert.FromBase64String(user.SymKey));
-        //    fileDecData.base64key = Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64KeyEnc), Convert.FromBase64String(user.SymKey));
-        //    fileDecData.base64iv = Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.base64IvEnc), Convert.FromBase64String(user.SymKey));
-        //    fileDecData.fileName = Encoding.UTF8.GetString(Convert.FromBase64String(Utils.Utils.DecryptAes(Convert.FromBase64String(fileEncData.encFileName), Convert.FromBase64String(user.SymKey))));
-
-
-        //    if (await CheckIfFileNameExists(user, fileDecData.fileName) == true)
-        //        throw new Exception("User has allready a file with this name!");
-
-        //    return fileDecData;
-        //}
 
 
         public async Task SaveDedupFile(FileDedupDto fileDedupDto)
